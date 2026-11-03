@@ -186,7 +186,7 @@ public sealed class RichPresenceService : IRichPresenceService, IDisposable
         if (_session.Current is { } activity && Options.RichPresence)
         {
             if (activity.Kind != RobloxActivityKind.InGame || activity.PlaceId is not { } placeId)
-                return BuildMenu(activity.SinceUtc);
+                return BuildMenu(activity.SinceUtc, Options);
 
             ExperienceInfo? info = null;
             string? icon = null;
@@ -209,13 +209,13 @@ public sealed class RichPresenceService : IRichPresenceService, IDisposable
             return BuildGame(info, icon, placeId, activity.SinceUtc, Options, user);
         }
 
-        return IsPreviewing ? BuildMenu(_previewSince) : null;
+        return IsPreviewing ? BuildMenu(_previewSince, Options) : null;
     }
 
-    internal static JsonObject BuildMenu(DateTime sinceUtc) => new()
+    internal static JsonObject BuildMenu(DateTime sinceUtc, DiscordSettings? options = null) => new()
     {
-        ["details"] = "Inside Nexstrap",
-        ["state"] = "Browsing Roblox",
+        ["details"] = FitOr(options?.MenuTopLine, DiscordSettings.DefaultMenuTopLine),
+        ["state"] = FitOr(options?.MenuBottomLine, DiscordSettings.DefaultMenuBottomLine),
         ["timestamps"] = new JsonObject { ["start"] = new DateTimeOffset(sinceUtc, TimeSpan.Zero).ToUnixTimeSeconds() },
         ["assets"] = new JsonObject { ["large_image"] = AppInfo.DiscordLogoAsset, ["large_text"] = AppInfo.Name }
     };
@@ -256,6 +256,8 @@ public sealed class RichPresenceService : IRichPresenceService, IDisposable
 
         return activity;
     }
+
+    private static string FitOr(string? text, string fallback) => Fit(string.IsNullOrWhiteSpace(text) ? fallback : text);
 
     /// <summary>Discord requires 2–128 characters.</summary>
     internal static string Fit(string text)

@@ -15,6 +15,9 @@
     <DataTemplate DataType="{x:Type vm:FastFlagsViewModel}">
         <pages:FastFlagsPage />
     </DataTemplate>
+    <DataTemplate DataType="{x:Type vm:PerformanceViewModel}">
+        <pages:PerformancePage />
+    </DataTemplate>
     <DataTemplate DataType="{x:Type vm:RobloxSettingsViewModel}">
         <pages:RobloxSettingsPage />
     </DataTemplate>

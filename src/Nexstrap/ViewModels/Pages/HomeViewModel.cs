@@ -538,8 +538,12 @@ public sealed partial class HomeViewModel : PageViewModel
         {
             var verified = await _installer.DownloadAndVerifyAsync(UpdateResult!.Release!, progress, _updateCts.Token);
             UpdateStage = "Verified. Restarting Nexstrap…";
+            _settings.Save();
             _installer.InstallAndRestart(verified);
-            Application.Current.Shutdown();
+
+            // Not Application.Shutdown(): a single-file app loads assemblies from its own exe on demand,
+            // and that file is now the new version, so normal shutdown code would fail to load.
+            Environment.Exit(0);
         }
         catch (OperationCanceledException)
         {

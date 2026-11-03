@@ -2,6 +2,16 @@
 
 All notable changes to Nexstrap are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.1.0] - 2026-11-03
+
+### Added
+- **Performance page**: FPS status that compares your cap with your display's refresh rate, four presets (Balanced, Smoothest, Best looking, Power saver), the frame-rate cap, and graphics preferences (graphics API, anti-aliasing, texture quality) using allowlisted FastFlags.
+- **Custom Discord text**: choose both menu lines on your Discord card (Integrations).
+
+### Fixed
+- After installing an update, the old version could log errors while closing because it could no longer load parts of itself. It now saves first and exits straight after the swap.
+- The app icon files were missing from the GitHub source, which stopped it from building.
+
 ## [1.0.0] - 2026-11-03
 
 First public release.
@@ -33,4 +43,5 @@ First public release.
 - Quick update check on every launch with an in-app banner; release notes, progress and cancel.
 - Updates are installed only after verifying source, size, SHA-256, product name and version; failed swaps roll back.
 
+[1.1.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.1.0
 [1.0.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.0.0

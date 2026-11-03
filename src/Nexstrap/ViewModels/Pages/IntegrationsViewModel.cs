@@ -174,6 +174,21 @@ public sealed partial class IntegrationsViewModel : PageViewModel
         set => Update(() => _settings.Current.Discord.ShowExperienceDetails = value);
     }
 
+    /// <summary>Empty falls back to the default text, both here and on Discord.</summary>
+    public string MenuTopLine
+    {
+        get => _settings.Current.Discord.MenuTopLine;
+        set => Update(() => _settings.Current.Discord.MenuTopLine =
+            string.IsNullOrWhiteSpace(value) ? DiscordSettings.DefaultMenuTopLine : value.Trim());
+    }
+
+    public string MenuBottomLine
+    {
+        get => _settings.Current.Discord.MenuBottomLine;
+        set => Update(() => _settings.Current.Discord.MenuBottomLine =
+            string.IsNullOrWhiteSpace(value) ? DiscordSettings.DefaultMenuBottomLine : value.Trim());
+    }
+
     public bool ShowAvatar
     {
         get => _settings.Current.Discord.ShowAvatar;

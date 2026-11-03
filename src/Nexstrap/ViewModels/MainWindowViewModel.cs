@@ -26,6 +26,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
         [
             new("Home", "", typeof(HomeViewModel)),
             new("Appearance", "", typeof(AppearanceViewModel)),
+            new("Performance", "", typeof(PerformanceViewModel)),
             new("FastFlags", "", typeof(FastFlagsViewModel)),
             new("Roblox Settings", "", typeof(RobloxSettingsViewModel)),
             new("Integrations", "", typeof(IntegrationsViewModel)),

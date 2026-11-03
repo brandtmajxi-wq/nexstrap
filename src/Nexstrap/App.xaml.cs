@@ -12,6 +12,7 @@ using Nexstrap.Services.FastFlags;
 using Nexstrap.Services.Integrations;
 using Nexstrap.Services.Logging;
 using Nexstrap.Services.Navigation;
+using Nexstrap.Services.Performance;
 using Nexstrap.Services.Roblox;
 using Nexstrap.Services.Shell;
 using Nexstrap.Services.Updates;
@@ -149,6 +150,7 @@ public partial class App : Application
             CreateHttpClient(TimeSpan.FromMinutes(30)), sp.GetRequiredService<ILogger<RobloxDeployment>>()));
         services.AddSingleton<IRobloxClientService, RobloxClientService>();
         services.AddSingleton<IExperienceInfoService, ExperienceInfoService>();
+        services.AddSingleton<IDisplayInfo, DisplayInfo>();
         services.AddSingleton<IRobloxSessionService, RobloxSessionService>();
         services.AddSingleton<IRobloxUserSettingsService, RobloxUserSettingsService>();
         services.AddSingleton<IProtocolRegistration, ProtocolRegistration>();
@@ -162,6 +164,7 @@ public partial class App : Application
         // Pages (singletons so state survives tab switches)
         services.AddSingleton<HomeViewModel>();
         services.AddSingleton<AppearanceViewModel>();
+        services.AddSingleton<PerformanceViewModel>();
         services.AddSingleton<FastFlagsViewModel>();
         services.AddSingleton<RobloxSettingsViewModel>();
         services.AddSingleton<IntegrationsViewModel>();

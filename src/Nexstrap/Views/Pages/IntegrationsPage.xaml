@@ -72,8 +72,10 @@
                             </Border>
                             <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
                                 <TextBlock Text="Roblox" FontSize="13.5" FontWeight="Bold" Foreground="#F2F3F5" FontFamily="{DynamicResource Font.Primary}" />
-                                <TextBlock Text="Inside Nexstrap" FontSize="12.5" Foreground="#DBDEE1" Margin="0,2,0,0" FontFamily="{DynamicResource Font.Primary}" />
-                                <TextBlock Text="Browsing Roblox" FontSize="12.5" Foreground="#DBDEE1" FontFamily="{DynamicResource Font.Primary}" />
+                                <TextBlock Text="{Binding MenuTopLine}" FontSize="12.5" Foreground="#DBDEE1" Margin="0,2,0,0" MaxWidth="190"
+                                           TextTrimming="CharacterEllipsis" FontFamily="{DynamicResource Font.Primary}" />
+                                <TextBlock Text="{Binding MenuBottomLine}" FontSize="12.5" Foreground="#DBDEE1" MaxWidth="190"
+                                           TextTrimming="CharacterEllipsis" FontFamily="{DynamicResource Font.Primary}" />
                                 <TextBlock Text="0:12:34" FontSize="12" Foreground="#3BA55D" Margin="0,2,0,0" FontFamily="{DynamicResource Font.Primary}" />
                             </StackPanel>
                         </StackPanel>
@@ -86,6 +88,16 @@
 
         <ui:SettingCard Icon="&#xE7FC;" Header="Show activity on Discord" Description="Turn Rich Presence on or off." Margin="0,10,0,6">
             <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding RichPresence}" AutomationProperties.Name="Rich Presence" />
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE8D2;" Header="Menu text: first line"
+                        Description="Shown while you're in the Roblox menu. Leave empty for the default.">
+            <TextBox Width="220" MaxLength="128" ui:Ui.Placeholder="Inside Nexstrap" AutomationProperties.Name="Menu text first line"
+                     Text="{Binding MenuTopLine, UpdateSourceTrigger=LostFocus}" />
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE8D2;" Header="Menu text: second line"
+                        Description="For example &quot;Browsing Zovstrap&quot;. Updates on Discord when you click away from the box.">
+            <TextBox Width="220" MaxLength="128" ui:Ui.Placeholder="Browsing Roblox" AutomationProperties.Name="Menu text second line"
+                     Text="{Binding MenuBottomLine, UpdateSourceTrigger=LostFocus}" />
         </ui:SettingCard>
         <ui:SettingCard Icon="&#xE8B9;" Header="Show experience name and icon"
                         Description="Off keeps it private: Discord just says you're in a Roblox experience.">

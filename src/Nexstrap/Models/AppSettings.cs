@@ -38,6 +38,15 @@ public sealed class CompanionApp
 
 public sealed class DiscordSettings
 {
+    public const string DefaultMenuTopLine = "Inside Nexstrap";
+    public const string DefaultMenuBottomLine = "Browsing Roblox";
+
+    /// <summary>First line of the card while in the Roblox menu.</summary>
+    public string MenuTopLine { get; set; } = DefaultMenuTopLine;
+
+    /// <summary>Second line of the card while in the Roblox menu.</summary>
+    public string MenuBottomLine { get; set; } = DefaultMenuBottomLine;
+
     /// <summary>Show what you're doing in Roblox on your Discord profile while Nexstrap is running.</summary>
     public bool RichPresence { get; set; } = true;
 

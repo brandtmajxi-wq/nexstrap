@@ -22,7 +22,10 @@ public interface IUpdateInstaller
     /// <summary>Downloads the release's Nexstrap.exe and verifies it. Nothing is run.</summary>
     Task<VerifiedUpdate> DownloadAndVerifyAsync(GitHubRelease release, IProgress<UpdateProgress>? progress, CancellationToken ct = default);
 
-    /// <summary>Swaps the verified file in for the running exe, starts it and returns; the caller then exits.</summary>
+    /// <summary>
+    /// Swaps the verified file in for the running exe and starts it. The caller must exit immediately
+    /// afterwards, without running normal shutdown code (see HomeViewModel.InstallUpdateAsync).
+    /// </summary>
     void InstallAndRestart(VerifiedUpdate update);
 
     /// <summary>Removes leftovers of a previous update (old exe, downloads). Safe to call at every start.</summary>
@@ -131,6 +134,9 @@ public sealed class UpdateInstaller : IUpdateInstaller
 
         var old = current + OldExeSuffix;
         TryDelete(old);
+
+        // Load the process assembly now: after the swap, this exe can't load anything new from its bundle.
+        _ = new ProcessStartInfo();
 
         // Windows allows renaming a running exe, but not overwriting it.
         File.Move(current, old);

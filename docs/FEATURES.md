@@ -23,6 +23,15 @@ A page-by-page guide. Everything Nexstrap stores lives in `%LocalAppData%\Nexstr
 - **Your themes**: save the current look; apply, export, import or delete. Exports don't include the image file.
 - **Reset**: back to defaults; saved themes are kept.
 
+## Performance
+
+These settings change limits and quality; they can't make your PC faster.
+
+- **FPS status**: your primary display's refresh rate, whether your cap suits it, and warnings such as Roblox being open or the ignored `DFIntTaskSchedulerTargetFps` flag being present.
+- **Presets**: Balanced, Smoothest, Best looking and Power saver set Roblox's frame-rate cap and graphics quality together. All except Power saver use the highest standard cap your display can show. Roblox must be closed.
+- **Maximum frame rate**: 60, 120, 144 or 240, stored in Roblox's own settings.
+- **Graphics preferences**: graphics API, anti-aliasing and texture quality. These are allowlisted FastFlags, so they only apply to Nexstrap-installed builds; *Automatic* removes the flag.
+
 ## FastFlags
 
 FastFlags are Roblox client configuration values written to `ClientSettings\ClientAppSettings.json` inside a Roblox build.
@@ -48,7 +57,7 @@ maximum frame rate (60/120/144/240), automatic or fixed graphics quality (1–10
 
 ## Integrations
 
-- **Discord Rich Presence** (needs the Discord desktop app). Menu: "Inside Nexstrap · Browsing Roblox". In game: experience name, creator, icon, your avatar headshot and a *View game* button. Each part can be switched off. Nexstrap reads Roblox's own log lines to tell menu from game and stays running in the background until Roblox closes.
+- **Discord Rich Presence** (needs the Discord desktop app). Menu: "Inside Nexstrap · Browsing Roblox" by default, and you can write your own text for both lines. In game: experience name, creator, icon, your avatar headshot and a *View game* button. Each part can be switched off. Nexstrap reads Roblox's own log lines to tell menu from game and stays running in the background until Roblox closes.
 - **Start with Roblox**: programs launched when a Nexstrap-started Roblox session begins; optionally asked to close (never force-killed) when it ends.
 - **Move your setup**: one JSON file with appearance, launch and Discord settings, FastFlags, saved themes and companion apps. Machine-specific items (window size, background files, chosen build, URL-handler backup) are not exported. Importing backs up the current setup first.
 - **Multiple Roblox windows**: not offered. Roblox allows one game at a time and Nexstrap doesn't get around that.
