@@ -189,6 +189,25 @@ public sealed partial class IntegrationsViewModel : PageViewModel
             string.IsNullOrWhiteSpace(value) ? DiscordSettings.DefaultMenuBottomLine : value.Trim());
     }
 
+    public string MenuImage
+    {
+        get => _settings.Current.Discord.MenuImage ?? "";
+        set
+        {
+            var text = value.Trim();
+            if (text.Length > 0 && !RichPresenceService.IsValidImage(text))
+            {
+                MenuImageError = "Use a direct https:// image link, or an Art Asset name (letters, numbers, _ and - only).";
+                return;
+            }
+            MenuImageError = null;
+            Update(() => _settings.Current.Discord.MenuImage = text.Length == 0 ? null : text);
+        }
+    }
+
+    [ObservableProperty]
+    private string? _menuImageError;
+
     public bool ShowAvatar
     {
         get => _settings.Current.Discord.ShowAvatar;

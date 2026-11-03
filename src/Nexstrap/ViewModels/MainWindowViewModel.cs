@@ -25,7 +25,10 @@ public sealed partial class MainWindowViewModel : ObservableObject
         NavItems =
         [
             new("Home", "", typeof(HomeViewModel)),
+            new("Games", "", typeof(GamesViewModel)),
+            new("Servers", "", typeof(ServersViewModel)),
             new("Appearance", "", typeof(AppearanceViewModel)),
+            new("Loading Screen", "", typeof(LaunchScreenViewModel)),
             new("Performance", "", typeof(PerformanceViewModel)),
             new("FastFlags", "", typeof(FastFlagsViewModel)),
             new("Roblox Settings", "", typeof(RobloxSettingsViewModel)),

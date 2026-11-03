@@ -99,6 +99,13 @@
             <TextBox Width="220" MaxLength="128" ui:Ui.Placeholder="Browsing Roblox" AutomationProperties.Name="Menu text second line"
                      Text="{Binding MenuBottomLine, UpdateSourceTrigger=LostFocus}" />
         </ui:SettingCard>
+        <ui:SettingCard Icon="&#xEB9F;" Header="Card icon"
+                        Description="A direct https:// link to a PNG or JPG, or the name of an Art Asset in your Discord app. Leave empty for the built-in logo. In a game, the game's icon stays large and this is only used if your avatar isn't shown.">
+            <TextBox Width="220" MaxLength="256" ui:Ui.Placeholder="Built-in logo" AutomationProperties.Name="Card icon"
+                     Text="{Binding MenuImage, UpdateSourceTrigger=LostFocus}" />
+        </ui:SettingCard>
+        <TextBlock Text="{Binding MenuImageError}" Style="{StaticResource Text.Caption}" Foreground="{DynamicResource Brush.Danger}"
+                   Margin="2,0,0,6" Visibility="{Binding MenuImageError, Converter={StaticResource NullToVisibility}}" />
         <ui:SettingCard Icon="&#xE8B9;" Header="Show experience name and icon"
                         Description="Off keeps it private: Discord just says you're in a Roblox experience.">
             <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding ShowExperienceDetails}" AutomationProperties.Name="Show experience details" />

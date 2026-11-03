@@ -217,8 +217,26 @@ public sealed class RichPresenceService : IRichPresenceService, IDisposable
         ["details"] = FitOr(options?.MenuTopLine, DiscordSettings.DefaultMenuTopLine),
         ["state"] = FitOr(options?.MenuBottomLine, DiscordSettings.DefaultMenuBottomLine),
         ["timestamps"] = new JsonObject { ["start"] = new DateTimeOffset(sinceUtc, TimeSpan.Zero).ToUnixTimeSeconds() },
-        ["assets"] = new JsonObject { ["large_image"] = AppInfo.DiscordLogoAsset, ["large_text"] = AppInfo.Name }
+        ["assets"] = new JsonObject { ["large_image"] = CardImage(options), ["large_text"] = AppInfo.Name }
     };
+
+    /// <summary>True for an https link or a Discord Art Asset name (letters, digits, _ and -).</summary>
+    internal static bool IsValidImage(string? image)
+    {
+        var text = image?.Trim();
+        if (string.IsNullOrEmpty(text) || text.Length > 256) return false;
+        if (text.Contains("://"))
+            return Uri.TryCreate(text, UriKind.Absolute, out var uri) && uri.Scheme == Uri.UriSchemeHttps;
+        return text.All(c => char.IsAsciiLetterOrDigit(c) || c is '_' or '-');
+    }
+
+    /// <summary>Discord stores Art Asset names in lower case; links must keep their case.</summary>
+    internal static string CardImage(DiscordSettings? options)
+    {
+        var image = options?.MenuImage?.Trim();
+        if (!IsValidImage(image)) return AppInfo.DiscordLogoAsset;
+        return image!.Contains("://") ? image : image.ToLowerInvariant();
+    }
 
     internal static JsonObject BuildGame(ExperienceInfo? info, string? iconUrl, long placeId, DateTime sinceUtc,
         DiscordSettings options, RobloxUser? user = null)
@@ -229,7 +247,7 @@ public sealed class RichPresenceService : IRichPresenceService, IDisposable
         var avatar = showDetails && options.ShowAvatar ? user : null;
         var (smallImage, smallText) = avatar?.HeadshotUrl is { } headshot
             ? (headshot, avatar.DisplayName == avatar.Name ? $"Playing as @{avatar.Name}" : $"Playing as {avatar.DisplayName} (@{avatar.Name})")
-            : (AppInfo.DiscordLogoAsset, $"via {AppInfo.Name}");
+            : (CardImage(options), $"via {AppInfo.Name}");
 
         var activity = new JsonObject
         {
@@ -244,7 +262,7 @@ public sealed class RichPresenceService : IRichPresenceService, IDisposable
                     ["small_image"] = smallImage,
                     ["small_text"] = Fit(smallText)
                 }
-                : new JsonObject { ["large_image"] = AppInfo.DiscordLogoAsset, ["large_text"] = AppInfo.Name }
+                : new JsonObject { ["large_image"] = CardImage(options), ["large_text"] = AppInfo.Name }
         };
 
         if (options.ShowExperienceDetails && options.ShowExperienceButton)

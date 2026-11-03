@@ -32,8 +32,14 @@ public static partial class RobloxLinks
         return match.Success && long.TryParse(match.Groups[1].Value, out placeId) && placeId > 0;
     }
 
-    /// <summary>Roblox's documented deep link for joining an experience.</summary>
-    public static string PlaceLaunchUri(long placeId) => $"roblox://experiences/start?placeId={placeId}";
+    /// <summary>Roblox's documented direct-to-app deep link for joining an experience.</summary>
+    public static string PlaceLaunchUri(long placeId) => $"roblox://placeId={placeId}";
+
+    /// <summary>The same link for one specific server. <paramref name="serverId"/> must be a GUID (a job ID).</summary>
+    public static string ServerLaunchUri(long placeId, string serverId) =>
+        Guid.TryParse(serverId, out var id)
+            ? $"roblox://placeId={placeId}&gameInstanceId={id:D}"
+            : throw new ArgumentException("Not a valid server ID.", nameof(serverId));
 
     /// <summary>
     /// True for roblox: / roblox-player: URIs Windows hands to the registered handler.

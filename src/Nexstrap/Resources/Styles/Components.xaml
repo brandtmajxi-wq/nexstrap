@@ -4,6 +4,7 @@
 
     <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
     <ui:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibility" />
+    <ui:InverseBoolConverter x:Key="InverseBool" />
     <ui:NullToVisibilityConverter x:Key="NullToVisibility" />
     <ui:HexToBrushConverter x:Key="HexToBrush" />
     <ui:ThemePreviewBrushConverter x:Key="ThemePreviewBrush" />

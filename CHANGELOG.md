@@ -2,6 +2,18 @@
 
 All notable changes to Nexstrap are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.3.0] - 2026-11-03
+
+### Added
+- **Servers page**: browse an experience's public servers with player counts, ping and FPS; sort, filter and join a specific server. Regions aren't shown because Roblox's public list doesn't include them.
+- **Games page**: favorites and recently played with thumbnails, quick Play, view servers, and desktop shortcuts.
+- **Loading Screen page**: a customizable screen while Roblox starts, with text, colours, background image, animation and presets. It closes itself when Roblox opens.
+- **Custom Discord card icon**: use a direct https image link or an Art Asset name (Integrations → Card icon).
+
+### Changed
+- Joining now uses Roblox's documented `roblox://placeId=` link.
+- The sidebar scrolls on small windows.
+
 ## [1.1.0] - 2026-11-03
 
 ### Added
@@ -43,5 +55,6 @@ First public release.
 - Quick update check on every launch with an in-app banner; release notes, progress and cancel.
 - Updates are installed only after verifying source, size, SHA-256, product name and version; failed swaps roll back.
 
+[1.3.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.3.0
 [1.1.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.1.0
 [1.0.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.0.0

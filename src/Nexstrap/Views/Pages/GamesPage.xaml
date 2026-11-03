@@ -1,0 +1,81 @@
+<UserControl x:Class="Nexstrap.Views.Pages.GamesPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="clr-namespace:Nexstrap.Controls"
+             xmlns:vm="clr-namespace:Nexstrap.ViewModels.Pages"
+             mc:Ignorable="d" d:DataContext="{d:DesignInstance vm:GamesViewModel}">
+    <UserControl.Resources>
+        <!-- One tile for both lists -->
+        <DataTemplate x:Key="GameTile" DataType="{x:Type vm:GameItem}">
+            <Border Style="{StaticResource Card}" Padding="10" Margin="0,0,0,8">
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Style="{StaticResource Button.Primary}" Content="Play" ui:Ui.Icon="&#xE768;" Padding="12,5"
+                                AutomationProperties.Name="{Binding Name, StringFormat='Play {0}'}"
+                                Command="{Binding DataContext.PlayCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" />
+                        <Button Style="{StaticResource Button.Icon}" Content="&#xE968;" FontFamily="{StaticResource Font.Icons}" Margin="6,0,0,0" ToolTip="View servers"
+                                AutomationProperties.Name="{Binding Name, StringFormat='Servers for {0}'}"
+                                Command="{Binding DataContext.ViewServersCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" />
+                        <Button Style="{StaticResource Button.Icon}" Content="&#xE71B;" FontFamily="{StaticResource Font.Icons}" ToolTip="Create desktop shortcut"
+                                AutomationProperties.Name="{Binding Name, StringFormat='Shortcut for {0}'}"
+                                Command="{Binding DataContext.CreateShortcutCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" />
+                        <Button FontFamily="{StaticResource Font.Icons}" ToolTip="Favorite"
+                                AutomationProperties.Name="{Binding Name, StringFormat='Favorite {0}'}"
+                                Command="{Binding DataContext.ToggleFavoriteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource Button.Icon}">
+                                    <Setter Property="Content" Value="&#xE734;" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsFavorite}" Value="True">
+                                            <Setter Property="Content" Value="&#xE735;" />
+                                            <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </StackPanel>
+                    <Border Width="52" Height="52" CornerRadius="8" Background="{DynamicResource Brush.Hover}" ClipToBounds="True" Margin="0,0,12,0">
+                        <Image Source="{Binding IconUrl, TargetNullValue={x:Null}}" Stretch="UniformToFill" />
+                    </Border>
+                    <StackPanel VerticalAlignment="Center" Margin="0,0,12,0">
+                        <TextBlock Text="{Binding Name}" Style="{StaticResource Text.Base}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Text="{Binding Creator, StringFormat='by {0}'}" Style="{StaticResource Text.Caption}" Margin="0,2,0,0"
+                                   Visibility="{Binding Creator, Converter={StaticResource NullToVisibility}}" />
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <StackPanel>
+        <Border Style="{StaticResource Card}" Padding="18,14">
+            <StackPanel>
+                <DockPanel>
+                    <Button DockPanel.Dock="Right" Style="{StaticResource Button.Primary}" Content="Add favorite" ui:Ui.Icon="&#xE734;"
+                            Margin="10,0,0,0" Command="{Binding AddFavoriteCommand}" />
+                    <TextBox ui:Ui.Icon="&#xE71B;" ui:Ui.Placeholder="Place ID or roblox.com/games/… link" AutomationProperties.Name="Favorite place"
+                             Text="{Binding Input, UpdateSourceTrigger=PropertyChanged}">
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Enter" Command="{Binding AddFavoriteCommand}" />
+                        </TextBox.InputBindings>
+                    </TextBox>
+                </DockPanel>
+                <TextBlock Text="{Binding Status}" Style="{StaticResource Text.Caption}" Margin="2,8,0,0"
+                           Visibility="{Binding Status, Converter={StaticResource NullToVisibility}}" />
+            </StackPanel>
+        </Border>
+
+        <TextBlock Text="Favorites" Style="{StaticResource SectionHeader}" />
+        <TextBlock Text="No favorites yet. Add one above, or press the star on a recent game." Style="{StaticResource Text.Caption}" Margin="2,0,0,6"
+                   Visibility="{Binding HasFavorites, Converter={StaticResource InverseBoolToVisibility}}" />
+        <ItemsControl ItemsSource="{Binding Favorites}" ItemTemplate="{StaticResource GameTile}" Focusable="False" />
+
+        <TextBlock Text="Recently played" Style="{StaticResource SectionHeader}" />
+        <TextBlock Text="Games you start from Nexstrap appear here." Style="{StaticResource Text.Caption}" Margin="2,0,0,6"
+                   Visibility="{Binding HasRecent, Converter={StaticResource InverseBoolToVisibility}}" />
+        <ItemsControl ItemsSource="{Binding Recent}" ItemTemplate="{StaticResource GameTile}" Focusable="False" />
+    </StackPanel>
+</UserControl>

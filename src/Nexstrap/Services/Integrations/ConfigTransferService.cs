@@ -28,6 +28,8 @@ public sealed class ConfigBundle
     public List<CompanionApp>? CompanionApps { get; set; }
     public List<FastFlagEntry>? FastFlags { get; set; }
     public List<ThemeProfile>? Themes { get; set; }
+    public LaunchScreenSettings? LaunchScreen { get; set; }
+    public List<RecentExperience>? FavoriteExperiences { get; set; }
 }
 
 public sealed record ConfigImportResult(int FastFlags, int Themes, int CompanionApps, IReadOnlyList<string> Notes);
@@ -72,6 +74,15 @@ public sealed class ConfigTransferService(
             RecentExperiences = s.Launcher.RecentExperiences.ToList(),
             Discord = s.Discord,
             CompanionApps = s.CompanionApps.ToList(),
+            LaunchScreen = new LaunchScreenSettings
+            {
+                Enabled = s.LaunchScreen.Enabled,
+                Title = s.LaunchScreen.Title,
+                BackgroundColor = s.LaunchScreen.BackgroundColor,
+                AccentColor = s.LaunchScreen.AccentColor,
+                Animation = s.LaunchScreen.Animation
+            },
+            FavoriteExperiences = s.FavoriteExperiences.ToList(),
             FastFlags = fastFlags.Flags.ToList(),
             Themes = appearance.LoadSavedProfiles().Select(p =>
             {
@@ -116,6 +127,14 @@ public sealed class ConfigTransferService(
                 discord.ApplicationIdOverride = null;
             s.Discord = discord;
         }
+
+        if (bundle.LaunchScreen is { } screen)
+        {
+            screen.BackgroundImage = s.LaunchScreen.BackgroundImage; // exports carry no image; keep this PC's
+            s.LaunchScreen = screen;
+        }
+        if (bundle.FavoriteExperiences is { } favorites)
+            s.FavoriteExperiences = favorites.Where(f => f.PlaceId > 0).ToList();
 
         var apps = 0;
         if (bundle.CompanionApps is { } companions)

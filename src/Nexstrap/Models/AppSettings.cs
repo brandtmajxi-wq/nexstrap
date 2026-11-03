@@ -19,6 +19,32 @@ public sealed class AppSettings
 
     /// <summary>Programs started alongside Roblox (e.g. a recorder or voice app).</summary>
     public List<CompanionApp> CompanionApps { get; set; } = [];
+
+    public LaunchScreenSettings LaunchScreen { get; set; } = new();
+
+    /// <summary>Experiences pinned on the Games page.</summary>
+    public List<RecentExperience> FavoriteExperiences { get; set; } = [];
+}
+
+public enum LaunchAnimation
+{
+    Spinner,
+    Bar,
+    Pulse,
+    None
+}
+
+/// <summary>The window shown while Roblox starts.</summary>
+public sealed class LaunchScreenSettings
+{
+    public bool Enabled { get; set; } = true;
+    public string Title { get; set; } = "Starting Roblox";
+    public string BackgroundColor { get; set; } = "#0E0F13";
+    public string AccentColor { get; set; } = "#7C6CFF";
+    public LaunchAnimation Animation { get; set; } = LaunchAnimation.Spinner;
+
+    /// <summary>Copy in Nexstrap's Backgrounds folder; null for a plain colour.</summary>
+    public string? BackgroundImage { get; set; }
 }
 
 public sealed class CompanionApp
@@ -46,6 +72,9 @@ public sealed class DiscordSettings
 
     /// <summary>Second line of the card while in the Roblox menu.</summary>
     public string MenuBottomLine { get; set; } = DefaultMenuBottomLine;
+
+    /// <summary>Card icon: an https image link or a Discord Art Asset name. Empty uses the built-in logo.</summary>
+    public string? MenuImage { get; set; }
 
     /// <summary>Show what you're doing in Roblox on your Discord profile while Nexstrap is running.</summary>
     public bool RichPresence { get; set; } = true;

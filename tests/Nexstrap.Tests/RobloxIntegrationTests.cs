@@ -38,7 +38,16 @@ public class RobloxLinksTests
 
     [Fact]
     public void Builds_documented_deep_link() =>
-        Assert.Equal("roblox://experiences/start?placeId=1818", RobloxLinks.PlaceLaunchUri(1818));
+        Assert.Equal("roblox://placeId=1818", RobloxLinks.PlaceLaunchUri(1818));
+
+    [Fact]
+    public void Builds_server_link_and_rejects_anything_but_a_guid()
+    {
+        Assert.Equal("roblox://placeId=1818&gameInstanceId=b6c72548-3e72-4029-a7b6-056e397f1d18",
+            RobloxLinks.ServerLaunchUri(1818, "b6c72548-3e72-4029-a7b6-056e397f1d18"));
+        Assert.True(RobloxLinks.IsLaunchUri(RobloxLinks.ServerLaunchUri(1818, "b6c72548-3e72-4029-a7b6-056e397f1d18")));
+        Assert.Throws<ArgumentException>(() => RobloxLinks.ServerLaunchUri(1818, "x&launchData=evil"));
+    }
 
     [Theory]
     [InlineData("roblox://experiences/start?placeId=1818", true)]

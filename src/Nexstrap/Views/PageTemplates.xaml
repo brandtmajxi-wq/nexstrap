@@ -15,6 +15,15 @@
     <DataTemplate DataType="{x:Type vm:FastFlagsViewModel}">
         <pages:FastFlagsPage />
     </DataTemplate>
+    <DataTemplate DataType="{x:Type vm:GamesViewModel}">
+        <pages:GamesPage />
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type vm:LaunchScreenViewModel}">
+        <pages:LaunchScreenPage />
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type vm:ServersViewModel}">
+        <pages:ServersPage />
+    </DataTemplate>
     <DataTemplate DataType="{x:Type vm:PerformanceViewModel}">
         <pages:PerformancePage />
     </DataTemplate>

@@ -17,6 +17,9 @@ A modern Windows launcher for the official Roblox client, with themes, honest Fa
 ## What it does
 
 - **Play and join**: start Roblox, or join any experience by place ID or roblox.com link (with name, creator and player count shown first).
+- **Games**: favorites and recently played with thumbnails, quick Play and desktop shortcuts.
+- **Servers**: browse an experience's public servers, filter by free slots and ping, and join a specific one.
+- **Loading screen**: your own text, colours, background and animation while Roblox starts.
 - **Installs Roblox for you**: downloads the official, unmodified Roblox Player from Roblox's own servers, checks every file against Roblox's checksums, and keeps it up to date.
 - **Appearance**: dark and light themes, any accent colour, any installed font, background images, presets, and themes you can save, share and import. Changes apply instantly.
 - **FastFlags, honestly**: add, edit, toggle, import and export flags with type checking and automatic backups. Every flag is marked **Applied** or **Ignored**, based on Roblox's published allowlist (since September 2025 Roblox ignores everything else).

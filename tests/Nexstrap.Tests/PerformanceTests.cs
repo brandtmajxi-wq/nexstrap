@@ -102,6 +102,30 @@ public class PerformancePlannerTests : IDisposable
 
 public class CustomPresenceTextTests
 {
+    [Theory]
+    [InlineData(null, "roblox")]
+    [InlineData("", "roblox")]
+    [InlineData("  ", "roblox")]
+    [InlineData("Zov_Logo", "zov_logo")]
+    [InlineData("https://cdn.example.com/Zov.PNG", "https://cdn.example.com/Zov.PNG")]
+    [InlineData("http://insecure.example/x.png", "roblox")]
+    [InlineData("C:\\Users\\me\\logo.png", "roblox")]
+    [InlineData("has spaces", "roblox")]
+    public void Card_image_accepts_links_and_asset_names_only(string? input, string expected) =>
+        Assert.Equal(expected, RichPresenceService.CardImage(new DiscordSettings { MenuImage = input }));
+
+    [Fact]
+    public void Card_image_is_used_in_the_menu_and_as_the_game_fallback()
+    {
+        var options = new DiscordSettings { MenuImage = "https://cdn.example.com/zov.png" };
+        Assert.Equal(options.MenuImage, (string?)RichPresenceService.BuildMenu(DateTime.UtcNow, options)["assets"]!["large_image"]);
+
+        var info = new Nexstrap.Services.Roblox.ExperienceInfo(1, 2, "Game", "Maker", 3);
+        var game = RichPresenceService.BuildGame(info, "https://icon", 1, DateTime.UtcNow, options);
+        Assert.Equal("https://icon", (string?)game["assets"]!["large_image"]);
+        Assert.Equal(options.MenuImage, (string?)game["assets"]!["small_image"]);
+    }
+
     [Fact]
     public void Menu_card_uses_custom_text_and_falls_back_when_blank()
     {

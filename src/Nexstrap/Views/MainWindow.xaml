@@ -56,10 +56,12 @@
                 </StackPanel>
 
                 <!-- Navigation items -->
-                <StackPanel>
-                    <TextBlock Text="MENU" Style="{StaticResource Text.Overline}" Margin="8,0,0,8" />
-                    <ItemsControl ItemsSource="{Binding NavItems}" ItemTemplate="{StaticResource Template.NavItem}" Focusable="False" />
-                </StackPanel>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Focusable="False">
+                    <StackPanel>
+                        <TextBlock Text="MENU" Style="{StaticResource Text.Overline}" Margin="8,0,0,8" />
+                        <ItemsControl ItemsSource="{Binding NavItems}" ItemTemplate="{StaticResource Template.NavItem}" Focusable="False" />
+                    </StackPanel>
+                </ScrollViewer>
             </DockPanel>
         </Border>
 

@@ -8,10 +8,24 @@ A page-by-page guide. Everything Nexstrap stores lives in `%LocalAppData%\Nexstr
 |---|---|
 | **Play Roblox** | Starts the Roblox app (`RobloxPlayerBeta.exe --app`) from the selected build. Your FastFlags are written first (Nexstrap builds only). |
 | **Install / Update Roblox** | Shown when no build is found or yours is older than Roblox's live version. Downloads the official build from `setup.rbxcdn.com`, verifies each package's MD5, and installs to `%LocalAppData%\Nexstrap\Versions`. Cancel leaves nothing behind. |
-| **Join an experience** | Paste a place ID, `roblox.com/games/<id>/…` link or `…/games/start?placeId=…` link. Nexstrap looks up the name via Roblox's public API, then launches `roblox://experiences/start?placeId=<id>`. If Roblox is already open you're asked first, since Roblox runs one game at a time. |
+| **Join an experience** | Paste a place ID, `roblox.com/games/<id>/…` link or `…/games/start?placeId=…` link. Nexstrap looks up the name via Roblox's public API, then launches `roblox://placeId=<id>`. If Roblox is already open you're asked first, since Roblox runs one game at a time. |
 | **Installations** | Every build found on the PC. *Choose automatically* uses the one matching Roblox's live version (Nexstrap's own first). Builds from other launchers can be used but are never modified or deleted. |
 | **Quick settings** | Light theme, close Nexstrap after launch, check for updates on launch. |
 | **Nexstrap updates** | Current version, latest release, release notes, *Download & install*. |
+
+## Games
+
+Favorites and recently played experiences (newest 20) with thumbnails from Roblox's public API. Each game has **Play**, a servers button, a desktop-shortcut button (a `.url` file that opens `roblox://placeId=<id>` through whichever program handles Roblox links; existing files are never overwritten) and a favorite star.
+
+## Servers
+
+Enter a place ID or link to list its public servers (100 at a time) with player counts, ping and FPS. Sort by most or fewest players or lowest ping; filter by full servers, free slots and maximum ping. **Join** opens that server with Roblox's `gameInstanceId` link.
+
+Ping is the average Roblox reports for the server, not your own. Regions aren't shown: Roblox's public list doesn't include them, and finding them would need your account's sign-in, which Nexstrap never touches.
+
+## Loading Screen
+
+A small window shown when you start Roblox from Nexstrap. It closes when Roblox's window opens, when Roblox exits, or after 20 seconds. Customize the text, background and accent colours, background image and animation (spinner, sliding bar, pulsing logo or none), or use a preset. Roblox's own start-up isn't changed.
 
 ## Appearance
 
@@ -57,7 +71,7 @@ maximum frame rate (60/120/144/240), automatic or fixed graphics quality (1–10
 
 ## Integrations
 
-- **Discord Rich Presence** (needs the Discord desktop app). Menu: "Inside Nexstrap · Browsing Roblox" by default, and you can write your own text for both lines. In game: experience name, creator, icon, your avatar headshot and a *View game* button. Each part can be switched off. Nexstrap reads Roblox's own log lines to tell menu from game and stays running in the background until Roblox closes.
+- **Discord Rich Presence** (needs the Discord desktop app). Menu: "Inside Nexstrap · Browsing Roblox" by default, and you can write your own text for both lines and choose the card icon (a direct https image link or an Art Asset name). In game: experience name, creator, icon, your avatar headshot and a *View game* button. Each part can be switched off. Nexstrap reads Roblox's own log lines to tell menu from game and stays running in the background until Roblox closes.
 - **Start with Roblox**: programs launched when a Nexstrap-started Roblox session begins; optionally asked to close (never force-killed) when it ends.
 - **Move your setup**: one JSON file with appearance, launch and Discord settings, FastFlags, saved themes and companion apps. Machine-specific items (window size, background files, chosen build, URL-handler backup) are not exported. Importing backs up the current setup first.
 - **Multiple Roblox windows**: not offered. Roblox allows one game at a time and Nexstrap doesn't get around that.

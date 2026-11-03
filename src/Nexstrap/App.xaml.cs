@@ -159,11 +159,18 @@ public partial class App : Application
         services.AddSingleton<IDiscordIpcClient, DiscordIpcClient>();
         services.AddSingleton<IRichPresenceService, RichPresenceService>();
         services.AddSingleton<ICompanionAppService, CompanionAppService>();
+        services.AddSingleton<ILaunchScreen, LaunchScreenService>();
+        services.AddSingleton<IGameShortcutService, GameShortcutService>();
+        services.AddSingleton<ILaunchCoordinator, LaunchCoordinator>();
+        services.AddSingleton<IServerBrowserService, ServerBrowserService>();
         services.AddSingleton<IConfigTransferService, ConfigTransferService>();
 
         // Pages (singletons so state survives tab switches)
         services.AddSingleton<HomeViewModel>();
         services.AddSingleton<AppearanceViewModel>();
+        services.AddSingleton<GamesViewModel>();
+        services.AddSingleton<ServersViewModel>();
+        services.AddSingleton<LaunchScreenViewModel>();
         services.AddSingleton<PerformanceViewModel>();
         services.AddSingleton<FastFlagsViewModel>();
         services.AddSingleton<RobloxSettingsViewModel>();

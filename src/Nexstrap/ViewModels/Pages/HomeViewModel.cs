@@ -10,8 +10,6 @@ using Nexstrap.Models;
 using Nexstrap.Services.Appearance;
 using Nexstrap.Services.Configuration;
 using Nexstrap.Services.Dialogs;
-using Nexstrap.Services.Discord;
-using Nexstrap.Services.Integrations;
 using Nexstrap.Services.Roblox;
 using Nexstrap.Services.Shell;
 using Nexstrap.Services.Updates;
@@ -32,7 +30,7 @@ public sealed partial class HomeViewModel : PageViewModel
     private const int MaxRecent = 6;
 
     private readonly IRobloxClientService _client;
-    private readonly IRobloxLauncher _launcher;
+    private readonly ILaunchCoordinator _coordinator;
     private readonly IExperienceInfoService _experiences;
     private readonly IUpdateService _updates;
     private readonly ISettingsService _settings;
@@ -40,8 +38,6 @@ public sealed partial class HomeViewModel : PageViewModel
     private readonly IDialogService _dialogs;
     private readonly IShellService _shell;
     private readonly IRobloxSessionService _session;
-    private readonly IRichPresenceService _presence;
-    private readonly ICompanionAppService _companions;
     private readonly IUpdateInstaller _installer;
     private CancellationTokenSource? _updateCts;
     private readonly ILogger<HomeViewModel> _logger;
@@ -49,17 +45,14 @@ public sealed partial class HomeViewModel : PageViewModel
     private CancellationTokenSource? _lookupCts;
     private bool _initialised;
 
-    public HomeViewModel(IRobloxClientService client, IRobloxLauncher launcher, IExperienceInfoService experiences,
+    public HomeViewModel(IRobloxClientService client, ILaunchCoordinator coordinator, IExperienceInfoService experiences,
         IUpdateService updates, ISettingsService settings, IAppearanceService appearance, IDialogService dialogs,
-        IShellService shell, IRobloxSessionService session, IRichPresenceService presence, ICompanionAppService companions,
-        IUpdateInstaller installer, ILogger<HomeViewModel> logger)
+        IShellService shell, IRobloxSessionService session, IUpdateInstaller installer, ILogger<HomeViewModel> logger)
     {
         _installer = installer;
-        _companions = companions;
         _session = session;
-        _presence = presence;
         _client = client;
-        _launcher = launcher;
+        _coordinator = coordinator;
         _experiences = experiences;
         _updates = updates;
         _settings = settings;
@@ -72,6 +65,7 @@ public sealed partial class HomeViewModel : PageViewModel
         updates.Checked += (_, result) => Application.Current?.Dispatcher.BeginInvoke(() => ApplyUpdateResult(result));
         appearance.Changed += (_, _) => OnPropertyChanged(nameof(IsLightTheme));
         client.StateChanged += (_, _) => Application.Current?.Dispatcher.Invoke(OnClientStateChanged);
+        coordinator.RecentsChanged += (_, _) => Application.Current?.Dispatcher.BeginInvoke(LoadRecent);
         LoadRecent();
     }
 
@@ -388,7 +382,7 @@ public sealed partial class HomeViewModel : PageViewModel
     private bool CanPlay() => IsInstalled && !IsLaunching && !IsBusy;
 
     [RelayCommand(CanExecute = nameof(CanPlay))]
-    private Task PlayAsync() => LaunchAsync(i => _launcher.LaunchApp(i), replacesGame: false);
+    private Task PlayAsync() => LaunchAsync(_coordinator.LaunchAppAsync);
 
     private bool CanJoin() => CanPlay() && RobloxLinks.TryParsePlaceId(ExperienceInput, out _);
 
@@ -410,61 +404,21 @@ public sealed partial class HomeViewModel : PageViewModel
         LoadRecent();
     }
 
-    private async Task JoinPlaceAsync(long placeId, string? name)
+    private Task JoinPlaceAsync(long placeId, string? name) =>
+        CanPlay() ? LaunchAsync(() => _coordinator.JoinAsync(placeId, name)) : Task.CompletedTask;
+
+    private async Task LaunchAsync(Func<Task<LaunchResult?>> launch)
     {
-        if (!CanPlay()) return;
-        var launched = await LaunchAsync(i => _launcher.LaunchUri(i, RobloxLinks.PlaceLaunchUri(placeId)), replacesGame: true);
-        if (launched) RememberRecent(placeId, name ?? $"Place {placeId}");
-    }
-
-    /// <returns>True if Roblox was started.</returns>
-    private async Task<bool> LaunchAsync(Func<RobloxInstallation, LaunchResult> launch, bool replacesGame)
-    {
-        if (replacesGame && _launcher.IsRobloxRunning() &&
-            !_dialogs.Confirm("Roblox is already open",
-                "Roblox runs one game at a time, so joining this experience will replace the session that's open now.", "Join anyway"))
-            return false;
-
-        if (UpdateAvailable && State.Latest is { } latest &&
-            !_dialogs.Confirm("Roblox is out of date",
-                $"This build is {Installation!.DisplayVersion}, but Roblox is now on {latest.Version}. Outdated clients may refuse to join games. Launch anyway?",
-                "Launch anyway", "Not now"))
-            return false;
-
         IsLaunching = true;
         LaunchMessage = "Starting Roblox…";
         try
         {
-            var installation = Installation!;
-            var launchedAt = DateTime.UtcNow;
-            var result = await Task.Run(() => launch(installation));
-            LaunchMessage = result.Message;
-
-            if (!result.Success)
+            if (await launch() is { Success: true } result)
             {
-                _dialogs.Show("Roblox didn't start", result.Message, DialogKind.Error);
-                return false;
+                LaunchMessage = result.Message;
+                await Task.Delay(4000);
             }
-
-            if (result.ProcessId is { } pid)
-                _session.Track(pid, launchedAt);
-
-            if (CloseAfterLaunch)
-            {
-                await Task.Delay(1500); // let Roblox take focus first
-                if (_presence.KeepsRunningDuringSession || _companions.NeedsToWatchSession)
-                {
-                    // Presence and companion cleanup live as long as Nexstrap does: hide instead of exiting.
-                    Application.Current.MainWindow?.Hide();
-                    await _session.WaitForEndAsync();
-                }
-                Application.Current.Shutdown();
-                return true;
-            }
-
-            await Task.Delay(4000);
             LaunchMessage = null;
-            return true;
         }
         finally
         {
@@ -497,20 +451,10 @@ public sealed partial class HomeViewModel : PageViewModel
         }
     }
 
-    private void RememberRecent(long placeId, string name)
-    {
-        var list = _settings.Current.Launcher.RecentExperiences;
-        list.RemoveAll(r => r.PlaceId == placeId);
-        list.Insert(0, new RecentExperience { PlaceId = placeId, Name = name, LastLaunched = DateTime.Now });
-        if (list.Count > MaxRecent) list.RemoveRange(MaxRecent, list.Count - MaxRecent);
-        _settings.Save();
-        LoadRecent();
-    }
-
     private void LoadRecent()
     {
         RecentExperiences.Clear();
-        foreach (var r in _settings.Current.Launcher.RecentExperiences) RecentExperiences.Add(r);
+        foreach (var r in _settings.Current.Launcher.RecentExperiences.Take(MaxRecent)) RecentExperiences.Add(r);
         OnPropertyChanged(nameof(HasRecent));
     }
 
