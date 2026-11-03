@@ -1,0 +1,36 @@
+# Changelog
+
+All notable changes to Nexstrap are listed here. Versions follow [Semantic Versioning](https://semver.org).
+
+## [1.0.0] - 2026-11-03
+
+First public release.
+
+### Launching
+- Detects Roblox installed by the official installer, Bloxstrap, Voidstrap, Fishstrap or Nexstrap; choose which build **Play** uses, or let Nexstrap pick the one matching Roblox's live version.
+- **Play Roblox** opens the Roblox app; **Join an experience** accepts a place ID or roblox.com link, shows the game's name, creator and player count, and remembers recent games.
+- Handles `roblox:` / `roblox-player:` links (optional: make the website's Play buttons open Nexstrap, with exact restore of the previous handler).
+- Installs and updates the official Roblox Player from Roblox's CDN with MD5 verification of every package; removes outdated Nexstrap-installed builds.
+
+### Appearance
+- Dark and light themes, accent colour (swatches or HEX), any installed font with live preview, background images with opacity, sizing and position.
+- Seven presets; save, apply, import and export your own themes; one-click reset. Everything applies instantly.
+
+### FastFlags
+- Full editor: add, edit, enable/disable, delete, search and filter, with type validation.
+- Each flag is labelled **Applied by Roblox** or **Ignored by Roblox** according to Roblox's allowlist (checked 3 Nov 2026); catalogue of known flags with descriptions.
+- Import/export JSON (Bloxstrap/Voidstrap format), import from another launcher's build (read-only), automatic backups with restore.
+
+### Roblox Settings
+- Frame-rate cap, graphics quality, fullscreen, volume, camera sensitivity and inversion, written to Roblox's own settings file only while Roblox is closed, with automatic backups and restore.
+
+### Integrations
+- Discord Rich Presence: menu ("Inside Nexstrap · Browsing Roblox") and in-game (name, icon, your avatar, *View game* button), with privacy options.
+- Companion programs that start with Roblox and can be asked to close with it.
+- Export/import your whole Nexstrap setup as one file.
+
+### Updates
+- Quick update check on every launch with an in-app banner; release notes, progress and cancel.
+- Updates are installed only after verifying source, size, SHA-256, product name and version; failed swaps roll back.
+
+[1.0.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.0.0

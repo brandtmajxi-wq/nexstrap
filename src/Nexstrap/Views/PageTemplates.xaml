@@ -1,0 +1,27 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:vm="clr-namespace:Nexstrap.ViewModels.Pages"
+                    xmlns:pages="clr-namespace:Nexstrap.Views.Pages">
+    <!--
+        ViewModel → View mapping for the navigation content host.
+        Each page ViewModel gets one DataTemplate here.
+    -->
+    <DataTemplate DataType="{x:Type vm:HomeViewModel}">
+        <pages:HomePage />
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type vm:AppearanceViewModel}">
+        <pages:AppearancePage />
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type vm:FastFlagsViewModel}">
+        <pages:FastFlagsPage />
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type vm:RobloxSettingsViewModel}">
+        <pages:RobloxSettingsPage />
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type vm:IntegrationsViewModel}">
+        <pages:IntegrationsPage />
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type vm:AboutViewModel}">
+        <pages:AboutPage />
+    </DataTemplate>
+</ResourceDictionary>

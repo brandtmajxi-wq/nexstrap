@@ -1,0 +1,27 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+
+    <!--
+        Nexstrap mark on a 100x100 grid (kept in sync with tools/generate-icon.ps1):
+        an "N" whose right leg is split, leaving a detached square "spark" top-right.
+    -->
+    <Geometry x:Key="Logo.Mark">M25,22 H33 A3,3 0 0 1 36,25 V26 L68,58 V47 A3,3 0 0 1 71,44 H75 A3,3 0 0 1 78,47 V75 A3,3 0 0 1 75,78 H68 L36,46 V75 A3,3 0 0 1 33,78 H25 A3,3 0 0 1 22,75 V25 A3,3 0 0 1 25,22 Z</Geometry>
+    <Geometry x:Key="Logo.Spark">M67,22 H75 A3,3 0 0 1 78,25 V33 A3,3 0 0 1 75,36 H67 A3,3 0 0 1 64,33 V25 A3,3 0 0 1 67,22 Z</Geometry>
+
+    <LinearGradientBrush x:Key="Brush.LogoGradient" StartPoint="0.2,0.8" EndPoint="0.8,0.2">
+        <GradientStop Offset="0" Color="#7C6CFF" />
+        <GradientStop Offset="1" Color="#22D3EE" />
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="Brush.LogoSpark" Color="#22D3EE" />
+
+    <!-- Reusable vector logo; scales with its container -->
+    <DataTemplate x:Key="Template.LogoMark">
+        <Viewbox Stretch="Uniform">
+            <Canvas Width="100" Height="100">
+                <Path Data="{StaticResource Logo.Mark}" Fill="{StaticResource Brush.LogoGradient}" />
+                <Path Data="{StaticResource Logo.Spark}" Fill="{StaticResource Brush.LogoSpark}" />
+            </Canvas>
+        </Viewbox>
+    </DataTemplate>
+</ResourceDictionary>

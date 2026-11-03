@@ -1,0 +1,171 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ui="clr-namespace:Nexstrap.Controls">
+
+    <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
+    <ui:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibility" />
+    <ui:NullToVisibilityConverter x:Key="NullToVisibility" />
+    <ui:HexToBrushConverter x:Key="HexToBrush" />
+    <ui:ThemePreviewBrushConverter x:Key="ThemePreviewBrush" />
+
+    <!-- Large selectable card (e.g. Dark / Light). Content is the card body. -->
+    <Style x:Key="ChoiceCard" TargetType="RadioButton">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Grid>
+                        <Border x:Name="Bd" Background="{DynamicResource Brush.Card}" BorderBrush="{DynamicResource Brush.Border}"
+                                BorderThickness="1" CornerRadius="{StaticResource Radius.Card}" Padding="12">
+                            <ContentPresenter />
+                        </Border>
+                        <Border x:Name="Ring" BorderBrush="{DynamicResource Brush.Accent}" BorderThickness="2"
+                                CornerRadius="{StaticResource Radius.Card}" Opacity="0" />
+                        <Border x:Name="Check" Width="20" Height="20" CornerRadius="10" Margin="0,10,10,0"
+                                HorizontalAlignment="Right" VerticalAlignment="Top" Background="{DynamicResource Brush.Accent}" Opacity="0">
+                            <TextBlock Text="&#xE73E;" FontFamily="{StaticResource Font.Icons}" FontSize="10"
+                                       Foreground="{DynamicResource Brush.AccentForeground}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Brush.CardHover}" />
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Brush.BorderStrong}" />
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Ring" Storyboard.TargetProperty="Opacity" To="1" Duration="{StaticResource Motion.Fast}" />
+                                        <DoubleAnimation Storyboard.TargetName="Check" Storyboard.TargetProperty="Opacity" To="1" Duration="{StaticResource Motion.Normal}" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Ring" Storyboard.TargetProperty="Opacity" To="0" Duration="{StaticResource Motion.Fast}" />
+                                        <DoubleAnimation Storyboard.TargetName="Check" Storyboard.TargetProperty="Opacity" To="0" Duration="{StaticResource Motion.Fast}" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Clickable card button (presets, etc.) -->
+    <Style x:Key="TileButton" TargetType="Button">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Bd" Background="{DynamicResource Brush.Card}" BorderBrush="{DynamicResource Brush.Border}"
+                            BorderThickness="1" CornerRadius="10" Padding="{TemplateBinding Padding}" RenderTransformOrigin="0.5,0.5">
+                        <ContentPresenter />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Brush.CardHover}" />
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Bd" Property="RenderTransform">
+                                <Setter.Value>
+                                    <ScaleTransform ScaleX="0.97" ScaleY="0.97" />
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Round colour swatch; Background is the colour -->
+    <Style x:Key="Swatch" TargetType="Button">
+        <Setter Property="Width" Value="28" />
+        <Setter Property="Height" Value="28" />
+        <Setter Property="Margin" Value="0,0,8,0" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid>
+                        <Ellipse x:Name="Ring" Stroke="{DynamicResource Brush.Text}" StrokeThickness="2" Opacity="0" />
+                        <Ellipse Margin="4" Fill="{TemplateBinding Background}" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Ring" Property="Opacity" Value="0.5" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Ring" Property="Opacity" Value="1" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ===== SettingCard ===== -->
+    <Style TargetType="ui:SettingCard">
+        <Setter Property="Margin" Value="0,0,0,6" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ui:SettingCard">
+                    <Border x:Name="Bd" Background="{DynamicResource Brush.Card}" BorderBrush="{DynamicResource Brush.Border}"
+                            BorderThickness="1" CornerRadius="{StaticResource Radius.Card}" Padding="18,14">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Border x:Name="IconHost" Width="34" Height="34" CornerRadius="8" Margin="0,0,14,0"
+                                    Background="{DynamicResource Brush.Hover}" VerticalAlignment="Center">
+                                <TextBlock Text="{TemplateBinding Icon}" Style="{StaticResource Text.Icon}" FontSize="15" />
+                            </Border>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                <TextBlock Text="{TemplateBinding Header}" Style="{StaticResource Text.Base}" FontSize="13.5" FontWeight="Medium" />
+                                <TextBlock x:Name="Desc" Text="{TemplateBinding Description}" Style="{StaticResource Text.Caption}"
+                                           FontSize="12" Margin="0,3,0,0" />
+                            </StackPanel>
+                            <ContentPresenter Grid.Column="2" VerticalAlignment="Center" />
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Icon" Value="{x:Null}">
+                            <Setter TargetName="IconHost" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="Description" Value="{x:Null}">
+                            <Setter TargetName="Desc" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Brush.CardHover}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Section heading above a group of SettingCards -->
+    <Style x:Key="SectionHeader" TargetType="TextBlock" BasedOn="{StaticResource Text.Section}">
+        <Setter Property="Margin" Value="2,18,0,10" />
+    </Style>
+</ResourceDictionary>

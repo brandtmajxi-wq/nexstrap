@@ -1,0 +1,42 @@
+using System.Windows;
+using Nexstrap.Views.Dialogs;
+
+namespace Nexstrap.Services.Dialogs;
+
+public enum DialogKind
+{
+    Info,
+    Warning,
+    Error,
+    Question
+}
+
+public interface IDialogService
+{
+    void Show(string title, string message, DialogKind kind = DialogKind.Info, string? details = null);
+
+    bool Confirm(string title, string message, string confirmText = "Continue", string cancelText = "Cancel");
+}
+
+/// <summary>Shows Nexstrap-styled modal dialogs instead of the stock MessageBox.</summary>
+public sealed class DialogService : IDialogService
+{
+    public void Show(string title, string message, DialogKind kind = DialogKind.Info, string? details = null) =>
+        Run(() => MessageDialog.ShowModal(Owner(), title, message, kind, details, "OK", null));
+
+    public bool Confirm(string title, string message, string confirmText = "Continue", string cancelText = "Cancel") =>
+        Run(() => MessageDialog.ShowModal(Owner(), title, message, DialogKind.Question, null, confirmText, cancelText));
+
+    private static Window? Owner() =>
+        Application.Current?.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive)
+        ?? Application.Current?.MainWindow;
+
+    private static bool Run(Func<bool> show)
+    {
+        var dispatcher = Application.Current?.Dispatcher;
+        if (dispatcher is null) return false;
+        return dispatcher.CheckAccess() ? show() : dispatcher.Invoke(show);
+    }
+
+    private static void Run(Action show) => Run(() => { show(); return true; });
+}

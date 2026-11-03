@@ -1,0 +1,231 @@
+using System.Collections.ObjectModel;
+using System.Windows;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using Nexstrap.Models;
+using Nexstrap.Services.Configuration;
+using Nexstrap.Services.Dialogs;
+using Nexstrap.Services.Discord;
+using Nexstrap.Services.Integrations;
+
+namespace Nexstrap.ViewModels.Pages;
+
+/// <summary>Editable row for a companion app; changes save immediately.</summary>
+public sealed partial class CompanionRow(CompanionApp app, ICompanionAppService service) : ObservableObject
+{
+    public CompanionApp App { get; } = app;
+
+    public string Name => App.Name;
+
+    public string Path => App.Path;
+
+    public bool Exists => System.IO.File.Exists(App.Path);
+
+    public bool Enabled
+    {
+        get => App.Enabled;
+        set { App.Enabled = value; service.Update(App); OnPropertyChanged(); }
+    }
+
+    public bool CloseWithRoblox
+    {
+        get => App.CloseWithRoblox;
+        set { App.CloseWithRoblox = value; service.Update(App); OnPropertyChanged(); }
+    }
+
+    public string Arguments
+    {
+        get => App.Arguments;
+        set { App.Arguments = value.Trim(); service.Update(App); OnPropertyChanged(); }
+    }
+}
+
+public sealed partial class IntegrationsViewModel : PageViewModel
+{
+    private readonly IRichPresenceService _presence;
+    private readonly ISettingsService _settings;
+    private readonly ICompanionAppService _companions;
+    private readonly IConfigTransferService _transfer;
+    private readonly IFileDialogService _files;
+    private readonly IDialogService _dialogs;
+
+    public IntegrationsViewModel(IRichPresenceService presence, ISettingsService settings, ICompanionAppService companions,
+        IConfigTransferService transfer, IFileDialogService files, IDialogService dialogs)
+    {
+        _presence = presence;
+        _settings = settings;
+        _companions = companions;
+        _transfer = transfer;
+        _files = files;
+        _dialogs = dialogs;
+        _applicationId = settings.Current.Discord.ApplicationIdOverride ?? "";
+        presence.StatusChanged += (_, _) => Application.Current?.Dispatcher.BeginInvoke(OnStatusChanged);
+        companions.Changed += (_, _) => RebuildCompanions();
+        RebuildCompanions();
+    }
+
+    // ===== Companion apps =====
+
+    public ObservableCollection<CompanionRow> Companions { get; } = [];
+
+    public bool HasCompanions => Companions.Count > 0;
+
+    [RelayCommand]
+    private void AddCompanion()
+    {
+        var path = _files.OpenFile("Choose a program to start with Roblox", "Programs (*.exe)|*.exe");
+        if (path is null) return;
+        if (_companions.Add(path) is { } error)
+            _dialogs.Show("Couldn't add that program", error, DialogKind.Warning);
+    }
+
+    [RelayCommand]
+    private void RemoveCompanion(CompanionRow row) => _companions.Remove(row.App);
+
+    [RelayCommand]
+    private void TestCompanion(CompanionRow row)
+    {
+        if (_companions.TestLaunch(row.App) is { } error)
+            _dialogs.Show("Couldn't start it", error, DialogKind.Warning);
+    }
+
+    private void RebuildCompanions()
+    {
+        Companions.Clear();
+        foreach (var app in _companions.Apps) Companions.Add(new CompanionRow(app, _companions));
+        OnPropertyChanged(nameof(HasCompanions));
+    }
+
+    // ===== Configuration transfer =====
+
+    [ObservableProperty]
+    private string? _transferMessage;
+
+    [RelayCommand]
+    private void ExportConfig()
+    {
+        var path = _files.SaveFile("Export Nexstrap configuration", "Nexstrap configuration (*.json)|*.json",
+            $"Nexstrap-config-{DateTime.Now:yyyy-MM-dd}.json");
+        if (path is null) return;
+        try
+        {
+            _transfer.Export(path);
+            TransferMessage = $"Exported to {System.IO.Path.GetFileName(path)}.";
+        }
+        catch (Exception ex) when (ex is System.IO.IOException or UnauthorizedAccessException)
+        {
+            _dialogs.Show("Couldn't export", ex.Message, DialogKind.Error);
+        }
+    }
+
+    [RelayCommand]
+    private void ImportConfig()
+    {
+        var path = _files.OpenFile("Import Nexstrap configuration", "Nexstrap configuration (*.json)|*.json");
+        if (path is null) return;
+        if (!_dialogs.Confirm("Import this configuration?",
+                "Your appearance, launch and Discord settings, FastFlags, saved themes and companion apps will be replaced by the file's. " +
+                "Your current setup is backed up first.", "Import"))
+            return;
+        try
+        {
+            var result = _transfer.Import(path);
+            ApplicationId = _settings.Current.Discord.ApplicationIdOverride ?? "";
+            OnPropertyChanged(string.Empty);
+            RebuildCompanions();
+            _ = _presence.RefreshAsync();
+            TransferMessage = $"Imported {result.FastFlags} FastFlags, {result.Themes} themes and {result.CompanionApps} companion apps. A backup was made first.";
+            if (result.Notes.Count > 0)
+                _dialogs.Show("Imported with notes", "Some parts couldn't be used on this PC.", DialogKind.Info, string.Join(Environment.NewLine, result.Notes));
+        }
+        catch (System.IO.InvalidDataException ex)
+        {
+            _dialogs.Show("Couldn't import", ex.Message, DialogKind.Warning);
+        }
+        catch (Exception ex) when (ex is System.IO.IOException or UnauthorizedAccessException)
+        {
+            _dialogs.Show("Couldn't import", ex.Message, DialogKind.Error);
+        }
+    }
+
+    public override string Title => "Integrations";
+
+    public override string Subtitle => "Connect Nexstrap with the rest of your setup.";
+
+    // ===== Discord Rich Presence =====
+
+    public string StatusText => _presence.StatusText;
+
+    public PresenceStatus Status => _presence.Status;
+
+    public bool IsPreviewing => _presence.IsPreviewing;
+
+    public string PreviewButtonText => IsPreviewing ? "Stop preview" : "Preview on Discord";
+
+    public bool RichPresence
+    {
+        get => _settings.Current.Discord.RichPresence;
+        set => Update(() => _settings.Current.Discord.RichPresence = value);
+    }
+
+    public bool ShowExperienceDetails
+    {
+        get => _settings.Current.Discord.ShowExperienceDetails;
+        set => Update(() => _settings.Current.Discord.ShowExperienceDetails = value);
+    }
+
+    public bool ShowAvatar
+    {
+        get => _settings.Current.Discord.ShowAvatar;
+        set => Update(() => _settings.Current.Discord.ShowAvatar = value);
+    }
+
+    public bool ShowExperienceButton
+    {
+        get => _settings.Current.Discord.ShowExperienceButton;
+        set => Update(() => _settings.Current.Discord.ShowExperienceButton = value);
+    }
+
+    [ObservableProperty]
+    private string _applicationId;
+
+    [ObservableProperty]
+    private string? _applicationIdError;
+
+    partial void OnApplicationIdChanged(string value)
+    {
+        var trimmed = value.Trim();
+        if (trimmed.Length > 0 && !RichPresenceService.IsValidApplicationId(trimmed))
+        {
+            ApplicationIdError = "An application ID is 17–20 digits (Discord Developer Portal → your app → General Information).";
+            return;
+        }
+        ApplicationIdError = null;
+        Update(() => _settings.Current.Discord.ApplicationIdOverride = trimmed.Length == 0 ? null : trimmed);
+    }
+
+    [RelayCommand]
+    private Task TogglePreviewAsync() => _presence.SetPreviewAsync(!_presence.IsPreviewing);
+
+    public override void OnNavigatedFrom()
+    {
+        // A forgotten preview shouldn't linger on the user's profile.
+        if (_presence.IsPreviewing) _ = _presence.SetPreviewAsync(false);
+    }
+
+    private void Update(Action change)
+    {
+        change();
+        _settings.Save();
+        OnPropertyChanged(string.Empty);
+        _ = _presence.RefreshAsync();
+    }
+
+    private void OnStatusChanged()
+    {
+        OnPropertyChanged(nameof(StatusText));
+        OnPropertyChanged(nameof(Status));
+        OnPropertyChanged(nameof(IsPreviewing));
+        OnPropertyChanged(nameof(PreviewButtonText));
+    }
+}

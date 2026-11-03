@@ -1,0 +1,84 @@
+using Nexstrap.Services.Navigation;
+using Nexstrap.Services.Updates;
+using Nexstrap.ViewModels;
+using Nexstrap.ViewModels.Pages;
+
+namespace Nexstrap.Tests;
+
+internal sealed class FakeUpdates : IUpdateService
+{
+    public int Checks { get; private set; }
+    public UpdateCheckResult? LastResult { get; private set; }
+    public event EventHandler<UpdateCheckResult>? Checked;
+
+    public Task<UpdateCheckResult> CheckAsync(CancellationToken cancellationToken = default)
+    {
+        Checks++;
+        LastResult = new UpdateCheckResult(UpdateStatus.UpToDate, "ok");
+        Checked?.Invoke(this, LastResult);
+        return Task.FromResult(LastResult);
+    }
+}
+
+public class NavigationTests
+{
+    private sealed class FakeNavigation : INavigationService
+    {
+        public PageViewModel? CurrentPage { get; private set; }
+        public event EventHandler<PageViewModel>? Navigated;
+        public List<Type> History { get; } = [];
+
+        public void NavigateTo<TPage>() where TPage : PageViewModel => NavigateTo(typeof(TPage));
+
+        public void NavigateTo(Type pageType)
+        {
+            if (CurrentPage?.GetType() == pageType) return;
+            History.Add(pageType);
+            // Pages take services; navigation only cares about their type.
+            CurrentPage = (PageViewModel)System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(pageType);
+            Navigated?.Invoke(this, CurrentPage);
+        }
+    }
+
+    private static MainWindowViewModel Create(FakeNavigation nav, FakeUpdates? updates = null, MemorySettings? settings = null) =>
+        new(nav, updates ?? new FakeUpdates(), settings ?? new MemorySettings());
+
+    [Fact]
+    public void Selecting_a_nav_item_navigates_and_keeps_single_selection()
+    {
+        var nav = new FakeNavigation();
+        var vm = Create(nav);
+        vm.NavigateToStartPage("FastFlags");
+
+        var settingsPage = vm.NavItems.Single(i => i.Title == "Roblox Settings");
+        settingsPage.IsSelected = true;   // what a click, arrow key or UI Automation does
+
+        Assert.IsType<RobloxSettingsViewModel>(nav.CurrentPage);
+        Assert.Equal([typeof(FastFlagsViewModel), typeof(RobloxSettingsViewModel)], nav.History);
+        Assert.Single(vm.NavItems.Concat(vm.FooterItems), i => i.IsSelected);
+    }
+
+    [Fact]
+    public void Unknown_start_page_falls_back_to_home()
+    {
+        var nav = new FakeNavigation();
+        var vm = Create(nav);
+        vm.NavigateToStartPage("does-not-exist");
+        Assert.Equal([typeof(HomeViewModel)], nav.History);
+    }
+
+    [Fact]
+    public async Task Launch_update_check_runs_only_when_enabled()
+    {
+        var updates = new FakeUpdates();
+        var settings = new MemorySettings();
+        var vm = Create(new FakeNavigation(), updates, settings);
+
+        await vm.CheckForUpdatesOnLaunchAsync();
+        Assert.Equal(1, updates.Checks);
+
+        settings.Current.Launcher.CheckForUpdatesOnStartup = false;
+        await vm.CheckForUpdatesOnLaunchAsync();
+        Assert.Equal(1, updates.Checks);
+    }
+}

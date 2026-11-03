@@ -1,0 +1,30 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+    <sys:String x:Key="Theme.Name">Light</sys:String>
+
+    <SolidColorBrush x:Key="Brush.Window" Color="#F4F5F8" />
+    <SolidColorBrush x:Key="Brush.Sidebar" Color="#ECEDF2" />
+    <SolidColorBrush x:Key="Brush.Card" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="Brush.CardHover" Color="#F9F9FB" />
+    <SolidColorBrush x:Key="Brush.Raised" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="Brush.Input" Color="#F6F7FA" />
+
+    <SolidColorBrush x:Key="Brush.Border" Color="#E1E3EA" />
+    <SolidColorBrush x:Key="Brush.BorderStrong" Color="#CDD0DA" />
+    <SolidColorBrush x:Key="Brush.Divider" Color="#EAEBF0" />
+
+    <SolidColorBrush x:Key="Brush.Text" Color="#15161C" />
+    <SolidColorBrush x:Key="Brush.TextSecondary" Color="#555866" />
+    <SolidColorBrush x:Key="Brush.TextMuted" Color="#8A8D9A" />
+
+    <SolidColorBrush x:Key="Brush.Hover" Color="#0C000000" />
+    <SolidColorBrush x:Key="Brush.Pressed" Color="#16000000" />
+
+    <SolidColorBrush x:Key="Brush.Success" Color="#1F9D62" />
+    <SolidColorBrush x:Key="Brush.SuccessSoft" Color="#1A1F9D62" />
+    <SolidColorBrush x:Key="Brush.Warning" Color="#B7791F" />
+    <SolidColorBrush x:Key="Brush.WarningSoft" Color="#1AB7791F" />
+    <SolidColorBrush x:Key="Brush.Danger" Color="#D63B40" />
+    <SolidColorBrush x:Key="Brush.DangerSoft" Color="#1AD63B40" />
+</ResourceDictionary>
