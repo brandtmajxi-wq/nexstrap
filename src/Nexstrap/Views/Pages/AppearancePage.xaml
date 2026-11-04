@@ -170,6 +170,20 @@
             </Grid>
         </Border>
 
+        <!-- ===== Roblox font ===== -->
+        <TextBlock Text="Roblox font" Style="{StaticResource SectionHeader}" />
+        <ui:SettingCard Icon="&#xE8D2;" Header="Use a custom font in Roblox" Description="{Binding RobloxFontStatus}">
+            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding RobloxFontEnabled}" AutomationProperties.Name="Use a custom font in Roblox" />
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE8E9;" Header="Font for Roblox" Description="{Binding RobloxFontName}">
+            <StackPanel Orientation="Horizontal">
+                <Button Content="Use my Nexstrap font" Padding="10,6" Command="{Binding UseNexstrapFontForRobloxCommand}" />
+                <Button Content="Choose file…" ui:Ui.Icon="&#xE8E5;" Padding="10,6" Margin="6,0,0,0" Command="{Binding ChooseRobloxFontFileCommand}" />
+            </StackPanel>
+        </ui:SettingCard>
+        <TextBlock Style="{StaticResource Text.Caption}" Margin="2,4,0,0"
+                   Text="Only works on Roblox builds Nexstrap installed. Not supported by Roblox, so it may stop working after an update. Takes effect the next time Roblox starts from Nexstrap." />
+
         <!-- ===== Background ===== -->
         <TextBlock Text="Background" Style="{StaticResource SectionHeader}" />
         <ui:SettingCard Icon="&#xEB9F;" Header="Background image"

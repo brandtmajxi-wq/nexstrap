@@ -27,7 +27,7 @@ public interface IRobloxLauncher
 /// own folder, passing either "--app" or a Roblox deep link. Sign-in, server selection and
 /// anti-cheat are handled entirely by Roblox.
 /// </summary>
-public sealed class RobloxLauncher(IFastFlagService fastFlags, ILogger<RobloxLauncher> logger) : IRobloxLauncher
+public sealed class RobloxLauncher(IFastFlagService fastFlags, IRobloxFontService fonts, ILogger<RobloxLauncher> logger) : IRobloxLauncher
 {
     private const string ProcessName = "RobloxPlayerBeta";
 
@@ -63,6 +63,17 @@ public sealed class RobloxLauncher(IFastFlagService fastFlags, ILogger<RobloxLau
         {
             logger.LogWarning(ex, "Could not write FastFlags");
             flagWarning = " (your FastFlags couldn't be written: " + ex.Message + ")";
+        }
+
+        try
+        {
+            fonts.ApplyTo(installation);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            // Files can be in use if Roblox is already open; the next launch tries again.
+            logger.LogWarning(ex, "Could not update Roblox's fonts");
+            flagWarning += " (your Roblox font couldn't be updated: " + ex.Message + ")";
         }
 
         try

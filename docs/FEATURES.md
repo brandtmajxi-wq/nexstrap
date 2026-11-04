@@ -33,6 +33,7 @@ A small window shown when you start Roblox from Nexstrap. It closes when Roblox'
 - **Presets**: change theme + accent only; your font and background stay.
 - **Accent colour**: swatches or `#RGB` / `#RRGGBB`. Text on accent-coloured buttons switches between black and white for readability.
 - **Font**: any installed text font (symbol fonts are hidden). The whole app switches immediately.
+- **Roblox font** (opt-in, off by default): uses a .ttf/.otf file or your Nexstrap font in Roblox itself by pointing the font family files of a Nexstrap-installed build at that font. Other launchers' builds are never changed. The original files are backed up inside the build and restored at the next launch after you turn it off. Chinese, Japanese and Korean fallback text is left alone. Roblox doesn't support this: it may stop working after a Roblox update, and text from a game's own fonts may not change.
 - **Background**: PNG/JPG/BMP/GIF, copied into Nexstrap's folder. Opacity, sizing (fill, fit, stretch, center, tile) and position. Cards become slightly translucent while a background is shown.
 - **Your themes**: save the current look; apply, export, import or delete. Exports don't include the image file.
 - **Reset**: back to defaults; saved themes are kept.

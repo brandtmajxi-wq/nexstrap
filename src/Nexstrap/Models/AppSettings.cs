@@ -26,6 +26,20 @@ public sealed class AppSettings
     public List<RecentExperience> FavoriteExperiences { get; set; } = [];
 
     public NotificationSettings Notifications { get; set; } = new();
+
+    public RobloxFontSettings RobloxFont { get; set; } = new();
+}
+
+/// <summary>Opt-in replacement of Roblox's interface fonts in Nexstrap-installed builds.</summary>
+public sealed class RobloxFontSettings
+{
+    public bool Enabled { get; set; }
+
+    /// <summary>Copy of the chosen .ttf/.otf in Nexstrap's Fonts folder.</summary>
+    public string? FontFile { get; set; }
+
+    /// <summary>Name shown in the UI.</summary>
+    public string? DisplayName { get; set; }
 }
 
 public sealed class NotificationSettings

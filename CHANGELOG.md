@@ -2,6 +2,11 @@
 
 All notable changes to Nexstrap are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.5.0] - 2026-11-04
+
+### Added
+- **Roblox font** (Appearance): opt-in custom font for Roblox itself, from a .ttf/.otf file or your Nexstrap font. It only changes builds Nexstrap installed, keeps a backup of the original font settings, and restores them when turned off. Roblox doesn't support this, so it may stop working after a Roblox update, and text from a game's own fonts may not change.
+
 ## [1.4.1] - 2026-11-04
 
 ### Fixed
@@ -65,6 +70,7 @@ First public release.
 - Quick update check on every launch with an in-app banner; release notes, progress and cancel.
 - Updates are installed only after verifying source, size, SHA-256, product name and version; failed swaps roll back.
 
+[1.5.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.5.0
 [1.4.1]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.4.1
 [1.4.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.4.0
 [1.3.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.3.0

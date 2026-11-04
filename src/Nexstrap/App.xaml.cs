@@ -146,6 +146,7 @@ public partial class App : Application
 
         // Roblox
         services.AddSingleton<IFastFlagService, FastFlagService>();
+        services.AddSingleton<IRobloxFontService, RobloxFontService>();
         services.AddSingleton<IRobloxLocator, RobloxLocator>();
         services.AddSingleton<IRobloxLauncher, RobloxLauncher>();
         // Large downloads get their own client so the short API timeout doesn't cut them off.

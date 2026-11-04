@@ -9,7 +9,9 @@ using Microsoft.Extensions.Logging;
 using Nexstrap.Core;
 using Nexstrap.Models;
 using Nexstrap.Services.Appearance;
+using Nexstrap.Services.Configuration;
 using Nexstrap.Services.Dialogs;
+using Nexstrap.Services.Roblox;
 
 namespace Nexstrap.ViewModels.Pages;
 
@@ -20,6 +22,9 @@ public sealed partial class AppearanceViewModel : PageViewModel
 {
     private const string ThemeFileFilter = "Nexstrap theme (*.json)|*.json";
 
+    private readonly ISettingsService _settings;
+    private readonly IRobloxFontService _robloxFont;
+    private readonly IRobloxClientService _client;
     private readonly IAppearanceService _appearance;
     private readonly IThemeService _theme;
     private readonly IFontCatalog _fonts;
@@ -30,8 +35,13 @@ public sealed partial class AppearanceViewModel : PageViewModel
     private bool _fontsRequested;
 
     public AppearanceViewModel(IAppearanceService appearance, IThemeService theme, IFontCatalog fonts,
-        IDialogService dialogs, IFileDialogService files, ILogger<AppearanceViewModel> logger)
+        IDialogService dialogs, IFileDialogService files, ISettingsService settings, IRobloxFontService robloxFont,
+        IRobloxClientService client, ILogger<AppearanceViewModel> logger)
     {
+        _settings = settings;
+        _robloxFont = robloxFont;
+        _client = client;
+        client.StateChanged += (_, _) => System.Windows.Application.Current?.Dispatcher.BeginInvoke(() => OnPropertyChanged(nameof(RobloxFontStatus)));
         _appearance = appearance;
         _theme = theme;
         _fonts = fonts;
@@ -156,6 +166,66 @@ public sealed partial class AppearanceViewModel : PageViewModel
         _syncing = true;
         SelectedFont = _fontList.FirstOrDefault(f => string.Equals(f.Name, Current.FontFamily, StringComparison.OrdinalIgnoreCase));
         _syncing = false;
+    }
+
+    // ===== Roblox font =====
+
+    private RobloxFontSettings RobloxFontOptions => _settings.Current.RobloxFont;
+
+    public bool RobloxFontEnabled
+    {
+        get => RobloxFontOptions.Enabled;
+        set
+        {
+            if (value && RobloxFontOptions.FontFile is null)
+            {
+                _dialogs.Show("Choose a font first", "Pick a font file, or use your Nexstrap font, then turn this on.", DialogKind.Info);
+            }
+            else if (value && !_dialogs.Confirm("Change Roblox's fonts?",
+                         "This edits font settings inside Nexstrap's own Roblox build, so that build is no longer unmodified. " +
+                         "Roblox doesn't support this: it may stop working after a Roblox update, and it's your choice to use it. " +
+                         "Game text from a game's own fonts may not change. Turning this off restores the originals at the next launch.",
+                         "Turn on"))
+            {
+                // Declined: the toggle goes back below.
+            }
+            else
+            {
+                RobloxFontOptions.Enabled = value;
+                _settings.Save();
+            }
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(RobloxFontStatus));
+        }
+    }
+
+    public string RobloxFontName => RobloxFontOptions.DisplayName ?? "None chosen";
+
+    public string RobloxFontStatus
+    {
+        get
+        {
+            if (!RobloxFontOptions.Enabled) return "Off. Roblox uses its own fonts.";
+            return _client.State.Preferred?.Source == InstallationSource.Nexstrap
+                ? "On. Applied each time you start Roblox from Nexstrap."
+                : "On, but Play isn't using a Nexstrap-installed build, so it won't apply. Install one from Home.";
+        }
+    }
+
+    [RelayCommand]
+    private void ChooseRobloxFontFile()
+    {
+        if (_files.OpenFile("Choose a font for Roblox", "Fonts (*.ttf;*.otf)|*.ttf;*.otf") is not { } path) return;
+        ShowRobloxFontResult(_robloxFont.SetFontFile(path));
+    }
+
+    [RelayCommand]
+    private void UseNexstrapFontForRoblox() => ShowRobloxFontResult(_robloxFont.SetInstalledFont(Current.FontFamily));
+
+    private void ShowRobloxFontResult(string? error)
+    {
+        if (error is not null) _dialogs.Show("Couldn't use that font", error, DialogKind.Warning);
+        OnPropertyChanged(nameof(RobloxFontName));
     }
 
     // ===== Background =====
