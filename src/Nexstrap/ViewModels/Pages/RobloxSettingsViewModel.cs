@@ -5,10 +5,13 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Win32;
 using Nexstrap.Core;
+using Nexstrap.Models;
 using Nexstrap.Services.Configuration;
 using Nexstrap.Services.Dialogs;
+using Nexstrap.Services.Maintenance;
 using Nexstrap.Services.Navigation;
 using Nexstrap.Services.Roblox;
+using Nexstrap.Services.Setup;
 using Nexstrap.Services.Shell;
 
 namespace Nexstrap.ViewModels.Pages;
@@ -26,11 +29,14 @@ public sealed partial class RobloxSettingsViewModel : PageViewModel
     private readonly IDialogService _dialogs;
     private readonly IShellService _shell;
     private readonly INavigationService _navigation;
+    private readonly IWindowsStartup _startup;
+    private readonly ICleanupService _cleanup;
     private RobloxUserSettings _loaded = new();
     private bool _loading;
 
     public RobloxSettingsViewModel(IRobloxUserSettingsService robloxSettings, IRobloxLauncher launcher, IRobloxClientService client,
-        IProtocolRegistration protocol, ISettingsService settings, IDialogService dialogs, IShellService shell, INavigationService navigation)
+        IProtocolRegistration protocol, ISettingsService settings, IDialogService dialogs, IShellService shell, INavigationService navigation,
+        IWindowsStartup startup, ICleanupService cleanup)
     {
         _robloxSettings = robloxSettings;
         _launcher = launcher;
@@ -40,7 +46,13 @@ public sealed partial class RobloxSettingsViewModel : PageViewModel
         _dialogs = dialogs;
         _shell = shell;
         _navigation = navigation;
-        client.StateChanged += (_, _) => Application.Current?.Dispatcher.BeginInvoke(() => OnPropertyChanged(nameof(InstallationText)));
+        _startup = startup;
+        _cleanup = cleanup;
+        client.StateChanged += (_, _) => Application.Current?.Dispatcher.BeginInvoke(() =>
+        {
+            OnPropertyChanged(nameof(InstallationText));
+            OnPropertyChanged(nameof(LinkHandlerText));
+        });
     }
 
     public override string Title => Loc.Get("Nav.RobloxSettings");
@@ -196,9 +208,113 @@ public sealed partial class RobloxSettingsViewModel : PageViewModel
         }
     }
 
+    public bool StartWithWindows
+    {
+        get => _startup.IsEnabled;
+        set
+        {
+            try
+            {
+                if (value) _startup.Enable();
+                else _startup.Disable();
+            }
+            catch (Exception ex) when (ex is UnauthorizedAccessException or IOException or System.Security.SecurityException)
+            {
+                _dialogs.Show(Loc.Get("RobloxSettings.CouldntChangeStartup"), ex.Message, DialogKind.Error);
+            }
+            OnPropertyChanged();
+        }
+    }
+
+    public IReadOnlyList<Choice<RobloxPriority>> PriorityChoices { get; } =
+    [
+        new(RobloxPriority.Automatic, () => Loc.Get("RobloxSettings.Priority.Automatic")),
+        new(RobloxPriority.BelowNormal, () => Loc.Get("RobloxSettings.Priority.BelowNormal")),
+        new(RobloxPriority.AboveNormal, () => Loc.Get("RobloxSettings.Priority.AboveNormal")),
+        new(RobloxPriority.High, () => Loc.Get("RobloxSettings.Priority.High"))
+    ];
+
+    public RobloxPriority RobloxPriority
+    {
+        get => _settings.Current.Launcher.RobloxPriority;
+        set
+        {
+            _settings.Current.Launcher.RobloxPriority = value;
+            _settings.Save();
+            OnPropertyChanged();
+        }
+    }
+
+    public IReadOnlyList<Choice<int>> CoreChoices { get; } = BuildCoreChoices(Environment.ProcessorCount);
+
+    internal static IReadOnlyList<Choice<int>> BuildCoreChoices(int processors)
+    {
+        var choices = new List<Choice<int>> { new(0, () => Loc.Get("RobloxSettings.AllCores")) };
+        for (var cores = 2; cores < processors; cores += 2)
+        {
+            var count = cores;
+            choices.Add(new(count, () => Loc.Format("RobloxSettings.CoreCount", count)));
+        }
+        return choices;
+    }
+
+    public int RobloxCoreLimit
+    {
+        get => CoreChoices.Any(c => c.Value == _settings.Current.Launcher.RobloxCoreLimit) ? _settings.Current.Launcher.RobloxCoreLimit : 0;
+        set
+        {
+            _settings.Current.Launcher.RobloxCoreLimit = value;
+            _settings.Save();
+            OnPropertyChanged();
+        }
+    }
+
+    public string RobloxWindowTitle
+    {
+        get => _settings.Current.Launcher.RobloxWindowTitle ?? "";
+        set
+        {
+            _settings.Current.Launcher.RobloxWindowTitle = RobloxProcessTuner.CleanTitle(value);
+            _settings.Save();
+            OnPropertyChanged();
+        }
+    }
+
     public string LinkHandlerText => _protocol.IsRegistered
         ? Loc.Get("RobloxSettings.RobloxComPlayButtonsOpenNexstrap")
         : Loc.Format("RobloxSettings.CurrentlyHandledByTurningThisOn", _client.State.ProtocolHandler.OwnerName);
+
+    // ===== Cleanup =====
+
+    public bool CleanOldFilesOnStart
+    {
+        get => _settings.Current.Launcher.CleanOldFilesOnStart;
+        set
+        {
+            _settings.Current.Launcher.CleanOldFilesOnStart = value;
+            _settings.Save();
+            OnPropertyChanged();
+        }
+    }
+
+    [ObservableProperty]
+    private string? _cleanupResult;
+
+    public string CleanupDescription => CleanupResult ?? Loc.Get("RobloxSettings.CleanNow.Text");
+
+    partial void OnCleanupResultChanged(string? value) => OnPropertyChanged(nameof(CleanupDescription));
+
+    [RelayCommand]
+    private async Task CleanNowAsync()
+    {
+        if (_launcher.IsRobloxRunning())
+        {
+            CleanupResult = Loc.Get("RobloxSettings.CleanCloseRoblox");
+            return;
+        }
+        var result = await Task.Run(_cleanup.CleanOldFiles);
+        CleanupResult = Loc.Format("RobloxSettings.Cleaned", result.Files, result.Bytes / 1024d / 1024d);
+    }
 
     // ===== Installation =====
 

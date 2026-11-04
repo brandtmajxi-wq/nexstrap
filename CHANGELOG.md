@@ -2,6 +2,20 @@
 
 All notable changes to Nexstrap are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.8.0] - 2026-11-04
+
+### Added
+- **Roblox CPU priority and CPU cores** (Roblox Settings): choose how Windows treats Roblox when it starts from Nexstrap. These manage your CPU; they don't add FPS by themselves.
+- **Roblox window title** (Roblox Settings): your own name in the title bar and taskbar.
+- **Death sound and mouse cursor** (Appearance): replace Roblox's defaults in Nexstrap-installed builds with your own .ogg and .png files. Removing them restores the originals. Roblox doesn't support this, and games with their own sound or cursor won't change.
+- **App size** (Appearance): 85% to 130%.
+- **Open Nexstrap when Windows starts** (Roblox Settings).
+- **Clean up old files** (Roblox Settings): removes Roblox logs, Roblox temp files and leftover downloads older than 7 days, on demand or each time Nexstrap opens.
+
+### Fixed
+- An installed copy now puts its Installed apps entry back if it goes missing.
+- Roblox Settings could say links were handled by "Nobody" until the page was reopened.
+
 ## [1.7.0] - 2026-11-04
 
 ### Added
@@ -96,6 +110,7 @@ First public release.
 - Quick update check on every launch with an in-app banner; release notes, progress and cancel.
 - Updates are installed only after verifying source, size, SHA-256, product name and version; failed swaps roll back.
 
+[1.8.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.8.0
 [1.7.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.7.0
 [1.6.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.6.0
 [1.5.2]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.5.2

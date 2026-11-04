@@ -59,6 +59,7 @@ public sealed class InstallService : IInstallService
     private readonly string _desktop;
     private readonly string _sourceExe;
     private readonly string _dataRoot;
+    private readonly string? _runKey;
 
     public InstallService(ISettingsService settings, IProtocolRegistration protocol, ILogger<InstallService> logger)
         : this(settings, protocol, logger,
@@ -66,11 +67,11 @@ public sealed class InstallService : IInstallService
             Environment.GetFolderPath(Environment.SpecialFolder.Programs),
             Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory),
             Environment.ProcessPath ?? throw new InvalidOperationException("Unknown executable path."),
-            AppInfo.Paths.Root) { }
+            AppInfo.Paths.Root, WindowsStartup.RunKey) { }
 
     /// <summary>Tests point these at a scratch registry key and temp folders.</summary>
     internal InstallService(ISettingsService settings, IProtocolRegistration protocol, ILogger<InstallService> logger,
-        string uninstallKey, string startMenu, string desktop, string sourceExe, string dataRoot)
+        string uninstallKey, string startMenu, string desktop, string sourceExe, string dataRoot, string? runKey = null)
     {
         _settings = settings;
         _protocol = protocol;
@@ -80,6 +81,7 @@ public sealed class InstallService : IInstallService
         _desktop = desktop;
         _sourceExe = sourceExe;
         _dataRoot = dataRoot;
+        _runKey = runKey;
     }
 
     public string DefaultFolder => Path.Combine(
@@ -150,6 +152,7 @@ public sealed class InstallService : IInstallService
         UpdateShortcut(Path.Combine(_desktop, ShortcutName), target, options.DesktopShortcut);
         UpdateShortcut(Path.Combine(_startMenu, ShortcutName), target, options.StartMenuShortcut);
         WriteUninstallEntry(folder, target);
+        if (_runKey is not null) WindowsStartup.Retarget(_runKey, target);
 
         if (options.HandleLinks) _protocol.RegisterFor(target);
         else _protocol.Unregister(); // only acts if Nexstrap owns the links
@@ -165,6 +168,9 @@ public sealed class InstallService : IInstallService
 
     public void SyncInstalledVersion()
     {
+        // The Windows entry can go missing; the default folder only holds an installed copy, so put it back.
+        if (InstalledFolder is null && SamePath(Path.Combine(DefaultFolder, ExeName), _sourceExe))
+            WriteUninstallEntry(DefaultFolder, _sourceExe);
         if (!IsRunningInstalledCopy) return;
         using var key = Registry.CurrentUser.OpenSubKey(_uninstallKey, writable: true);
         if (key?.GetValue("DisplayVersion") as string != AppInfo.VersionString)
@@ -195,6 +201,7 @@ public sealed class InstallService : IInstallService
         TryDelete(Path.Combine(_desktop, ShortcutName));
         TryDelete(Path.Combine(_startMenu, ShortcutName));
         Registry.CurrentUser.DeleteSubKeyTree(_uninstallKey, throwOnMissingSubKey: false);
+        if (_runKey is not null) WindowsStartup.Remove(_runKey);
 
         Process.Start(new ProcessStartInfo("cmd.exe", BuildCleanupArguments(_sourceExe, deleteData ? _dataRoot : null))
         {

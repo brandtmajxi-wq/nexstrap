@@ -83,6 +83,22 @@
         <ui:SettingCard Icon="&#xE71B;" Header="{DynamicResource L.RobloxSettings.OpenWebsitePlayButtonsWithNexstrap}" Description="{Binding LinkHandlerText}">
             <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding UseNexstrapForLinks}" AutomationProperties.Name="Use Nexstrap for website links" />
         </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE7E8;" Header="{DynamicResource L.RobloxSettings.StartWithWindows}" Description="{DynamicResource L.RobloxSettings.StartWithWindows.Text}">
+            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding StartWithWindows}" AutomationProperties.Name="{DynamicResource L.RobloxSettings.StartWithWindows}" />
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE950;" Header="{DynamicResource L.RobloxSettings.CpuPriority}" Description="{DynamicResource L.RobloxSettings.CpuPriority.Text}">
+            <ComboBox Width="190" ItemsSource="{Binding PriorityChoices}" DisplayMemberPath="Label" SelectedValuePath="Value"
+                      SelectedValue="{Binding RobloxPriority}" AutomationProperties.Name="{DynamicResource L.RobloxSettings.CpuPriority}" />
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE964;" Header="{DynamicResource L.RobloxSettings.CpuCores}" Description="{DynamicResource L.RobloxSettings.CpuCores.Text}">
+            <ComboBox Width="190" ItemsSource="{Binding CoreChoices}" DisplayMemberPath="Label" SelectedValuePath="Value"
+                      SelectedValue="{Binding RobloxCoreLimit}" AutomationProperties.Name="{DynamicResource L.RobloxSettings.CpuCores}" />
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE737;" Header="{DynamicResource L.RobloxSettings.WindowTitle}" Description="{DynamicResource L.RobloxSettings.WindowTitle.Text}">
+            <TextBox Width="220" Text="{Binding RobloxWindowTitle}" MaxLength="100" ui:Ui.Placeholder="Roblox"
+                     AutomationProperties.Name="{DynamicResource L.RobloxSettings.WindowTitle}" />
+        </ui:SettingCard>
+        <TextBlock Style="{StaticResource Text.Caption}" Margin="2,4,0,0" Text="{DynamicResource L.RobloxSettings.TweaksNote}" />
 
         <!-- ===== Installation ===== -->
         <TextBlock Text="{DynamicResource L.RobloxSettings.Installation}" Style="{StaticResource SectionHeader}" />
@@ -125,6 +141,12 @@
         </ui:SettingCard>
         <ui:SettingCard Icon="&#xE9F9;" Header="{DynamicResource L.RobloxSettings.RobloxsLogs}" Description="{DynamicResource L.RobloxSettings.UsefulWhenReportingAProblemWith}">
             <Button Content="{DynamicResource L.About.Open}" ui:Ui.Icon="&#xE838;" Padding="10,5" Command="{Binding OpenRobloxLogsCommand}" />
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE74D;" Header="{DynamicResource L.RobloxSettings.CleanOnStart}" Description="{DynamicResource L.RobloxSettings.CleanOnStart.Text}">
+            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding CleanOldFilesOnStart}" AutomationProperties.Name="{DynamicResource L.RobloxSettings.CleanOnStart}" />
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE81C;" Header="{DynamicResource L.RobloxSettings.CleanNow}" Description="{Binding CleanupDescription}">
+            <Button Content="{DynamicResource L.RobloxSettings.CleanNow.Button}" Padding="10,5" Command="{Binding CleanNowCommand}" />
         </ui:SettingCard>
     </StackPanel>
 </UserControl>

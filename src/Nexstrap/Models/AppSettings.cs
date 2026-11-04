@@ -29,6 +29,8 @@ public sealed class AppSettings
 
     public RobloxFontSettings RobloxFont { get; set; } = new();
 
+    public RobloxModSettings RobloxMods { get; set; } = new();
+
     /// <summary>Language code; null follows Windows.</summary>
     public string? Language { get; set; }
 
@@ -46,6 +48,29 @@ public sealed class RobloxFontSettings
 
     /// <summary>Name shown in the UI.</summary>
     public string? DisplayName { get; set; }
+}
+
+/// <summary>Opt-in replacements for Roblox's default death sound and mouse cursor. A null file means Roblox's own.</summary>
+public sealed class RobloxModSettings
+{
+    /// <summary>Copy of the chosen .ogg in Nexstrap's Mods folder.</summary>
+    public string? DeathSoundFile { get; set; }
+
+    public string? DeathSoundName { get; set; }
+
+    /// <summary>Copy of the chosen .png in Nexstrap's Mods folder.</summary>
+    public string? CursorFile { get; set; }
+
+    public string? CursorName { get; set; }
+}
+
+/// <summary>Windows CPU priority for Roblox. Realtime is left out on purpose: it can freeze the PC.</summary>
+public enum RobloxPriority
+{
+    Automatic,
+    BelowNormal,
+    AboveNormal,
+    High
 }
 
 public sealed class NotificationSettings
@@ -131,6 +156,17 @@ public sealed class LauncherSettings
 
     /// <summary>Query GitHub for a newer Nexstrap when the app opens.</summary>
     public bool CheckForUpdatesOnStartup { get; set; } = true;
+
+    public RobloxPriority RobloxPriority { get; set; }
+
+    /// <summary>How many CPU cores Roblox may use; 0 means all.</summary>
+    public int RobloxCoreLimit { get; set; }
+
+    /// <summary>Title for Roblox's window; empty keeps Roblox's own.</summary>
+    public string? RobloxWindowTitle { get; set; }
+
+    /// <summary>Delete old logs and temp files each time Nexstrap opens.</summary>
+    public bool CleanOldFilesOnStart { get; set; }
 
     /// <summary>Install directory Play uses; null picks automatically (see RobloxClientService).</summary>
     public string? PreferredInstallation { get; set; }
@@ -223,6 +259,9 @@ public sealed class WindowSettings
     public double Width { get; set; } = 1120;
     public double Height { get; set; } = 720;
     public bool Maximized { get; set; }
+
+    /// <summary>Size of everything in the main window; 1 is normal.</summary>
+    public double Scale { get; set; } = 1;
 }
 
 /// <summary>A named appearance, either built in or saved by the user (Themes\*.json).</summary>

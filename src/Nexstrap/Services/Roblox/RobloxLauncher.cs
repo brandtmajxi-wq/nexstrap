@@ -27,7 +27,12 @@ public interface IRobloxLauncher
 /// own folder, passing either "--app" or a Roblox deep link. Sign-in, server selection and
 /// anti-cheat are handled entirely by Roblox.
 /// </summary>
-public sealed class RobloxLauncher(IFastFlagService fastFlags, IRobloxFontService fonts, ILogger<RobloxLauncher> logger) : IRobloxLauncher
+public sealed class RobloxLauncher(
+    IFastFlagService fastFlags,
+    IRobloxFontService fonts,
+    IRobloxModService mods,
+    IRobloxProcessTuner tuner,
+    ILogger<RobloxLauncher> logger) : IRobloxLauncher
 {
     private const string ProcessName = "RobloxPlayerBeta";
 
@@ -78,6 +83,16 @@ public sealed class RobloxLauncher(IFastFlagService fastFlags, IRobloxFontServic
 
         try
         {
+            mods.ApplyTo(installation);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            logger.LogWarning(ex, "Could not update Roblox's sound or cursor");
+            flagWarning += Loc.Get("Launch.YourRobloxModsCouldntBeUpdated") + ex.Message + ")";
+        }
+
+        try
+        {
             var info = new ProcessStartInfo
             {
                 FileName = installation.ExecutablePath,
@@ -91,6 +106,7 @@ public sealed class RobloxLauncher(IFastFlagService fastFlags, IRobloxFontServic
             if (process is null)
                 return Fail(Loc.Get("Launch.WindowsDidNotStartRoblox"));
 
+            tuner.Tune(process);
             logger.LogInformation("Started Roblox {Version} with {What} (pid {Pid})",
                 installation.DisplayVersion, description, process.Id);
             return new LaunchResult(true, Loc.Get("Launch.RobloxIsStarting") + flagWarning, process.Id);

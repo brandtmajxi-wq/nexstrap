@@ -28,6 +28,9 @@
     </Window.Resources>
 
     <Grid x:Name="RootGrid">
+        <Grid.LayoutTransform>
+            <ScaleTransform ScaleX="{DynamicResource App.Scale}" ScaleY="{DynamicResource App.Scale}" />
+        </Grid.LayoutTransform>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="236" />
             <ColumnDefinition />

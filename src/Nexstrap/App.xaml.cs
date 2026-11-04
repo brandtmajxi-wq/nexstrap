@@ -53,6 +53,7 @@ public partial class App : Application
         var settings = _services.GetRequiredService<ISettingsService>();
         _services.GetRequiredService<IThemeService>().Apply(settings.Current.Appearance);
         Loc.Apply(settings.Current.Language);
+        Resources["App.Scale"] = Math.Clamp(settings.Current.Window.Scale, 0.8, 1.5);
 
         var install = _services.GetRequiredService<IInstallService>();
         if (Options.Uninstall)
@@ -89,6 +90,12 @@ public partial class App : Application
         _ = shell.CheckForUpdatesOnLaunchAsync();
         // Roblox update notifications shouldn't depend on Home being the first page opened.
         _ = _services.GetRequiredService<IRobloxClientService>().RefreshAsync();
+
+        if (settings.Current.Launcher.CleanOldFilesOnStart)
+        {
+            var cleanup = _services.GetRequiredService<Nexstrap.Services.Maintenance.ICleanupService>();
+            _ = Task.Run(cleanup.CleanOldFiles);
+        }
     }
 
     /// <summary>Shows setup. Returns true if this copy should carry on and open normally.</summary>
@@ -213,6 +220,10 @@ public partial class App : Application
         // Roblox
         services.AddSingleton<IFastFlagService, FastFlagService>();
         services.AddSingleton<IRobloxFontService, RobloxFontService>();
+        services.AddSingleton<IRobloxModService, RobloxModService>();
+        services.AddSingleton<IRobloxProcessTuner, RobloxProcessTuner>();
+        services.AddSingleton<Nexstrap.Services.Maintenance.ICleanupService, Nexstrap.Services.Maintenance.CleanupService>();
+        services.AddSingleton<IWindowsStartup, WindowsStartup>();
         services.AddSingleton<IRobloxLocator, RobloxLocator>();
         services.AddSingleton<IRobloxLauncher, RobloxLauncher>();
         // Large downloads get their own client so the short API timeout doesn't cut them off.

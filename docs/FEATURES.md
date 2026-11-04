@@ -45,6 +45,8 @@ A small window shown when you start Roblox from Nexstrap. It closes when Roblox'
 - **Accent colour**: swatches or `#RGB` / `#RRGGBB`. Text on accent-coloured buttons switches between black and white for readability.
 - **Font**: any installed text font (symbol fonts are hidden). The whole app switches immediately.
 - **Roblox font** (opt-in, off by default): uses a .ttf/.otf file or your Nexstrap font in Roblox itself by pointing the font family files of a Nexstrap-installed build at that font. Other launchers' builds are never changed. The original files are backed up inside the build and restored at the next launch after you turn it off. Chinese, Japanese and Korean fallback text is left alone. Roblox doesn't support this: it may stop working after a Roblox update, and text from a game's own fonts may not change.
+- **App size**: 85%, 100%, 115% or 130%. Not part of saved themes.
+- **Death sound and mouse cursor** (opt-in): an .ogg file replaces `content\sounds\ouch.ogg`, and a .png up to 256 × 256 replaces the arrow cursors in `content\textures\Cursors\KeyboardMouse`. Only Nexstrap-installed builds change. Originals are backed up inside the build and restored at the next launch after you remove the file. Roblox doesn't support this, and games with their own sound or cursor won't change.
 - **Background**: PNG/JPG/BMP/GIF, copied into Nexstrap's folder. Opacity, sizing (fill, fit, stretch, center, tile) and position. Cards become slightly translucent while a background is shown.
 - **Your themes**: save the current look; apply, export, import or delete. Exports don't include the image file.
 - **Reset**: back to defaults; saved themes are kept.
@@ -80,6 +82,10 @@ maximum frame rate (60/120/144/240), automatic or fixed graphics quality (1–10
 - Saving is blocked while Roblox is running, because Roblox overwrites the file when it exits.
 - Only changed keys are written; everything else in the file is preserved. A backup is made before every save/restore (newest 15 kept).
 - **Open website Play buttons with Nexstrap** registers the `roblox` and `roblox-player` URL schemes for your user only (HKCU), saving the previous handler so turning it off restores it exactly.
+- **Open Nexstrap when Windows starts** adds a per-user startup entry, which uninstalling removes.
+- **Roblox CPU priority and CPU cores** use normal Windows process settings when Roblox starts from Nexstrap, with any build. Realtime priority isn't offered because it can freeze a PC. They don't add FPS by themselves, and fewer cores can lower it.
+- **Roblox window title** changes the title of Roblox's window once it opens.
+- **Clean up old files** deletes files older than 7 days from Roblox's logs folder, Roblox's temp folder and Nexstrap's Downloads folder, and waits if Roblox is open. Settings, games and Roblox builds aren't touched.
 
 ## Integrations
 

@@ -23,6 +23,10 @@ public sealed class ConfigBundle
     public AppearanceSettings? Appearance { get; set; }
     public bool? CloseAfterLaunch { get; set; }
     public bool? CheckForUpdatesOnStartup { get; set; }
+    public RobloxPriority? RobloxPriority { get; set; }
+    public int? RobloxCoreLimit { get; set; }
+    public string? RobloxWindowTitle { get; set; }
+    public bool? CleanOldFilesOnStart { get; set; }
     public List<RecentExperience>? RecentExperiences { get; set; }
     public DiscordSettings? Discord { get; set; }
     public List<CompanionApp>? CompanionApps { get; set; }
@@ -71,6 +75,10 @@ public sealed class ConfigTransferService(
             Appearance = look,
             CloseAfterLaunch = s.Launcher.CloseAfterLaunch,
             CheckForUpdatesOnStartup = s.Launcher.CheckForUpdatesOnStartup,
+            RobloxPriority = s.Launcher.RobloxPriority,
+            RobloxCoreLimit = s.Launcher.RobloxCoreLimit,
+            RobloxWindowTitle = s.Launcher.RobloxWindowTitle,
+            CleanOldFilesOnStart = s.Launcher.CleanOldFilesOnStart,
             RecentExperiences = s.Launcher.RecentExperiences.ToList(),
             Discord = s.Discord,
             CompanionApps = s.CompanionApps.ToList(),
@@ -119,6 +127,10 @@ public sealed class ConfigTransferService(
 
         if (bundle.CloseAfterLaunch is { } close) s.Launcher.CloseAfterLaunch = close;
         if (bundle.CheckForUpdatesOnStartup is { } check) s.Launcher.CheckForUpdatesOnStartup = check;
+        if (bundle.RobloxPriority is { } priority && Enum.IsDefined(priority)) s.Launcher.RobloxPriority = priority;
+        if (bundle.RobloxCoreLimit is >= 0 and var cores) s.Launcher.RobloxCoreLimit = cores;
+        if (bundle.RobloxWindowTitle is var title) s.Launcher.RobloxWindowTitle = Roblox.RobloxProcessTuner.CleanTitle(title);
+        if (bundle.CleanOldFilesOnStart is { } clean) s.Launcher.CleanOldFilesOnStart = clean;
         if (bundle.RecentExperiences is { } recent)
             s.Launcher.RecentExperiences = recent.Where(r => r.PlaceId > 0).Take(6).ToList();
         if (bundle.Discord is { } discord)

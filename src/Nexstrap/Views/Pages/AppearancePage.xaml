@@ -170,6 +170,13 @@
             </Grid>
         </Border>
 
+        <!-- ===== App size ===== -->
+        <TextBlock Text="{DynamicResource L.Appearance.AppSize}" Style="{StaticResource SectionHeader}" />
+        <ui:SettingCard Icon="&#xE8A3;" Header="{DynamicResource L.Appearance.AppSize}" Description="{DynamicResource L.Appearance.AppSize.Text}">
+            <ComboBox Width="190" ItemsSource="{Binding ScaleChoices}" DisplayMemberPath="Label" SelectedValuePath="Value"
+                      SelectedValue="{Binding UiScale}" AutomationProperties.Name="{DynamicResource L.Appearance.AppSize}" />
+        </ui:SettingCard>
+
         <!-- ===== Language ===== -->
         <TextBlock Text="{DynamicResource L.Language.Header}" Style="{StaticResource SectionHeader}" />
         <ui:SettingCard Icon="&#xF2B7;" Header="{DynamicResource L.Language.Header}" Description="{DynamicResource L.Language.Description}">
@@ -190,6 +197,27 @@
         </ui:SettingCard>
         <TextBlock Style="{StaticResource Text.Caption}" Margin="2,4,0,0"
                    Text="{DynamicResource L.Appearance.OnlyWorksOnRobloxBuildsNexstrap}" />
+
+        <!-- ===== Roblox sound and cursor ===== -->
+        <TextBlock Text="{DynamicResource L.Appearance.RobloxMods}" Style="{StaticResource SectionHeader}" />
+        <ui:SettingCard Icon="&#xE767;" Header="{DynamicResource L.Appearance.DeathSound}" Description="{Binding DeathSoundName}">
+            <StackPanel Orientation="Horizontal">
+                <Button Content="{DynamicResource L.Appearance.ChooseFile}" ui:Ui.Icon="&#xE8E5;" Padding="10,6" Command="{Binding ChooseDeathSoundCommand}" />
+                <Button Content="{DynamicResource L.Appearance.Remove}" Padding="10,6" Margin="6,0,0,0" Command="{Binding RemoveDeathSoundCommand}"
+                        Visibility="{Binding HasDeathSound, Converter={StaticResource BoolToVisibility}}" />
+            </StackPanel>
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE962;" Header="{DynamicResource L.Appearance.Cursor}" Description="{Binding CursorName}">
+            <StackPanel Orientation="Horizontal">
+                <Button Content="{DynamicResource L.Appearance.ChooseFile}" ui:Ui.Icon="&#xE8E5;" Padding="10,6" Command="{Binding ChooseCursorCommand}" />
+                <Button Content="{DynamicResource L.Appearance.Remove}" Padding="10,6" Margin="6,0,0,0" Command="{Binding RemoveCursorCommand}"
+                        Visibility="{Binding HasCursor, Converter={StaticResource BoolToVisibility}}" />
+            </StackPanel>
+        </ui:SettingCard>
+        <TextBlock Style="{StaticResource Text.Caption}" Margin="2,4,0,0" Text="{DynamicResource L.Appearance.ModsNote}" />
+        <TextBlock Style="{StaticResource Text.Caption}" Margin="2,4,0,0" Foreground="{DynamicResource Brush.Warning}"
+                   Text="{DynamicResource L.Appearance.ModsNeedNexstrapBuild}"
+                   Visibility="{Binding ModsWontApply, Converter={StaticResource BoolToVisibility}}" />
 
         <!-- ===== Background ===== -->
         <TextBlock Text="{DynamicResource L.Appearance.Background}" Style="{StaticResource SectionHeader}" />

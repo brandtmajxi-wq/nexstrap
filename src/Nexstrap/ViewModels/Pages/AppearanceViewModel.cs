@@ -45,6 +45,7 @@ public sealed partial class AppearanceViewModel : PageViewModel
 
     private readonly ISettingsService _settings;
     private readonly IRobloxFontService _robloxFont;
+    private readonly IRobloxModService _mods;
     private readonly IRobloxClientService _client;
     private readonly IAppearanceService _appearance;
     private readonly IThemeService _theme;
@@ -57,12 +58,17 @@ public sealed partial class AppearanceViewModel : PageViewModel
 
     public AppearanceViewModel(IAppearanceService appearance, IThemeService theme, IFontCatalog fonts,
         IDialogService dialogs, IFileDialogService files, ISettingsService settings, IRobloxFontService robloxFont,
-        IRobloxClientService client, ILogger<AppearanceViewModel> logger)
+        IRobloxModService mods, IRobloxClientService client, ILogger<AppearanceViewModel> logger)
     {
         _settings = settings;
         _robloxFont = robloxFont;
+        _mods = mods;
         _client = client;
-        client.StateChanged += (_, _) => System.Windows.Application.Current?.Dispatcher.BeginInvoke(() => OnPropertyChanged(nameof(RobloxFontStatus)));
+        client.StateChanged += (_, _) => System.Windows.Application.Current?.Dispatcher.BeginInvoke(() =>
+        {
+            OnPropertyChanged(nameof(RobloxFontStatus));
+            OnPropertyChanged(nameof(ModsWontApply));
+        });
         _appearance = appearance;
         _theme = theme;
         _fonts = fonts;
@@ -189,6 +195,23 @@ public sealed partial class AppearanceViewModel : PageViewModel
         _syncing = false;
     }
 
+    // ===== App size =====
+
+    public IReadOnlyList<Choice<double>> ScaleChoices { get; } =
+        [new(0.85, "85%"), new(1d, "100%"), new(1.15, "115%"), new(1.3, "130%")];
+
+    public double UiScale
+    {
+        get => ScaleChoices.FirstOrDefault(c => Math.Abs(c.Value - _settings.Current.Window.Scale) < 0.01)?.Value ?? 1;
+        set
+        {
+            _settings.Current.Window.Scale = value;
+            _settings.Save();
+            if (System.Windows.Application.Current is { } app) app.Resources["App.Scale"] = value;
+            OnPropertyChanged();
+        }
+    }
+
     // ===== Language =====
 
     public IReadOnlyList<LanguageOption> Languages => Loc.Languages;
@@ -262,6 +285,53 @@ public sealed partial class AppearanceViewModel : PageViewModel
     {
         if (error is not null) _dialogs.Show(Loc.Get("Appearance.CouldntUseThatFont"), error, DialogKind.Warning);
         OnPropertyChanged(nameof(RobloxFontName));
+    }
+
+    // ===== Roblox sound and cursor =====
+
+    private RobloxModSettings Mods => _settings.Current.RobloxMods;
+
+    public string DeathSoundName => Mods.DeathSoundName ?? Loc.Get("Appearance.RobloxDefault");
+
+    public string CursorName => Mods.CursorName ?? Loc.Get("Appearance.RobloxDefault");
+
+    public bool HasDeathSound => Mods.DeathSoundFile is not null;
+
+    public bool HasCursor => Mods.CursorFile is not null;
+
+    public bool ModsWontApply => (HasDeathSound || HasCursor) && _client.State.Preferred?.Source != InstallationSource.Nexstrap;
+
+    [RelayCommand]
+    private void ChooseDeathSound()
+    {
+        if (_files.OpenFile(Loc.Get("Appearance.ChooseSoundFile"), "Ogg (*.ogg)|*.ogg") is { } path) ShowModResult(_mods.SetDeathSound(path));
+    }
+
+    [RelayCommand]
+    private void ChooseCursor()
+    {
+        if (_files.OpenFile(Loc.Get("Appearance.ChooseCursorFile"), "PNG (*.png)|*.png") is { } path) ShowModResult(_mods.SetCursor(path));
+    }
+
+    [RelayCommand]
+    private void RemoveDeathSound()
+    {
+        _mods.ClearDeathSound();
+        ShowModResult(null);
+    }
+
+    [RelayCommand]
+    private void RemoveCursor()
+    {
+        _mods.ClearCursor();
+        ShowModResult(null);
+    }
+
+    private void ShowModResult(string? error)
+    {
+        if (error is not null) _dialogs.Show(Loc.Get("Appearance.CouldntUseThatFile"), error, DialogKind.Warning);
+        foreach (var name in new[] { nameof(DeathSoundName), nameof(CursorName), nameof(HasDeathSound), nameof(HasCursor), nameof(ModsWontApply) })
+            OnPropertyChanged(name);
     }
 
     // ===== Background =====
