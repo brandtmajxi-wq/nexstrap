@@ -1,0 +1,93 @@
+<Window x:Class="Nexstrap.Views.SetupWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{DynamicResource L.Setup.Title}" Icon="/Resources/Branding/Nexstrap.ico"
+        Width="620" Height="500" ResizeMode="CanMinimize"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource Brush.Window}"
+        FontFamily="{DynamicResource Font.Primary}"
+        TextOptions.TextFormattingMode="Ideal"
+        UseLayoutRounding="True">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="44" ResizeBorderThickness="0" CornerRadius="0"
+                      GlassFrameThickness="0,0,0,1" UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="44" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Title bar -->
+        <StackPanel Orientation="Horizontal" Margin="20,0,0,0" VerticalAlignment="Center">
+            <ContentPresenter Width="20" Height="20" ContentTemplate="{StaticResource Template.LogoMark}" Content="{Binding}" />
+            <TextBlock Text="{DynamicResource L.Setup.Title}" Style="{StaticResource Text.Caption}" Margin="8,0,0,0" VerticalAlignment="Center" />
+        </StackPanel>
+        <Button Style="{StaticResource Button.CaptionClose}" Content="&#xE8BB;" HorizontalAlignment="Right" VerticalAlignment="Top"
+                AutomationProperties.Name="Close" Click="OnClose" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBool}}" />
+
+        <!-- Step 1: language -->
+        <StackPanel Grid.Row="1" Margin="36,18,36,0" Visibility="{Binding IsWelcome, Converter={StaticResource BoolToVisibility}}">
+            <ContentPresenter Width="56" Height="56" HorizontalAlignment="Left" ContentTemplate="{StaticResource Template.LogoMark}" Content="{Binding}" />
+            <TextBlock Text="{Binding WelcomeHeading}" Style="{StaticResource Text.Title}" Margin="0,18,0,0" />
+            <TextBlock Text="{Binding WelcomeText}" Style="{StaticResource Text.Secondary}" TextWrapping="Wrap" Margin="0,6,0,0" />
+            <TextBlock Text="{DynamicResource L.Setup.Language}" Style="{StaticResource Text.Base}" FontWeight="SemiBold" Margin="0,26,0,6" />
+            <ComboBox Width="260" HorizontalAlignment="Left" ItemsSource="{Binding Languages}" DisplayMemberPath="Name"
+                      SelectedItem="{Binding SelectedLanguage}" AutomationProperties.Name="Language" />
+        </StackPanel>
+
+        <!-- Step 2: options -->
+        <StackPanel Grid.Row="1" Margin="36,18,36,0" Visibility="{Binding IsOptions, Converter={StaticResource BoolToVisibility}}">
+            <TextBlock Text="{DynamicResource L.Setup.Options.Heading}" Style="{StaticResource Text.Title}" />
+            <TextBlock Text="{DynamicResource L.Setup.Location}" Style="{StaticResource Text.Base}" FontWeight="SemiBold" Margin="0,18,0,6" />
+            <DockPanel>
+                <Button DockPanel.Dock="Right" Content="{DynamicResource L.Setup.Browse}" Margin="8,0,0,0" Padding="12,6" Command="{Binding BrowseCommand}" />
+                <TextBox Text="{Binding Folder, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Install location" />
+            </DockPanel>
+            <CheckBox Style="{StaticResource Toggle}" HorizontalAlignment="Left" Content="{DynamicResource L.Setup.Desktop}" IsChecked="{Binding DesktopShortcut}" Margin="0,16,0,0"
+                      AutomationProperties.AutomationId="Desktop" />
+            <CheckBox Style="{StaticResource Toggle}" HorizontalAlignment="Left" Content="{DynamicResource L.Setup.StartMenu}" IsChecked="{Binding StartMenuShortcut}" Margin="0,10,0,0"
+                      AutomationProperties.AutomationId="StartMenu" />
+            <CheckBox Style="{StaticResource Toggle}" HorizontalAlignment="Left" Content="{DynamicResource L.Setup.Links}" IsChecked="{Binding HandleLinks}" Margin="0,10,0,0"
+                      AutomationProperties.AutomationId="Links" />
+            <TextBlock Text="{DynamicResource L.Setup.Links.Hint}" Style="{StaticResource Text.Caption}" TextWrapping="Wrap" Margin="24,4,0,0" />
+            <TextBlock Text="{Binding Error}" Foreground="{DynamicResource Brush.Danger}" TextWrapping="Wrap" Margin="0,12,0,0"
+                       Visibility="{Binding Error, Converter={StaticResource NullToVisibility}}" />
+        </StackPanel>
+
+        <!-- Step 3: done -->
+        <StackPanel Grid.Row="1" Margin="36,40,36,0" Visibility="{Binding IsDone, Converter={StaticResource BoolToVisibility}}">
+            <ContentPresenter Width="56" Height="56" HorizontalAlignment="Left" ContentTemplate="{StaticResource Template.LogoMark}" Content="{Binding}" />
+            <TextBlock Text="{DynamicResource L.Setup.Done.Heading}" Style="{StaticResource Text.Title}" Margin="0,18,0,0" />
+            <TextBlock Text="{DynamicResource L.Setup.Done.Text}" Style="{StaticResource Text.Secondary}" TextWrapping="Wrap" Margin="0,6,0,0" />
+            <CheckBox Style="{StaticResource Toggle}" HorizontalAlignment="Left" Content="{DynamicResource L.Setup.OpenNow}" IsChecked="{Binding OpenAfterwards}" Margin="0,20,0,0"
+                      AutomationProperties.AutomationId="OpenNow" />
+        </StackPanel>
+
+        <!-- Buttons -->
+        <Grid Grid.Row="2" Margin="36,14,36,22">
+            <Button Style="{StaticResource Button.Ghost}" HorizontalAlignment="Left" Content="{DynamicResource L.Setup.Portable}" Padding="10,7"
+                    AutomationProperties.AutomationId="Portable" Command="{Binding RunPortableCommand}"
+                    Visibility="{Binding IsWelcome, Converter={StaticResource BoolToVisibility}}" />
+            <Button Style="{StaticResource Button.Ghost}" HorizontalAlignment="Left" Content="{DynamicResource L.Setup.Back}" Padding="14,7"
+                    AutomationProperties.AutomationId="Back" Command="{Binding BackCommand}"
+                    Visibility="{Binding IsOptions, Converter={StaticResource BoolToVisibility}}" />
+
+            <Button Style="{StaticResource Button.Primary}" HorizontalAlignment="Right" Content="{DynamicResource L.Setup.Next}" Padding="20,7"
+                    AutomationProperties.AutomationId="Next" Command="{Binding NextCommand}"
+                    Visibility="{Binding IsWelcome, Converter={StaticResource BoolToVisibility}}" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Visibility="{Binding IsOptions, Converter={StaticResource BoolToVisibility}}">
+                <TextBlock Text="{DynamicResource L.Setup.Installing}" Style="{StaticResource Text.Secondary}" VerticalAlignment="Center" Margin="0,0,12,0"
+                           Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibility}}" />
+                <Button Style="{StaticResource Button.Primary}" Content="{DynamicResource L.Setup.Install}" Padding="20,7"
+                        AutomationProperties.AutomationId="Install" Command="{Binding InstallCommand}" />
+            </StackPanel>
+            <Button Style="{StaticResource Button.Primary}" HorizontalAlignment="Right" Content="{DynamicResource L.Setup.Finish}" Padding="20,7"
+                    AutomationProperties.AutomationId="Finish" Command="{Binding FinishCommand}"
+                    Visibility="{Binding IsDone, Converter={StaticResource BoolToVisibility}}" />
+        </Grid>
+    </Grid>
+</Window>

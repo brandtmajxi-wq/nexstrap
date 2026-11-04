@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Windows;
 using CommunityToolkit.Mvvm.Input;
+using Nexstrap.Core;
 using Nexstrap.Services.Configuration;
 using Nexstrap.Services.Navigation;
 using Nexstrap.Services.Notifications;
@@ -21,9 +22,9 @@ public sealed partial class NotificationsViewModel : PageViewModel
         center.Changed += (_, _) => Application.Current?.Dispatcher.BeginInvoke(Rebuild);
     }
 
-    public override string Title => "Notifications";
+    public override string Title => Loc.Get("Nav.Notifications");
 
-    public override string Subtitle => "Updates and setup problems worth a look.";
+    public override string Subtitle => Loc.Get("Page.Notifications");
 
     public ObservableCollection<AppNotification> Items { get; } = [];
 

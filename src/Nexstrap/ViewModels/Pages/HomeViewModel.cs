@@ -71,7 +71,7 @@ public sealed partial class HomeViewModel : PageViewModel
 
     public override string Title => Greeting();
 
-    public override string Subtitle => AppInfo.Tagline;
+    public override string Subtitle => Loc.Get("Tagline");
 
     // ===== Roblox client state =====
 
@@ -548,9 +548,9 @@ public sealed partial class HomeViewModel : PageViewModel
 
     private static string Greeting() => DateTime.Now.Hour switch
     {
-        < 5 => "Welcome back",
-        < 12 => "Good morning",
-        < 18 => "Good afternoon",
-        _ => "Good evening"
+        < 5 => Loc.Get("Home.Night"),
+        < 12 => Loc.Get("Home.Morning"),
+        < 18 => Loc.Get("Home.Afternoon"),
+        _ => Loc.Get("Home.Evening")
     };
 }

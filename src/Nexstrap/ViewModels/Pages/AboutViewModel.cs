@@ -10,9 +10,9 @@ public sealed record ThirdPartyComponent(string Name, string License, string Url
 
 public sealed partial class AboutViewModel(IShellService shell, FileLoggerProvider logs) : PageViewModel
 {
-    public override string Title => "About";
+    public override string Title => Loc.Get("Nav.About");
 
-    public override string Subtitle => "Version, diagnostics and credits.";
+    public override string Subtitle => Loc.Get("Page.About");
 
     public string AppName => AppInfo.Name;
 

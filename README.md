@@ -21,6 +21,7 @@ A modern Windows launcher for the official Roblox client, with themes, honest Fa
 - **Servers**: browse an experience's public servers, filter by free slots and ping, and join a specific one.
 - **Loading screen**: your own text, colours, background and animation while Roblox starts.
 - **Installs Roblox for you**: downloads the official, unmodified Roblox Player from Roblox's own servers, checks every file against Roblox's checksums, and keeps it up to date.
+- **Setup**: installs for your Windows account without admin rights, with a language choice, shortcuts, and a clean uninstall from Windows Settings. It can also run without installing.
 - **Appearance**: dark and light themes, any accent colour, any installed font, background images, presets, and themes you can save, share and import. Changes apply instantly. An opt-in Roblox font setting can also change the font in Nexstrap-installed Roblox builds.
 - **FastFlags, honestly**: add, edit, toggle, import and export flags with type checking and automatic backups. Every flag is marked **Applied** or **Ignored**, based on Roblox's published allowlist (since September 2025 Roblox ignores everything else).
 - **Performance**: see how your frame-rate cap compares with your display, apply presets, and choose the graphics API, anti-aliasing and texture quality. It changes limits and quality; it can't make your PC faster.

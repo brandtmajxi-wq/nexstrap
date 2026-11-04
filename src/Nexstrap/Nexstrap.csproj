@@ -12,9 +12,9 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
 
     <!-- Version information (single source of truth for the updater) -->
-    <Version>1.5.2</Version>
-    <AssemblyVersion>1.5.2.0</AssemblyVersion>
-    <FileVersion>1.5.2.0</FileVersion>
+    <Version>1.6.0</Version>
+    <AssemblyVersion>1.6.0.0</AssemblyVersion>
+    <FileVersion>1.6.0.0</FileVersion>
     <Product>Nexstrap</Product>
     <Description>The Roblox launcher, reimagined.</Description>
     <Company>Nexstrap</Company>
@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <Resource Include="Resources\Branding\Nexstrap.ico" />
+    <EmbeddedResource Include="Resources\Languages\*.json" LogicalName="Nexstrap.Languages.%(Filename).json" />
   </ItemGroup>
 
   <ItemGroup>

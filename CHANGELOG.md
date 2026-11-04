@@ -2,6 +2,13 @@
 
 All notable changes to Nexstrap are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.6.0] - 2026-11-04
+
+### Added
+- **Setup**: double-clicking Nexstrap.exe now offers to install it for your Windows account, with no admin rights. Choose a language, install location, desktop and Start menu shortcuts, and whether Roblox links open with Nexstrap. You can also run it without installing.
+- **Uninstall**: Nexstrap appears in Installed apps in Windows Settings. Uninstalling removes its shortcuts, gives Roblox links back to your previous launcher, and lets you keep or delete your data.
+- **Languages**: English, Deutsch, Español, Français, Português (Brasil) and Русский. Setup, the menu and page titles are translated; the rest of the app is in English for now. Change it under Appearance.
+
 ## [1.5.2] - 2026-11-04
 
 ### Changed
@@ -80,6 +87,7 @@ First public release.
 - Quick update check on every launch with an in-app banner; release notes, progress and cancel.
 - Updates are installed only after verifying source, size, SHA-256, product name and version; failed swaps roll back.
 
+[1.6.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.6.0
 [1.5.2]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.5.2
 [1.5.1]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.5.1
 [1.5.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.5.0

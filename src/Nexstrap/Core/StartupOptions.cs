@@ -5,6 +5,7 @@ namespace Nexstrap.Core;
 ///   --capture &lt;file.png&gt;   render the main window to a PNG once loaded, then exit (UI regression checks)
 ///   --page &lt;Name&gt;          open a specific page on startup (e.g. Appearance)
 ///   --updated              set by the self-updater when it restarts Nexstrap
+///   --uninstall            run by Windows' Installed apps list
 /// </summary>
 public sealed class StartupOptions
 {
@@ -14,6 +15,8 @@ public sealed class StartupOptions
 
     public bool JustUpdated { get; init; }
 
+    public bool Uninstall { get; init; }
+
     /// <summary>Remaining arguments (e.g. a roblox-player: URI handed over by Windows).</summary>
     public IReadOnlyList<string> Positional { get; init; } = [];
 
@@ -21,6 +24,7 @@ public sealed class StartupOptions
     {
         string? capture = null, page = null;
         var updated = false;
+        var uninstall = false;
         var rest = new List<string>();
 
         for (var i = 0; i < args.Count; i++)
@@ -36,12 +40,15 @@ public sealed class StartupOptions
                 case "--updated":
                     updated = true;
                     break;
+                case "--uninstall":
+                    uninstall = true;
+                    break;
                 default:
                     rest.Add(args[i]);
                     break;
             }
         }
 
-        return new StartupOptions { CapturePath = capture, StartPage = page, JustUpdated = updated, Positional = rest };
+        return new StartupOptions { CapturePath = capture, StartPage = page, JustUpdated = updated, Uninstall = uninstall, Positional = rest };
     }
 }

@@ -54,9 +54,9 @@ public sealed partial class GamesViewModel : PageViewModel
         launch.RecentsChanged += (_, _) => Application.Current?.Dispatcher.BeginInvoke(Rebuild);
     }
 
-    public override string Title => "Games";
+    public override string Title => Loc.Get("Nav.Games");
 
-    public override string Subtitle => "Your favorites and recently played experiences.";
+    public override string Subtitle => Loc.Get("Page.Games");
 
     public ObservableCollection<GameItem> Favorites { get; } = [];
 

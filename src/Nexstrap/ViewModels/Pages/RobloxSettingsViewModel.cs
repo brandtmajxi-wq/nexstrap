@@ -4,6 +4,7 @@ using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Win32;
+using Nexstrap.Core;
 using Nexstrap.Services.Configuration;
 using Nexstrap.Services.Dialogs;
 using Nexstrap.Services.Navigation;
@@ -42,9 +43,9 @@ public sealed partial class RobloxSettingsViewModel : PageViewModel
         client.StateChanged += (_, _) => Application.Current?.Dispatcher.BeginInvoke(() => OnPropertyChanged(nameof(InstallationText)));
     }
 
-    public override string Title => "Roblox Settings";
+    public override string Title => Loc.Get("Nav.RobloxSettings");
 
-    public override string Subtitle => "Roblox's own settings, plus how Nexstrap launches it.";
+    public override string Subtitle => Loc.Get("Page.RobloxSettings");
 
     // ===== Status =====
 

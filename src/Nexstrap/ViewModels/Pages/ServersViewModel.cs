@@ -33,9 +33,9 @@ public sealed partial class ServersViewModel : PageViewModel
         ServersView.Filter = o => Matches((GameServer)o);
     }
 
-    public override string Title => "Servers";
+    public override string Title => Loc.Get("Nav.Servers");
 
-    public override string Subtitle => "Browse an experience's public servers and join a specific one.";
+    public override string Subtitle => Loc.Get("Page.Servers");
 
     public ObservableCollection<GameServer> Servers { get; } = [];
 

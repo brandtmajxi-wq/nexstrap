@@ -2,6 +2,17 @@
 
 A page-by-page guide. Everything Nexstrap stores lives in `%LocalAppData%\Nexstrap`.
 
+## Setup
+
+| Feature | Details |
+|---|---|
+| **Install** | Double-clicking `Nexstrap.exe` opens setup, which copies it to `%LocalAppData%\Programs\Nexstrap` or a folder you choose. No admin rights are needed, so folders like Program Files aren't allowed. |
+| **Options** | Language, desktop shortcut, Start menu shortcut, and whether Roblox links open with Nexstrap. |
+| **Run without installing** | Skips setup and remembers that choice. |
+| **Update** | Running a newer `Nexstrap.exe` offers to replace the installed copy. The in-app updater also updates it in place. |
+| **Uninstall** | From Installed apps in Windows Settings. Removes the exe, shortcuts and Windows entry, gives Roblox links back to your previous launcher, and asks whether to delete your data. A folder you chose is only removed if it's empty. |
+| **Languages** | English, Deutsch, Español, Français, Português (Brasil) and Русский, following Windows by default. Setup, the menu and page titles are translated; other pages are in English for now. Change it under Appearance. |
+
 ## Home
 
 | Feature | Details |

@@ -13,6 +13,9 @@ public interface IProtocolRegistration
     /// <summary>Makes website Play buttons open Nexstrap, remembering the previous handler.</summary>
     void Register();
 
+    /// <summary>Same, for a Nexstrap at another path (setup registers the installed copy).</summary>
+    void RegisterFor(string exePath);
+
     /// <summary>Puts back whatever handled the links before (or removes Nexstrap's entry).</summary>
     void Unregister();
 }
@@ -42,11 +45,13 @@ public sealed class ProtocolRegistration : IProtocolRegistration
         _exePath = exePath;
     }
 
-    private string Command => $"\"{_exePath}\" \"%1\"";
+    private static string CommandFor(string exePath) => $"\"{exePath}\" \"%1\"";
 
-    public bool IsRegistered => Schemes.All(s => ReadCommand(s) == Command);
+    public bool IsRegistered => Schemes.All(s => ReadCommand(s) == CommandFor(_exePath));
 
-    public void Register()
+    public void Register() => RegisterFor(_exePath);
+
+    public void RegisterFor(string exePath)
     {
         var previous = _settings.Current.Launcher.PreviousProtocolHandlers;
         foreach (var scheme in Schemes)
@@ -59,9 +64,9 @@ public sealed class ProtocolRegistration : IProtocolRegistration
             using var key = Registry.CurrentUser.CreateSubKey($@"{_classesPath}\{scheme}");
             key.SetValue(null, $"URL:{scheme} Protocol");
             key.SetValue("URL Protocol", "");
-            using (var icon = key.CreateSubKey("DefaultIcon")) icon.SetValue(null, $"\"{_exePath}\",0");
+            using (var icon = key.CreateSubKey("DefaultIcon")) icon.SetValue(null, $"\"{exePath}\",0");
             using var command = key.CreateSubKey(@"shell\open\command");
-            command.SetValue(null, Command);
+            command.SetValue(null, CommandFor(exePath));
         }
         _settings.Save();
         _logger.LogInformation("Registered Nexstrap for {Schemes} (previous handlers saved: {Count})", string.Join(", ", Schemes), previous.Count);

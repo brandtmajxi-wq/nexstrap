@@ -170,6 +170,13 @@
             </Grid>
         </Border>
 
+        <!-- ===== Language ===== -->
+        <TextBlock Text="{DynamicResource L.Language.Header}" Style="{StaticResource SectionHeader}" />
+        <ui:SettingCard Icon="&#xF2B7;" Header="{DynamicResource L.Language.Header}" Description="{DynamicResource L.Language.Description}">
+            <ComboBox Width="190" ItemsSource="{Binding Languages}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedLanguage}"
+                      AutomationProperties.Name="Language" />
+        </ui:SettingCard>
+
         <!-- ===== Roblox font ===== -->
         <TextBlock Text="Roblox font" Style="{StaticResource SectionHeader}" />
         <ui:SettingCard Icon="&#xE8D2;" Header="Use a custom font in Roblox" Description="{Binding RobloxFontStatus}">

@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Nexstrap.Core;
 using Nexstrap.Models;
 using Nexstrap.Services.Dialogs;
 using Nexstrap.Services.FastFlags;
@@ -22,9 +23,9 @@ public sealed partial class PerformanceViewModel(
 {
     private bool _loading;
 
-    public override string Title => "Performance";
+    public override string Title => Loc.Get("Nav.Performance");
 
-    public override string Subtitle => "Frame rate and graphics. These settings change limits and quality; they can't make your PC faster.";
+    public override string Subtitle => Loc.Get("Page.Performance");
 
     // ===== Status =====
 

@@ -9,6 +9,8 @@ public interface IFileDialogService
     string? OpenFile(string title, string filter);
 
     string? SaveFile(string title, string filter, string defaultFileName);
+
+    string? PickFolder(string title);
 }
 
 /// <summary>Native Windows open/save dialogs, owned by the main window.</summary>
@@ -24,5 +26,11 @@ public sealed class FileDialogService : IFileDialogService
     {
         var dialog = new SaveFileDialog { Title = title, Filter = filter, FileName = defaultFileName, OverwritePrompt = true };
         return dialog.ShowDialog(Application.Current.MainWindow) == true ? dialog.FileName : null;
+    }
+
+    public string? PickFolder(string title)
+    {
+        var dialog = new OpenFolderDialog { Title = title };
+        return dialog.ShowDialog(Application.Current.MainWindow) == true ? dialog.FolderName : null;
     }
 }

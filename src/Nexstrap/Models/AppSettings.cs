@@ -28,6 +28,12 @@ public sealed class AppSettings
     public NotificationSettings Notifications { get; set; } = new();
 
     public RobloxFontSettings RobloxFont { get; set; } = new();
+
+    /// <summary>Language code; null follows Windows.</summary>
+    public string? Language { get; set; }
+
+    /// <summary>Set by "Run without installing" so setup doesn't appear on every start.</summary>
+    public bool SkippedSetup { get; set; }
 }
 
 /// <summary>Opt-in replacement of Roblox's interface fonts in Nexstrap-installed builds.</summary>

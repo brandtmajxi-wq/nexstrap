@@ -14,9 +14,9 @@ public sealed partial class LaunchScreenViewModel(
     IFileDialogService files,
     IDialogService dialogs) : PageViewModel
 {
-    public override string Title => "Loading Screen";
+    public override string Title => Loc.Get("Nav.LoadingScreen");
 
-    public override string Subtitle => "What you see while Roblox starts. It closes by itself when Roblox opens.";
+    public override string Subtitle => Loc.Get("Page.LoadingScreen");
 
     private LaunchScreenSettings Options => settings.Current.LaunchScreen;
 

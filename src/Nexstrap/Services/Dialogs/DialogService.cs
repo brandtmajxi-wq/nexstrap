@@ -1,4 +1,5 @@
 using System.Windows;
+using Nexstrap.Core;
 using Nexstrap.Views.Dialogs;
 
 namespace Nexstrap.Services.Dialogs;
@@ -22,10 +23,11 @@ public interface IDialogService
 public sealed class DialogService : IDialogService
 {
     public void Show(string title, string message, DialogKind kind = DialogKind.Info, string? details = null) =>
-        Run(() => MessageDialog.ShowModal(Owner(), title, message, kind, details, "OK", null));
+        Run(() => MessageDialog.ShowModal(Owner(), title, message, kind, details, Loc.Get("Common.OK"), null));
 
     public bool Confirm(string title, string message, string confirmText = "Continue", string cancelText = "Cancel") =>
-        Run(() => MessageDialog.ShowModal(Owner(), title, message, DialogKind.Question, null, confirmText, cancelText));
+        Run(() => MessageDialog.ShowModal(Owner(), title, message, DialogKind.Question, null,
+            Loc.GetOr("Common." + confirmText, confirmText), Loc.GetOr("Common." + cancelText, cancelText)));
 
     private static Window? Owner() =>
         Application.Current?.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive)

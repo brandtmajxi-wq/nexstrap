@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Nexstrap.Core;
 using Nexstrap.Models;
 using Nexstrap.Services.Configuration;
 using Nexstrap.Services.Dialogs;
@@ -148,9 +149,9 @@ public sealed partial class IntegrationsViewModel : PageViewModel
         }
     }
 
-    public override string Title => "Integrations";
+    public override string Title => Loc.Get("Nav.Integrations");
 
-    public override string Subtitle => "Connect Nexstrap with the rest of your setup.";
+    public override string Subtitle => Loc.Get("Page.Integrations");
 
     // ===== Discord Rich Presence =====
 

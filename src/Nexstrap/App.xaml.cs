@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.IO;
+using System.Net.Http;
 using System.Windows;
 using System.Windows.Threading;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +16,7 @@ using Nexstrap.Services.Navigation;
 using Nexstrap.Services.Notifications;
 using Nexstrap.Services.Performance;
 using Nexstrap.Services.Roblox;
+using Nexstrap.Services.Setup;
 using Nexstrap.Services.Shell;
 using Nexstrap.Services.Updates;
 using Nexstrap.ViewModels;
@@ -50,6 +52,18 @@ public partial class App : Application
 
         var settings = _services.GetRequiredService<ISettingsService>();
         _services.GetRequiredService<IThemeService>().Apply(settings.Current.Appearance);
+        Loc.Apply(settings.Current.Language);
+
+        var install = _services.GetRequiredService<IInstallService>();
+        if (Options.Uninstall)
+        {
+            ShutdownMode = ShutdownMode.OnExplicitShutdown;
+            RunUninstall(install);
+            Shutdown();
+            return;
+        }
+        install.SyncInstalledVersion();
+
         // Created eagerly so they're listening for Roblox sessions from the start.
         _services.GetRequiredService<IRichPresenceService>();
         _services.GetRequiredService<ICompanionAppService>();
@@ -64,6 +78,9 @@ public partial class App : Application
             return;
         }
 
+        if (install.ShouldOfferSetup(Options) && !RunSetup())
+            return;
+
         var window = _services.GetRequiredService<MainWindow>();
         MainWindow = window;
         var shell = _services.GetRequiredService<MainWindowViewModel>();
@@ -72,6 +89,55 @@ public partial class App : Application
         _ = shell.CheckForUpdatesOnLaunchAsync();
         // Roblox update notifications shouldn't depend on Home being the first page opened.
         _ = _services.GetRequiredService<IRobloxClientService>().RefreshAsync();
+    }
+
+    /// <summary>Shows setup. Returns true if this copy should carry on and open normally.</summary>
+    private bool RunSetup()
+    {
+        ShutdownMode = ShutdownMode.OnExplicitShutdown;
+        var setup = _services!.GetRequiredService<SetupViewModel>();
+        new SetupWindow(setup).ShowDialog();
+
+        if (setup.Outcome == SetupOutcome.RunPortable)
+        {
+            ShutdownMode = ShutdownMode.OnMainWindowClose;
+            return true;
+        }
+
+        if (setup.Outcome == SetupOutcome.OpenInstalled)
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(setup.InstalledExe) { UseShellExecute = false })?.Dispose();
+        Shutdown();
+        return false;
+    }
+
+    private void RunUninstall(IInstallService install)
+    {
+        var dialogs = _services!.GetRequiredService<IDialogService>();
+        if (!install.IsRunningInstalledCopy)
+        {
+            dialogs.Show(Loc.Get("Uninstall.NotInstalled.Title"), Loc.Get("Uninstall.NotInstalled.Text"));
+            return;
+        }
+        if (install.IsAnotherCopyRunning())
+        {
+            dialogs.Show(Loc.Get("Uninstall.Running.Title"), Loc.Get("Uninstall.Running.Text"), DialogKind.Warning);
+            return;
+        }
+        if (!dialogs.Confirm(Loc.Get("Uninstall.Title"), Loc.Get("Uninstall.Text"), Loc.Get("Uninstall.Confirm")))
+            return;
+
+        var deleteData = dialogs.Confirm(Loc.Get("Uninstall.Data.Title"), Loc.Get("Uninstall.Data.Text"),
+            Loc.Get("Uninstall.Data.Delete"), Loc.Get("Uninstall.Data.Keep"));
+        try
+        {
+            install.Uninstall(deleteData);
+            dialogs.Show(Loc.Get("Uninstall.Done.Title"), Loc.Get("Uninstall.Done.Text"));
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Security.SecurityException or System.ComponentModel.Win32Exception)
+        {
+            _logger?.LogError(ex, "Uninstall failed");
+            dialogs.Show(Loc.Get("Uninstall.Failed.Title"), ex.Message, DialogKind.Error);
+        }
     }
 
     /// <summary>Launches a link without showing the main window, then exits.</summary>
@@ -169,6 +235,8 @@ public partial class App : Application
         services.AddSingleton<ILaunchCoordinator, LaunchCoordinator>();
         services.AddSingleton<IServerBrowserService, ServerBrowserService>();
         services.AddSingleton<IConfigTransferService, ConfigTransferService>();
+        services.AddSingleton<IInstallService, InstallService>();
+        services.AddSingleton<SetupViewModel>();
 
         // Pages (singletons so state survives tab switches)
         services.AddSingleton<HomeViewModel>();

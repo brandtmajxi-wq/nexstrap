@@ -22,7 +22,7 @@
     <Window.Resources>
         <!-- Sidebar entry; RadioButton gives single-selection + keyboard navigation for free -->
         <DataTemplate x:Key="Template.NavItem">
-            <RadioButton Style="{StaticResource NavItem}" GroupName="Nav" Content="{Binding Title}" ui:Ui.Icon="{Binding Glyph}"
+            <RadioButton Style="{StaticResource NavItem}" GroupName="Nav" Content="{Binding Label}" ui:Ui.Icon="{Binding Glyph}"
                          IsChecked="{Binding IsSelected, Mode=TwoWay}" />
         </DataTemplate>
     </Window.Resources>
@@ -52,13 +52,13 @@
                 <StackPanel DockPanel.Dock="Bottom">
                     <Border Style="{StaticResource Divider}" Margin="6,0,6,8" />
                     <ItemsControl ItemsSource="{Binding FooterItems}" ItemTemplate="{StaticResource Template.NavItem}" Focusable="False" />
-                    <TextBlock Text="{Binding Tagline}" Style="{StaticResource Text.Caption}" Margin="8,10,6,0" />
+                    <TextBlock Text="{DynamicResource L.Tagline}" Style="{StaticResource Text.Caption}" Margin="8,10,6,0" TextWrapping="Wrap" />
                 </StackPanel>
 
                 <!-- Navigation items -->
                 <ScrollViewer VerticalScrollBarVisibility="Auto" Focusable="False">
                     <StackPanel>
-                        <TextBlock Text="MENU" Style="{StaticResource Text.Overline}" Margin="8,0,0,8" />
+                        <TextBlock Text="{DynamicResource L.Nav.Menu}" Style="{StaticResource Text.Overline}" Margin="8,0,0,8" />
                         <ItemsControl ItemsSource="{Binding NavItems}" ItemTemplate="{StaticResource Template.NavItem}" Focusable="False" />
                     </StackPanel>
                 </ScrollViewer>

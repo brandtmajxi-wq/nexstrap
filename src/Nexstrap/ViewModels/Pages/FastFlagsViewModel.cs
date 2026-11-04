@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Data;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Nexstrap.Core;
 using Nexstrap.Models;
 using Nexstrap.Services.Dialogs;
 using Nexstrap.Services.FastFlags;
@@ -123,9 +124,9 @@ public sealed partial class FastFlagsViewModel : PageViewModel
         Rebuild();
     }
 
-    public override string Title => "FastFlags";
+    public override string Title => Loc.Get("Nav.FastFlags");
 
-    public override string Subtitle => "Roblox client configuration flags, with honest notes on what still works.";
+    public override string Subtitle => Loc.Get("Page.FastFlags");
 
     // ===== Where flags go =====
 

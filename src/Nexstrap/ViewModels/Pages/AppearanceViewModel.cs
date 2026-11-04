@@ -58,9 +58,9 @@ public sealed partial class AppearanceViewModel : PageViewModel
         RefreshSavedProfiles();
     }
 
-    public override string Title => "Appearance";
+    public override string Title => Loc.Get("Nav.Appearance");
 
-    public override string Subtitle => "Every change applies instantly and is saved automatically.";
+    public override string Subtitle => Loc.Get("Page.Appearance");
 
     private AppearanceSettings Current => _appearance.Current;
 
@@ -166,6 +166,23 @@ public sealed partial class AppearanceViewModel : PageViewModel
         _syncing = true;
         SelectedFont = _fontList.FirstOrDefault(f => string.Equals(f.Name, Current.FontFamily, StringComparison.OrdinalIgnoreCase));
         _syncing = false;
+    }
+
+    // ===== Language =====
+
+    public IReadOnlyList<LanguageOption> Languages => Loc.Languages;
+
+    public LanguageOption SelectedLanguage
+    {
+        get => Loc.Languages.First(l => l.Code == Loc.Code);
+        set
+        {
+            if (value is null || value.Code == Loc.Code) return;
+            Loc.Apply(value.Code);
+            _settings.Current.Language = value.Code;
+            _settings.Save();
+            OnPropertyChanged();
+        }
     }
 
     // ===== Roblox font =====

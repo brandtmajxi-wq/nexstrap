@@ -76,8 +76,6 @@ public sealed partial class MainWindowViewModel : ObservableObject
 
     public string AppName => AppInfo.Name;
 
-    public string Tagline => AppInfo.Tagline;
-
     public string VersionLabel => $"v{AppInfo.VersionString}";
 
     // ===== Update banner (shown on every page) =====
