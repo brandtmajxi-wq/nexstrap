@@ -2,6 +2,11 @@
 
 All notable changes to Nexstrap are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.5.1] - 2026-11-04
+
+### Changed
+- Hovering over the game's image on your Discord card now shows the game name followed by "via Nexstrap".
+
 ## [1.5.0] - 2026-11-04
 
 ### Added
@@ -70,6 +75,7 @@ First public release.
 - Quick update check on every launch with an in-app banner; release notes, progress and cancel.
 - Updates are installed only after verifying source, size, SHA-256, product name and version; failed swaps roll back.
 
+[1.5.1]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.5.1
 [1.5.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.5.0
 [1.4.1]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.4.1
 [1.4.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.4.0

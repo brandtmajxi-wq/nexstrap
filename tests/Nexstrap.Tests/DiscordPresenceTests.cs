@@ -84,6 +84,7 @@ public class PresenceContentTests
         var a = RichPresenceService.BuildGame(info, "https://icon", 1818, DateTime.UtcNow, new DiscordSettings(), user);
         Assert.Equal("https://tr.rbxcdn.com/headshot/150/150/AvatarHeadshot/Png", (string?)a["assets"]!["small_image"]);
         Assert.Equal("Playing as Ace Pilot (@pilot42)", (string?)a["assets"]!["small_text"]);
+        Assert.EndsWith(" · via Nexstrap", (string?)a["assets"]!["large_text"]);
         Assert.Equal("View game", (string?)a["buttons"]![0]!["label"]);
 
         var hidden = RichPresenceService.BuildGame(info, "https://icon", 1818, DateTime.UtcNow, new DiscordSettings { ShowAvatar = false }, user);

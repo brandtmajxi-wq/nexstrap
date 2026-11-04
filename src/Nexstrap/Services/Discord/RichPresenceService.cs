@@ -258,7 +258,7 @@ public sealed class RichPresenceService : IRichPresenceService, IDisposable
                 ? new JsonObject
                 {
                     ["large_image"] = iconUrl,
-                    ["large_text"] = Fit(info!.Name),
+                    ["large_text"] = Fit($"{info!.Name} · via {AppInfo.Name}"),
                     ["small_image"] = smallImage,
                     ["small_text"] = Fit(smallText)
                 }
