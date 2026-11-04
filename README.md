@@ -27,6 +27,7 @@ A modern Windows launcher for the official Roblox client, with themes, honest Fa
 - **Roblox Settings**: frame-rate cap, graphics quality, fullscreen, volume and camera options, the same settings as Roblox's own menu, with backups.
 - **Discord Rich Presence**: "Inside Nexstrap · Browsing Roblox" in the menu (with your own text if you like); the game's name, icon, your avatar and a *View game* button in game.
 - **Integrations**: start programs alongside Roblox (and close them after), and move your whole setup to another PC with one file.
+- **Notifications**: Nexstrap and Roblox updates and setup warnings in one inbox, with preferences for each.
 - **Self-updating**: checks this repository's releases on every launch and installs updates only after verifying them.
 
 More detail: [docs/FEATURES.md](docs/FEATURES.md).

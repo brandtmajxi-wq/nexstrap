@@ -14,4 +14,11 @@ public sealed partial class NavItem(string title, string glyph, Type pageType) :
 
     [ObservableProperty]
     private bool _isSelected;
+
+    /// <summary>Count shown at the end of the row; 0 hides it.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasBadge))]
+    private int _badge;
+
+    public bool HasBadge => Badge > 0;
 }

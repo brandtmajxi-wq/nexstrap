@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using Nexstrap.Core;
 using Nexstrap.Services.Configuration;
 using Nexstrap.Services.Navigation;
+using Nexstrap.Services.Notifications;
 using Nexstrap.Services.Updates;
 using Nexstrap.ViewModels.Pages;
 
@@ -16,12 +17,14 @@ public sealed partial class MainWindowViewModel : ObservableObject
 
     private readonly IUpdateService _updates;
     private readonly ISettingsService _settings;
+    private readonly INotificationCenter _notifications;
 
-    public MainWindowViewModel(INavigationService navigation, IUpdateService updates, ISettingsService settings)
+    public MainWindowViewModel(INavigationService navigation, IUpdateService updates, ISettingsService settings, INotificationCenter notifications)
     {
         Navigation = navigation;
         _updates = updates;
         _settings = settings;
+        _notifications = notifications;
         NavItems =
         [
             new("Home", "", typeof(HomeViewModel)),
@@ -34,7 +37,15 @@ public sealed partial class MainWindowViewModel : ObservableObject
             new("Roblox Settings", "", typeof(RobloxSettingsViewModel)),
             new("Integrations", "", typeof(IntegrationsViewModel)),
         ];
-        FooterItems = [new("About", "", typeof(AboutViewModel))];
+        var inbox = new NavItem("Notifications", "", typeof(NotificationsViewModel));
+        FooterItems = [inbox, new("About", "", typeof(AboutViewModel))];
+
+        notifications.Changed += (_, _) =>
+        {
+            var count = notifications.Active.Count;
+            if (Application.Current is { } app) app.Dispatcher.BeginInvoke(() => inbox.Badge = count);
+            else inbox.Badge = count;
+        };
 
         // Selection drives navigation, so mouse, keyboard (arrow keys) and UI Automation all work.
         foreach (var item in NavItems.Concat(FooterItems))
@@ -79,6 +90,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
     /// <summary>Quick background check each time Nexstrap opens (when enabled in settings).</summary>
     public async Task CheckForUpdatesOnLaunchAsync()
     {
+        _notifications.Refresh(); // the badge shouldn't wait for the network
         if (!_settings.Current.Launcher.CheckForUpdatesOnStartup) return;
         using var cts = new CancellationTokenSource(StartupCheckTimeout);
         await _updates.CheckAsync(cts.Token);

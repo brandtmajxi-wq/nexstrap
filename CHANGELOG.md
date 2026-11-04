@@ -2,6 +2,11 @@
 
 All notable changes to Nexstrap are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.4.0] - 2026-11-04
+
+### Added
+- **Notification Center**: Nexstrap updates, Roblox updates and configuration warnings in one inbox, with a count in the sidebar, per-category preferences and dismissing. A dismissed notification returns only if something changes.
+
 ## [1.3.0] - 2026-11-03
 
 ### Added
@@ -55,6 +60,7 @@ First public release.
 - Quick update check on every launch with an in-app banner; release notes, progress and cancel.
 - Updates are installed only after verifying source, size, SHA-256, product name and version; failed swaps roll back.
 
+[1.4.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.4.0
 [1.3.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.3.0
 [1.1.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.1.0
 [1.0.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.0.0

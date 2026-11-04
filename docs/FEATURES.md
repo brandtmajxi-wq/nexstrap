@@ -76,6 +76,10 @@ maximum frame rate (60/120/144/240), automatic or fixed graphics quality (1–10
 - **Move your setup**: one JSON file with appearance, launch and Discord settings, FastFlags, saved themes and companion apps. Machine-specific items (window size, background files, chosen build, URL-handler backup) are not exported. Importing backs up the current setup first.
 - **Multiple Roblox windows**: not offered. Roblox allows one game at a time and Nexstrap doesn't get around that.
 
+## Notifications
+
+An inbox with a count in the sidebar. It covers new Nexstrap releases, Roblox builds newer than the one Play uses, and configuration warnings: FastFlags Roblox ignores, flags that can't apply because Play uses another launcher's build, and a frame-rate cap above your display's refresh rate. Each category can be turned off. **Open** goes to the page that fixes it. A dismissed notification comes back only if something changes, such as a newer version. Notifications appear inside Nexstrap while it's open, not as Windows pop-ups.
+
 ## About
 
 Version and runtime details, *Copy diagnostics*, data and log folders, open-source credits.

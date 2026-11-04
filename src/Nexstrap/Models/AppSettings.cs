@@ -24,6 +24,18 @@ public sealed class AppSettings
 
     /// <summary>Experiences pinned on the Games page.</summary>
     public List<RecentExperience> FavoriteExperiences { get; set; } = [];
+
+    public NotificationSettings Notifications { get; set; } = new();
+}
+
+public sealed class NotificationSettings
+{
+    public bool RobloxUpdates { get; set; } = true;
+    public bool NexstrapUpdates { get; set; } = true;
+    public bool ConfigurationWarnings { get; set; } = true;
+
+    /// <summary>Keys of dismissed notifications. Keys include the version or count, so new ones show again.</summary>
+    public List<string> Dismissed { get; set; } = [];
 }
 
 public enum LaunchAnimation

@@ -40,8 +40,35 @@ public class NavigationTests
         }
     }
 
-    private static MainWindowViewModel Create(FakeNavigation nav, FakeUpdates? updates = null, MemorySettings? settings = null) =>
-        new(nav, updates ?? new FakeUpdates(), settings ?? new MemorySettings());
+    private sealed class FakeCenter : Nexstrap.Services.Notifications.INotificationCenter
+    {
+        public IReadOnlyList<Nexstrap.Services.Notifications.AppNotification> Active { get; set; } = [];
+        public event EventHandler? Changed;
+        public void Refresh() => Changed?.Invoke(this, EventArgs.Empty);
+        public void Dismiss(Nexstrap.Services.Notifications.AppNotification notification) { }
+        public void DismissAll() { }
+        public void RestoreDismissed() { }
+    }
+
+    private static MainWindowViewModel Create(FakeNavigation nav, FakeUpdates? updates = null, MemorySettings? settings = null, FakeCenter? center = null) =>
+        new(nav, updates ?? new FakeUpdates(), settings ?? new MemorySettings(), center ?? new FakeCenter());
+
+    [Fact]
+    public void Sidebar_badge_follows_the_notification_count()
+    {
+        var center = new FakeCenter();
+        var vm = Create(new FakeNavigation(), center: center);
+        var inbox = vm.FooterItems.Single(i => i.Title == "Notifications");
+
+        center.Active = [new("k", Nexstrap.Services.Notifications.NotificationCategory.Configuration, "t", "b", Nexstrap.Services.Notifications.NotificationTarget.Home)];
+        center.Refresh();
+        Assert.Equal(1, inbox.Badge);
+        Assert.True(inbox.HasBadge);
+
+        center.Active = [];
+        center.Refresh();
+        Assert.False(inbox.HasBadge);
+    }
 
     [Fact]
     public void Selecting_a_nav_item_navigates_and_keeps_single_selection()

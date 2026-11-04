@@ -12,6 +12,7 @@ using Nexstrap.Services.FastFlags;
 using Nexstrap.Services.Integrations;
 using Nexstrap.Services.Logging;
 using Nexstrap.Services.Navigation;
+using Nexstrap.Services.Notifications;
 using Nexstrap.Services.Performance;
 using Nexstrap.Services.Roblox;
 using Nexstrap.Services.Shell;
@@ -69,6 +70,8 @@ public partial class App : Application
         shell.NavigateToStartPage(Options.StartPage);
         window.Show();
         _ = shell.CheckForUpdatesOnLaunchAsync();
+        // Roblox update notifications shouldn't depend on Home being the first page opened.
+        _ = _services.GetRequiredService<IRobloxClientService>().RefreshAsync();
     }
 
     /// <summary>Launches a link without showing the main window, then exits.</summary>
@@ -159,6 +162,7 @@ public partial class App : Application
         services.AddSingleton<IDiscordIpcClient, DiscordIpcClient>();
         services.AddSingleton<IRichPresenceService, RichPresenceService>();
         services.AddSingleton<ICompanionAppService, CompanionAppService>();
+        services.AddSingleton<INotificationCenter, NotificationCenter>();
         services.AddSingleton<ILaunchScreen, LaunchScreenService>();
         services.AddSingleton<IGameShortcutService, GameShortcutService>();
         services.AddSingleton<ILaunchCoordinator, LaunchCoordinator>();
@@ -168,6 +172,7 @@ public partial class App : Application
         // Pages (singletons so state survives tab switches)
         services.AddSingleton<HomeViewModel>();
         services.AddSingleton<AppearanceViewModel>();
+        services.AddSingleton<NotificationsViewModel>();
         services.AddSingleton<GamesViewModel>();
         services.AddSingleton<ServersViewModel>();
         services.AddSingleton<LaunchScreenViewModel>();
