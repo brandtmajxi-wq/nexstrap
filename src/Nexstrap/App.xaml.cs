@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Net.Http;
 using System.Windows;
 using System.Windows.Threading;
@@ -154,8 +154,8 @@ public partial class App : Application
 
             if (client.State.Preferred is not { } installation)
             {
-                dialogs.Show("Roblox isn't installed",
-                    "Open Nexstrap and choose Install Roblox, then try the link again.", DialogKind.Warning);
+                dialogs.Show(Loc.Get("App.RobloxIsntInstalled"),
+                    Loc.Get("App.OpenNexstrapAndChooseInstallRoblox"), DialogKind.Warning);
                 return;
             }
 
@@ -163,7 +163,7 @@ public partial class App : Application
             var result = services.GetRequiredService<IRobloxLauncher>().LaunchUri(installation, uri);
             if (!result.Success)
             {
-                dialogs.Show("Roblox didn't start", result.Message, DialogKind.Error);
+                dialogs.Show(Loc.Get("App.RobloxDidntStart"), result.Message, DialogKind.Error);
                 return;
             }
 
@@ -180,7 +180,7 @@ public partial class App : Application
         catch (Exception ex)
         {
             logger.LogError(ex, "Launch link failed");
-            dialogs.Show("Roblox didn't start", "Something went wrong while starting Roblox.", DialogKind.Error, ex.ToString());
+            dialogs.Show(Loc.Get("App.RobloxDidntStart"), Loc.Get("App.SomethingWentWrongWhileStartingRoblox"), DialogKind.Error, ex.ToString());
         }
         finally
         {
@@ -286,8 +286,8 @@ public partial class App : Application
         try
         {
             _services?.GetService<IDialogService>()?.Show(
-                "Something went wrong",
-                "Nexstrap hit an unexpected error. Your settings are safe. The details were written to the log file.",
+                Loc.Get("App.SomethingWentWrong"),
+                Loc.Get("App.NexstrapHitAnUnexpectedErrorYour"),
                 DialogKind.Error,
                 e.Exception.ToString());
         }

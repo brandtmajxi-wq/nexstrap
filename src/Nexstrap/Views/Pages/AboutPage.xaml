@@ -19,23 +19,23 @@
             </StackPanel>
         </Border>
 
-        <TextBlock Text="Diagnostics" Style="{StaticResource SectionHeader}" />
-        <ui:SettingCard Icon="&#xE7F8;" Header="Runtime" Description="{Binding Runtime}">
-            <Button Content="Copy diagnostics" ui:Ui.Icon="&#xE8C8;" Padding="10,6" Command="{Binding CopyDiagnosticsCommand}" />
+        <TextBlock Text="{DynamicResource L.About.Diagnostics}" Style="{StaticResource SectionHeader}" />
+        <ui:SettingCard Icon="&#xE7F8;" Header="{DynamicResource L.About.Runtime}" Description="{Binding Runtime}">
+            <Button Content="{DynamicResource L.About.CopyDiagnostics}" ui:Ui.Icon="&#xE8C8;" Padding="10,6" Command="{Binding CopyDiagnosticsCommand}" />
         </ui:SettingCard>
-        <ui:SettingCard Icon="&#xE8B7;" Header="Data folder" Description="{Binding DataFolder}">
-            <Button Content="Open" ui:Ui.Icon="&#xE838;" Padding="10,6" Command="{Binding OpenDataFolderCommand}" />
+        <ui:SettingCard Icon="&#xE8B7;" Header="{DynamicResource L.About.DataFolder}" Description="{Binding DataFolder}">
+            <Button Content="{DynamicResource L.About.Open}" ui:Ui.Icon="&#xE838;" Padding="10,6" Command="{Binding OpenDataFolderCommand}" />
         </ui:SettingCard>
-        <ui:SettingCard Icon="&#xE9F9;" Header="Logs" Description="One log file per session; the newest ten are kept.">
-            <Button Content="Open" ui:Ui.Icon="&#xE838;" Padding="10,6" Command="{Binding OpenLogsFolderCommand}" />
+        <ui:SettingCard Icon="&#xE9F9;" Header="{DynamicResource L.About.Logs}" Description="{DynamicResource L.About.OneLogFilePerSessionThe}">
+            <Button Content="{DynamicResource L.About.Open}" ui:Ui.Icon="&#xE838;" Padding="10,6" Command="{Binding OpenLogsFolderCommand}" />
         </ui:SettingCard>
 
-        <TextBlock Text="Open-source components" Style="{StaticResource SectionHeader}" />
+        <TextBlock Text="{DynamicResource L.About.OpenSourceComponents}" Style="{StaticResource SectionHeader}" />
         <ItemsControl ItemsSource="{Binding Components}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <ui:SettingCard Header="{Binding Name}" Description="{Binding License, StringFormat='{}{0} licence'}">
-                        <Button Style="{StaticResource Button.Ghost}" Content="Source" ui:Ui.Icon="&#xE8A7;" Padding="10,6"
+                    <ui:SettingCard Header="{Binding Name}" Description="{Binding License, Converter={StaticResource LocFormat}, ConverterParameter=Format.Licence}">
+                        <Button Style="{StaticResource Button.Ghost}" Content="{DynamicResource L.About.Source}" ui:Ui.Icon="&#xE8A7;" Padding="10,6"
                                 Command="{Binding DataContext.OpenLinkCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                 CommandParameter="{Binding Url}" />
                     </ui:SettingCard>
@@ -44,6 +44,6 @@
         </ItemsControl>
 
         <TextBlock Style="{StaticResource Text.Caption}" Margin="2,18,0,0"
-                   Text="Nexstrap is an independent project and is not affiliated with, endorsed by or sponsored by Roblox Corporation. Roblox is a trademark of Roblox Corporation." />
+                   Text="{DynamicResource L.About.NexstrapIsAnIndependentProjectAnd}" />
     </StackPanel>
 </UserControl>

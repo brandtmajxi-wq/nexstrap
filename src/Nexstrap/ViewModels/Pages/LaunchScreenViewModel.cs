@@ -24,10 +24,10 @@ public sealed partial class LaunchScreenViewModel(
 
     public IReadOnlyList<Choice<LaunchAnimation>> AnimationChoices { get; } =
     [
-        new(LaunchAnimation.Spinner, "Spinner"),
-        new(LaunchAnimation.Bar, "Sliding bar"),
-        new(LaunchAnimation.Pulse, "Pulsing logo"),
-        new(LaunchAnimation.None, "None")
+        new(LaunchAnimation.Spinner, () => Loc.Get("LaunchScreen.Spinner")),
+        new(LaunchAnimation.Bar, () => Loc.Get("LaunchScreen.SlidingBar")),
+        new(LaunchAnimation.Pulse, () => Loc.Get("LaunchScreen.PulsingLogo")),
+        new(LaunchAnimation.None, () => Loc.Get("LaunchScreen.None"))
     ];
 
     public bool Enabled
@@ -69,7 +69,7 @@ public sealed partial class LaunchScreenViewModel(
     {
         if (!ColorUtil.TryParseHex(value, out var color))
         {
-            ColorError = "Use #RGB or #RRGGBB, e.g. #7C6CFF.";
+            ColorError = Loc.Get("Appearance.UseRGBOrRRGGBBEG");
             return;
         }
         ColorError = null;
@@ -88,8 +88,8 @@ public sealed partial class LaunchScreenViewModel(
     private void ChooseImage()
     {
         var filter = "Images|" + string.Join(';', AppearanceService.SupportedImageExtensions.Select(e => "*" + e));
-        if (files.OpenFile("Choose a loading screen image", filter) is not { } path) return;
-        if (screen.SetImage(path) is { } error) dialogs.Show("Couldn't use that image", error, DialogKind.Warning);
+        if (files.OpenFile(Loc.Get("LaunchScreen.ChooseALoadingScreenImage"), filter) is not { } path) return;
+        if (screen.SetImage(path) is { } error) dialogs.Show(Loc.Get("Appearance.CouldntUseThatImage"), error, DialogKind.Warning);
         OnPropertyChanged(nameof(HasImage));
     }
 

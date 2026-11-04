@@ -12,18 +12,18 @@
         <Border Style="{StaticResource Card}" Padding="18,14">
             <StackPanel>
                 <DockPanel>
-                    <Button DockPanel.Dock="Right" Style="{StaticResource Button.Link}" Content="Roblox's announcement" FontSize="12"
+                    <Button DockPanel.Dock="Right" Style="{StaticResource Button.Link}" Content="{DynamicResource L.FastFlags.RobloxsAnnouncement}" FontSize="12"
                             VerticalAlignment="Top" Command="{Binding OpenAllowlistCommand}" />
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="&#xE946;" Style="{StaticResource Text.Icon}" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,10,0" />
-                        <TextBlock Text="Roblox's allowlist" Style="{StaticResource Text.Base}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                        <TextBlock Text="{DynamicResource L.FastFlags.RobloxsAllowlist}" Style="{StaticResource Text.Base}" FontWeight="SemiBold" VerticalAlignment="Center" />
                     </StackPanel>
                 </DockPanel>
                 <TextBlock Text="{Binding AllowlistText}" Style="{StaticResource Text.Secondary}" Margin="0,6,0,0" />
 
                 <Border Style="{StaticResource Divider}" Margin="0,12" />
                 <DockPanel>
-                    <Button DockPanel.Dock="Right" Content="Go to Home" Padding="10,5" Margin="12,0,0,0" VerticalAlignment="Center"
+                    <Button DockPanel.Dock="Right" Content="{DynamicResource L.FastFlags.GoToHome}" Padding="10,5" Margin="12,0,0,0" VerticalAlignment="Center"
                             Command="{Binding GoHomeCommand}"
                             Visibility="{Binding TargetIsNexstrap, Converter={StaticResource InverseBoolToVisibility}}" />
                     <TextBlock>
@@ -47,7 +47,7 @@
         </Border>
 
         <!-- ===== Add ===== -->
-        <TextBlock Text="Add a flag" Style="{StaticResource SectionHeader}" />
+        <TextBlock Text="{DynamicResource L.FastFlags.AddAFlag}" Style="{StaticResource SectionHeader}" />
         <Border Style="{StaticResource Card}" Padding="18,14">
             <StackPanel>
                 <Grid>
@@ -58,19 +58,19 @@
                         <ColumnDefinition Width="10" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBox FontFamily="{StaticResource Font.Mono}" ui:Ui.Placeholder="FlagName, e.g. FIntDebugForceMSAASamples"
+                    <TextBox FontFamily="{StaticResource Font.Mono}" ui:Ui.Placeholder="{DynamicResource L.FastFlags.FlagNameEGFIntDebugForceMSAASamples}"
                              AutomationProperties.Name="New flag name" Text="{Binding NewName, UpdateSourceTrigger=PropertyChanged}">
                         <TextBox.InputBindings>
                             <KeyBinding Key="Enter" Command="{Binding AddCommand}" />
                         </TextBox.InputBindings>
                     </TextBox>
-                    <TextBox Grid.Column="2" FontFamily="{StaticResource Font.Mono}" ui:Ui.Placeholder="Value"
+                    <TextBox Grid.Column="2" FontFamily="{StaticResource Font.Mono}" ui:Ui.Placeholder="{DynamicResource L.FastFlags.Value}"
                              AutomationProperties.Name="New flag value" Text="{Binding NewValue, UpdateSourceTrigger=PropertyChanged}">
                         <TextBox.InputBindings>
                             <KeyBinding Key="Enter" Command="{Binding AddCommand}" />
                         </TextBox.InputBindings>
                     </TextBox>
-                    <Button Grid.Column="4" Style="{StaticResource Button.Primary}" Content="Add" ui:Ui.Icon="&#xE710;" Command="{Binding AddCommand}" />
+                    <Button Grid.Column="4" Style="{StaticResource Button.Primary}" Content="{DynamicResource L.FastFlags.Add}" ui:Ui.Icon="&#xE710;" Command="{Binding AddCommand}" />
                 </Grid>
                 <TextBlock Text="{Binding AddError}" Style="{StaticResource Text.Caption}" Foreground="{DynamicResource Brush.Danger}" Margin="2,8,0,0"
                            Visibility="{Binding AddError, Converter={StaticResource NullToVisibility}}" />
@@ -82,14 +82,14 @@
         <!-- ===== Your flags ===== -->
         <DockPanel Margin="2,18,0,10">
             <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                <Button Style="{StaticResource Button.Ghost}" Content="Import file…" ui:Ui.Icon="&#xE8B5;" Padding="10,4" Command="{Binding ImportFileCommand}" />
-                <Button Style="{StaticResource Button.Ghost}" Content="Import from Roblox build" ui:Ui.Icon="&#xE896;" Padding="10,4"
+                <Button Style="{StaticResource Button.Ghost}" Content="{DynamicResource L.FastFlags.ImportFile}" ui:Ui.Icon="&#xE8B5;" Padding="10,4" Command="{Binding ImportFileCommand}" />
+                <Button Style="{StaticResource Button.Ghost}" Content="{DynamicResource L.FastFlags.ImportFromRobloxBuild}" ui:Ui.Icon="&#xE896;" Padding="10,4"
                         Command="{Binding ImportFromInstallationCommand}" IsEnabled="{Binding CanImportFromTarget}"
-                        ToolTip="Reads the flags file of the build Play uses. Nothing there is changed." />
-                <Button Style="{StaticResource Button.Ghost}" Content="Export…" ui:Ui.Icon="&#xEDE1;" Padding="10,4" Command="{Binding ExportCommand}" />
+                        ToolTip="{DynamicResource L.FastFlags.ImportFromBuildHint}" />
+                <Button Style="{StaticResource Button.Ghost}" Content="{DynamicResource L.FastFlags.Export}" ui:Ui.Icon="&#xEDE1;" Padding="10,4" Command="{Binding ExportCommand}" />
             </StackPanel>
             <StackPanel>
-                <TextBlock Text="Your flags" Style="{StaticResource Text.Section}" />
+                <TextBlock Text="{DynamicResource L.FastFlags.YourFlags}" Style="{StaticResource Text.Section}" />
                 <TextBlock Text="{Binding CountText}" Style="{StaticResource Text.Caption}" Margin="0,2,0,0" />
             </StackPanel>
         </DockPanel>
@@ -105,13 +105,13 @@
                         <ColumnDefinition Width="10" />
                         <ColumnDefinition Width="200" />
                     </Grid.ColumnDefinitions>
-                    <TextBox ui:Ui.Icon="&#xE721;" ui:Ui.Placeholder="Search your flags" AutomationProperties.Name="Search flags"
+                    <TextBox ui:Ui.Icon="&#xE721;" ui:Ui.Placeholder="{DynamicResource L.FastFlags.SearchYourFlags}" AutomationProperties.Name="Search flags"
                              Text="{Binding Search, UpdateSourceTrigger=PropertyChanged}" />
                     <ComboBox Grid.Column="2" ItemsSource="{Binding FilterChoices}" DisplayMemberPath="Label" SelectedValuePath="Value"
                               SelectedValue="{Binding Filter}" AutomationProperties.Name="Filter flags" />
                 </Grid>
 
-                <TextBlock Text="No flags yet. Add one above, pick from the list below, or import a file."
+                <TextBlock Text="{DynamicResource L.FastFlags.NoFlagsYetAddOneAbove}"
                            Style="{StaticResource Text.Caption}" Margin="0,14,0,2"
                            Visibility="{Binding HasFlags, Converter={StaticResource InverseBoolToVisibility}}" />
 
@@ -127,7 +127,7 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding Enabled}" Margin="0,0,14,0"
-                                              AutomationProperties.Name="{Binding Name, StringFormat='Enable {0}'}" ToolTip="Enabled" />
+                                              AutomationProperties.Name="{Binding Name, StringFormat='Enable {0}'}" ToolTip="{DynamicResource L.FastFlags.Enabled}" />
 
                                     <StackPanel Grid.Column="1" Margin="0,0,12,0">
                                         <StackPanel Orientation="Horizontal">
@@ -174,7 +174,7 @@
                                     </TextBox>
 
                                     <Button Grid.Column="3" Style="{StaticResource Button.Icon}" Content="&#xE74D;" FontFamily="{StaticResource Font.Icons}"
-                                            Margin="8,0,0,0" ToolTip="Delete" AutomationProperties.Name="{Binding Name, StringFormat='Delete {0}'}"
+                                            Margin="8,0,0,0" ToolTip="{DynamicResource L.Appearance.Delete}" AutomationProperties.Name="{Binding Name, StringFormat='Delete {0}'}"
                                             Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                             CommandParameter="{Binding}" />
                                 </Grid>
@@ -186,16 +186,16 @@
         </Border>
 
         <!-- ===== Known flags ===== -->
-        <TextBlock Text="Known flags" Style="{StaticResource SectionHeader}" />
+        <TextBlock Text="{DynamicResource L.FastFlags.KnownFlags}" Style="{StaticResource SectionHeader}" />
         <TextBlock Style="{StaticResource Text.Caption}" Margin="2,-4,0,10"
-                   Text="Roblox doesn't document these flags; descriptions reflect how the community uses them. Values are suggestions." />
+                   Text="{DynamicResource L.FastFlags.RobloxDoesntDocumentTheseFlagsDescriptions}" />
         <Border Style="{StaticResource Card}" Padding="18,6">
             <ItemsControl ItemsSource="{Binding KnownFlags}" Focusable="False">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Border BorderBrush="{DynamicResource Brush.Divider}" BorderThickness="0,0,0,1" Padding="0,10">
                             <DockPanel>
-                                <Button DockPanel.Dock="Right" Content="Add" ui:Ui.Icon="&#xE710;" Padding="10,5" VerticalAlignment="Center"
+                                <Button DockPanel.Dock="Right" Content="{DynamicResource L.FastFlags.Add}" ui:Ui.Icon="&#xE710;" Padding="10,5" VerticalAlignment="Center"
                                         AutomationProperties.Name="{Binding Flag.Name, StringFormat='Add {0}'}"
                                         IsEnabled="{Binding CanAdd}"
                                         Command="{Binding DataContext.AddKnownCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
@@ -203,11 +203,11 @@
                                 <StackPanel Margin="0,0,12,0">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="{Binding Flag.Name}" FontFamily="{StaticResource Font.Mono}" FontSize="12.5" Foreground="{DynamicResource Brush.Text}" />
-                                        <TextBlock Text="{Binding Flag.Category, StringFormat=' · {0}'}" Style="{StaticResource Text.Caption}" VerticalAlignment="Center" />
-                                        <TextBlock Text=" · added" Style="{StaticResource Text.Caption}" Foreground="{DynamicResource Brush.Accent}" VerticalAlignment="Center"
+                                        <TextBlock Text="{Binding Flag.LocalizedCategory, StringFormat=' · {0}'}" Style="{StaticResource Text.Caption}" VerticalAlignment="Center" />
+                                        <TextBlock Text="{DynamicResource L.FastFlags.Added}" Style="{StaticResource Text.Caption}" Foreground="{DynamicResource Brush.Accent}" VerticalAlignment="Center"
                                                    Visibility="{Binding IsAdded, Converter={StaticResource BoolToVisibility}}" />
                                     </StackPanel>
-                                    <TextBlock Text="{Binding Flag.Description}" Style="{StaticResource Text.Caption}" Margin="0,3,0,0" />
+                                    <TextBlock Text="{Binding Flag.LocalizedDescription}" Style="{StaticResource Text.Caption}" Margin="0,3,0,0" />
                                     <TextBlock Text="{Binding Flag.Note}" Style="{StaticResource Text.Caption}" Foreground="{DynamicResource Brush.Warning}" Margin="0,2,0,0"
                                                Visibility="{Binding Flag.Note, Converter={StaticResource NullToVisibility}}" />
                                 </StackPanel>
@@ -219,18 +219,18 @@
         </Border>
 
         <!-- ===== Backups & reset ===== -->
-        <TextBlock Text="Backups" Style="{StaticResource SectionHeader}" />
+        <TextBlock Text="{DynamicResource L.FastFlags.Backups}" Style="{StaticResource SectionHeader}" />
         <Border Style="{StaticResource Card}" Padding="18,12">
             <StackPanel>
                 <TextBlock Style="{StaticResource Text.Caption}"
-                           Text="A backup is saved automatically before imports, resets, restores and your first edit each session. The newest 20 are kept." />
-                <TextBlock Text="No backups yet." Style="{StaticResource Text.Caption}" Margin="0,10,0,0"
+                           Text="{DynamicResource L.FastFlags.ABackupIsSavedAutomaticallyBefore}" />
+                <TextBlock Text="{DynamicResource L.FastFlags.NoBackupsYet}" Style="{StaticResource Text.Caption}" Margin="0,10,0,0"
                            Visibility="{Binding HasBackups, Converter={StaticResource InverseBoolToVisibility}}" />
                 <ItemsControl ItemsSource="{Binding Backups}" Margin="0,6,0,0" Focusable="False">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <DockPanel Margin="0,6">
-                                <Button DockPanel.Dock="Right" Content="Restore" Padding="10,4"
+                                <Button DockPanel.Dock="Right" Content="{DynamicResource L.FastFlags.Restore}" Padding="10,4"
                                         Command="{Binding DataContext.RestoreCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                         CommandParameter="{Binding}" />
                                 <TextBlock Style="{StaticResource Text.Body}" VerticalAlignment="Center">
@@ -238,7 +238,7 @@
                                     <Run Text="·" Foreground="{DynamicResource Brush.TextMuted}" />
                                     <Run Text="{Binding Reason, Mode=OneWay}" Foreground="{DynamicResource Brush.TextSecondary}" />
                                     <Run Text="·" Foreground="{DynamicResource Brush.TextMuted}" />
-                                    <Run Text="{Binding FlagCount, Mode=OneWay, StringFormat='{}{0} flags'}" Foreground="{DynamicResource Brush.TextSecondary}" />
+                                    <Run Text="{Binding FlagCount, Mode=OneWay, Converter={StaticResource LocFormat}, ConverterParameter=Format.FlagCount}" Foreground="{DynamicResource Brush.TextSecondary}" />
                                 </TextBlock>
                             </DockPanel>
                         </DataTemplate>
@@ -247,9 +247,9 @@
             </StackPanel>
         </Border>
 
-        <ui:SettingCard Icon="&#xE777;" Header="Remove all flags" Description="Roblox goes back to its defaults on next launch. A backup is made first."
+        <ui:SettingCard Icon="&#xE777;" Header="{DynamicResource L.FastFlags.RemoveAllFlags}" Description="{DynamicResource L.FastFlags.RobloxGoesBackToItsDefaults}"
                         Margin="0,12,0,0">
-            <Button Style="{StaticResource Button.Danger}" Content="Remove all" Padding="12,6" Command="{Binding ResetCommand}" />
+            <Button Style="{StaticResource Button.Danger}" Content="{DynamicResource L.FastFlags.RemoveAll}" Padding="12,6" Command="{Binding ResetCommand}" />
         </ui:SettingCard>
     </StackPanel>
 </UserControl>

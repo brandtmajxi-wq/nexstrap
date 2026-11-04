@@ -12,16 +12,16 @@
             <Border Style="{StaticResource Card}" Padding="10" Margin="0,0,0,8">
                 <DockPanel>
                     <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
-                        <Button Style="{StaticResource Button.Primary}" Content="Play" ui:Ui.Icon="&#xE768;" Padding="12,5"
+                        <Button Style="{StaticResource Button.Primary}" Content="{DynamicResource L.Games.Play}" ui:Ui.Icon="&#xE768;" Padding="12,5"
                                 AutomationProperties.Name="{Binding Name, StringFormat='Play {0}'}"
                                 Command="{Binding DataContext.PlayCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" />
-                        <Button Style="{StaticResource Button.Icon}" Content="&#xE968;" FontFamily="{StaticResource Font.Icons}" Margin="6,0,0,0" ToolTip="View servers"
+                        <Button Style="{StaticResource Button.Icon}" Content="&#xE968;" FontFamily="{StaticResource Font.Icons}" Margin="6,0,0,0" ToolTip="{DynamicResource L.Games.ViewServers}"
                                 AutomationProperties.Name="{Binding Name, StringFormat='Servers for {0}'}"
                                 Command="{Binding DataContext.ViewServersCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" />
-                        <Button Style="{StaticResource Button.Icon}" Content="&#xE71B;" FontFamily="{StaticResource Font.Icons}" ToolTip="Create desktop shortcut"
+                        <Button Style="{StaticResource Button.Icon}" Content="&#xE71B;" FontFamily="{StaticResource Font.Icons}" ToolTip="{DynamicResource L.Games.CreateDesktopShortcut}"
                                 AutomationProperties.Name="{Binding Name, StringFormat='Shortcut for {0}'}"
                                 Command="{Binding DataContext.CreateShortcutCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" />
-                        <Button FontFamily="{StaticResource Font.Icons}" ToolTip="Favorite"
+                        <Button FontFamily="{StaticResource Font.Icons}" ToolTip="{DynamicResource L.Games.Favorite}"
                                 AutomationProperties.Name="{Binding Name, StringFormat='Favorite {0}'}"
                                 Command="{Binding DataContext.ToggleFavoriteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}">
                             <Button.Style>
@@ -42,7 +42,7 @@
                     </Border>
                     <StackPanel VerticalAlignment="Center" Margin="0,0,12,0">
                         <TextBlock Text="{Binding Name}" Style="{StaticResource Text.Base}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-                        <TextBlock Text="{Binding Creator, StringFormat='by {0}'}" Style="{StaticResource Text.Caption}" Margin="0,2,0,0"
+                        <TextBlock Text="{Binding Creator, Converter={StaticResource LocFormat}, ConverterParameter=Format.By}" Style="{StaticResource Text.Caption}" Margin="0,2,0,0"
                                    Visibility="{Binding Creator, Converter={StaticResource NullToVisibility}}" />
                     </StackPanel>
                 </DockPanel>
@@ -54,9 +54,9 @@
         <Border Style="{StaticResource Card}" Padding="18,14">
             <StackPanel>
                 <DockPanel>
-                    <Button DockPanel.Dock="Right" Style="{StaticResource Button.Primary}" Content="Add favorite" ui:Ui.Icon="&#xE734;"
+                    <Button DockPanel.Dock="Right" Style="{StaticResource Button.Primary}" Content="{DynamicResource L.Games.AddFavorite}" ui:Ui.Icon="&#xE734;"
                             Margin="10,0,0,0" Command="{Binding AddFavoriteCommand}" />
-                    <TextBox ui:Ui.Icon="&#xE71B;" ui:Ui.Placeholder="Place ID or roblox.com/games/… link" AutomationProperties.Name="Favorite place"
+                    <TextBox ui:Ui.Icon="&#xE71B;" ui:Ui.Placeholder="{DynamicResource L.Games.PlaceIDOrRobloxComGames}" AutomationProperties.Name="Favorite place"
                              Text="{Binding Input, UpdateSourceTrigger=PropertyChanged}">
                         <TextBox.InputBindings>
                             <KeyBinding Key="Enter" Command="{Binding AddFavoriteCommand}" />
@@ -68,13 +68,13 @@
             </StackPanel>
         </Border>
 
-        <TextBlock Text="Favorites" Style="{StaticResource SectionHeader}" />
-        <TextBlock Text="No favorites yet. Add one above, or press the star on a recent game." Style="{StaticResource Text.Caption}" Margin="2,0,0,6"
+        <TextBlock Text="{DynamicResource L.Games.Favorites}" Style="{StaticResource SectionHeader}" />
+        <TextBlock Text="{DynamicResource L.Games.NoFavoritesYetAddOneAbove}" Style="{StaticResource Text.Caption}" Margin="2,0,0,6"
                    Visibility="{Binding HasFavorites, Converter={StaticResource InverseBoolToVisibility}}" />
         <ItemsControl ItemsSource="{Binding Favorites}" ItemTemplate="{StaticResource GameTile}" Focusable="False" />
 
-        <TextBlock Text="Recently played" Style="{StaticResource SectionHeader}" />
-        <TextBlock Text="Games you start from Nexstrap appear here." Style="{StaticResource Text.Caption}" Margin="2,0,0,6"
+        <TextBlock Text="{DynamicResource L.Games.RecentlyPlayed}" Style="{StaticResource SectionHeader}" />
+        <TextBlock Text="{DynamicResource L.Games.GamesYouStartFromNexstrapAppear}" Style="{StaticResource Text.Caption}" Margin="2,0,0,6"
                    Visibility="{Binding HasRecent, Converter={StaticResource InverseBoolToVisibility}}" />
         <ItemsControl ItemsSource="{Binding Recent}" ItemTemplate="{StaticResource GameTile}" Focusable="False" />
     </StackPanel>

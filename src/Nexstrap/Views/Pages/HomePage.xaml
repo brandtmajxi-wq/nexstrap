@@ -52,19 +52,19 @@
                             <TextBlock Margin="7,0,0,0" FontSize="11.5" FontWeight="SemiBold" FontFamily="{DynamicResource Font.Primary}">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
-                                        <Setter Property="Text" Value="Ready to play" />
+                                        <Setter Property="Text" Value="{DynamicResource L.Home.ReadyToPlay}" />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding UpdateAvailable}" Value="True">
-                                                <Setter Property="Text" Value="Roblox update available" />
+                                                <Setter Property="Text" Value="{DynamicResource L.Home.RobloxUpdateAvailable}" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding IsInstalled}" Value="False">
-                                                <Setter Property="Text" Value="Roblox not installed" />
+                                                <Setter Property="Text" Value="{DynamicResource L.Home.RobloxNotInstalled}" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding IsScanning}" Value="True">
-                                                <Setter Property="Text" Value="Checking installation…" />
+                                                <Setter Property="Text" Value="{DynamicResource L.Home.CheckingInstallation}" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding IsInstalling}" Value="True">
-                                                <Setter Property="Text" Value="Installing Roblox…" />
+                                                <Setter Property="Text" Value="{DynamicResource L.Home.InstallingRoblox}" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -72,14 +72,14 @@
                             </TextBlock>
                         </StackPanel>
                     </Border>
-                    <TextBlock Text="Jump back into Roblox" Style="{StaticResource Text.Display}" Margin="0,14,0,0" />
+                    <TextBlock Text="{DynamicResource L.Home.JumpBackIntoRoblox}" Style="{StaticResource Text.Display}" Margin="0,14,0,0" />
                     <TextBlock Style="{StaticResource Text.Secondary}" Margin="0,6,0,0" MaxWidth="460" HorizontalAlignment="Left"
-                               Text="Nexstrap starts the official Roblox client. Signing in, servers and anti-cheat stay entirely with Roblox." />
+                               Text="{DynamicResource L.Home.NexstrapStartsTheOfficialRobloxClient}" />
 
                     <!-- Actions (hidden while installing) -->
                     <StackPanel Orientation="Horizontal" Margin="0,22,0,0"
                                 Visibility="{Binding IsInstalling, Converter={StaticResource InverseBoolToVisibility}}">
-                        <Button Style="{StaticResource Button.Play}" ui:Ui.Icon="&#xE768;" Content="Play Roblox" MinWidth="180"
+                        <Button Style="{StaticResource Button.Play}" ui:Ui.Icon="&#xE768;" Content="{DynamicResource L.Home.PlayRoblox}" MinWidth="180"
                                 Command="{Binding PlayCommand}"
                                 Visibility="{Binding IsInstalled, Converter={StaticResource BoolToVisibility}}" />
                         <Button ui:Ui.Icon="&#xE896;" Content="{Binding InstallButtonText}" Margin="10,0,0,0" Padding="18,12"
@@ -93,7 +93,7 @@
                     <StackPanel Margin="0,22,0,0" MaxWidth="520" HorizontalAlignment="Left" Width="520"
                                 Visibility="{Binding IsInstalling, Converter={StaticResource BoolToVisibility}}">
                         <DockPanel>
-                            <Button DockPanel.Dock="Right" Style="{StaticResource Button.Ghost}" Content="Cancel" Padding="10,4"
+                            <Button DockPanel.Dock="Right" Style="{StaticResource Button.Ghost}" Content="{DynamicResource L.Common.Cancel}" Padding="10,4"
                                     Command="{Binding CancelInstallCommand}" />
                             <TextBlock Text="{Binding InstallStage}" Style="{StaticResource Text.Base}" FontWeight="Medium" VerticalAlignment="Center" />
                         </DockPanel>
@@ -108,14 +108,14 @@
         <UniformGrid Columns="3" Margin="-5,12,-5,0">
             <Border Style="{StaticResource Card}" Margin="5" Padding="18,16">
                 <DockPanel>
-                    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,12,0,0">
-                        <Button Style="{StaticResource Button.Secondary}" Padding="10,6" ui:Ui.Icon="&#xE72C;" Content="Refresh"
+                    <WrapPanel DockPanel.Dock="Bottom" Margin="0,12,0,0">
+                        <Button Style="{StaticResource Button.Secondary}" Padding="10,6" Margin="0,0,6,4" ui:Ui.Icon="&#xE72C;" Content="{DynamicResource L.Home.Refresh}"
                                 Command="{Binding RefreshCommand}" />
-                        <Button Style="{StaticResource Button.Ghost}" Padding="10,6" Margin="6,0,0,0" ui:Ui.Icon="&#xE838;" Content="Open folder"
+                        <Button Style="{StaticResource Button.Ghost}" Padding="10,6" Margin="0,0,0,4" ui:Ui.Icon="&#xE838;" Content="{DynamicResource L.Home.OpenFolder}"
                                 Command="{Binding OpenInstallFolderCommand}" />
-                    </StackPanel>
+                    </WrapPanel>
                     <StackPanel>
-                        <TextBlock Text="INSTALLATION" Style="{StaticResource Text.Overline}" />
+                        <TextBlock Text="{DynamicResource L.Home.INSTALLATION}" Style="{StaticResource Text.Overline}" />
                         <TextBlock Text="{Binding StatusTitle}" Style="{StaticResource Text.Section}" Margin="0,8,0,0" />
                         <TextBlock Text="{Binding StatusDetail}" Style="{StaticResource Text.Caption}" Margin="0,4,0,0"
                                    TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" ToolTip="{Binding StatusDetail}" />
@@ -125,7 +125,7 @@
 
             <Border Style="{StaticResource Card}" Margin="5" Padding="18,16">
                 <StackPanel>
-                    <TextBlock Text="ROBLOX VERSION" Style="{StaticResource Text.Overline}" />
+                    <TextBlock Text="{DynamicResource L.Home.ROBLOXVERSION}" Style="{StaticResource Text.Overline}" />
                     <TextBlock Text="{Binding VersionText}" Style="{StaticResource Text.Section}" Margin="0,8,0,0" />
                     <TextBlock Text="{Binding Installation.VersionHash, FallbackValue=''}" Style="{StaticResource Text.Caption}"
                                FontFamily="{StaticResource Font.Mono}" Margin="0,4,0,0" />
@@ -135,22 +135,22 @@
 
             <Border Style="{StaticResource Card}" Margin="5" Padding="18,16">
                 <StackPanel>
-                    <TextBlock Text="WEBSITE LINKS" Style="{StaticResource Text.Overline}" />
+                    <TextBlock Text="{DynamicResource L.Home.WEBSITELINKS}" Style="{StaticResource Text.Overline}" />
                     <TextBlock Text="{Binding ProtocolOwner}" Style="{StaticResource Text.Section}" Margin="0,8,0,0" />
                     <TextBlock Style="{StaticResource Text.Caption}" Margin="0,4,0,0"
-                               Text="The app Windows opens when you press Play on roblox.com." />
+                               Text="{DynamicResource L.Home.TheAppWindowsOpensWhenYou}" />
                 </StackPanel>
             </Border>
         </UniformGrid>
 
         <!-- ===== Join an experience ===== -->
-        <TextBlock Text="Join an experience" Style="{StaticResource SectionHeader}" Margin="2,12,0,10" />
+        <TextBlock Text="{DynamicResource L.Home.JoinAnExperience}" Style="{StaticResource SectionHeader}" Margin="2,12,0,10" />
         <Border Style="{StaticResource Card}" Padding="18,16">
             <StackPanel>
                 <DockPanel>
-                    <Button DockPanel.Dock="Right" Style="{StaticResource Button.Primary}" Content="Join" ui:Ui.Icon="&#xE768;"
+                    <Button DockPanel.Dock="Right" Style="{StaticResource Button.Primary}" Content="{DynamicResource L.Home.Join}" ui:Ui.Icon="&#xE768;"
                             Margin="10,0,0,0" MinWidth="96" Command="{Binding JoinCommand}" />
-                    <TextBox ui:Ui.Icon="&#xE71B;" ui:Ui.Placeholder="Place ID or roblox.com/games/… link"
+                    <TextBox ui:Ui.Icon="&#xE71B;" ui:Ui.Placeholder="{DynamicResource L.Games.PlaceIDOrRobloxComGames}"
                              AutomationProperties.Name="Experience"
                              Text="{Binding ExperienceInput, UpdateSourceTrigger=PropertyChanged}">
                         <TextBox.InputBindings>
@@ -169,11 +169,11 @@
                         Visibility="{Binding Experience, Converter={StaticResource NullToVisibility}}">
                     <DockPanel>
                         <TextBlock DockPanel.Dock="Right" Style="{StaticResource Text.Caption}" VerticalAlignment="Center"
-                                   Text="{Binding Experience.Playing, StringFormat='{}{0:N0} playing'}" />
+                                   Text="{Binding Experience.Playing, Converter={StaticResource LocFormat}, ConverterParameter=Format.Playing}" />
                         <StackPanel>
                             <TextBlock Text="{Binding Experience.Name}" Style="{StaticResource Text.Base}" FontWeight="SemiBold" />
                             <TextBlock Style="{StaticResource Text.Caption}" Margin="0,2,0,0"
-                                       Text="{Binding Experience.CreatorName, StringFormat='by {0}'}" />
+                                       Text="{Binding Experience.CreatorName, Converter={StaticResource LocFormat}, ConverterParameter=Format.By}" />
                         </StackPanel>
                     </DockPanel>
                 </Border>
@@ -181,9 +181,9 @@
                 <!-- Recent -->
                 <StackPanel Margin="0,14,0,0" Visibility="{Binding HasRecent, Converter={StaticResource BoolToVisibility}}">
                     <DockPanel>
-                        <Button DockPanel.Dock="Right" Style="{StaticResource Button.Link}" Content="Clear" FontSize="12"
+                        <Button DockPanel.Dock="Right" Style="{StaticResource Button.Link}" Content="{DynamicResource L.Home.Clear}" FontSize="12"
                                 Command="{Binding ClearRecentCommand}" />
-                        <TextBlock Text="RECENT" Style="{StaticResource Text.Overline}" />
+                        <TextBlock Text="{DynamicResource L.Home.RECENT}" Style="{StaticResource Text.Overline}" />
                     </DockPanel>
                     <ItemsControl ItemsSource="{Binding RecentExperiences}" Margin="0,8,0,0" Focusable="False">
                         <ItemsControl.ItemsPanel>
@@ -194,7 +194,7 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Button Content="{Binding Name}" ui:Ui.Icon="&#xE768;" Padding="10,5" Margin="0,0,8,8"
-                                        ToolTip="{Binding PlaceId, StringFormat='Place {0}'}"
+                                        ToolTip="{Binding PlaceId, Converter={StaticResource LocFormat}, ConverterParameter=Launch.Place}"
                                         Command="{Binding DataContext.JoinRecentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                         CommandParameter="{Binding}" />
                             </DataTemplate>
@@ -205,20 +205,20 @@
         </Border>
 
         <!-- ===== Installations ===== -->
-        <TextBlock Text="Installations" Style="{StaticResource SectionHeader}" />
+        <TextBlock Text="{DynamicResource L.Home.Installations}" Style="{StaticResource SectionHeader}" />
         <Border Style="{StaticResource Card}" Padding="18,14">
             <StackPanel>
                 <DockPanel>
                     <CheckBox DockPanel.Dock="Right" Style="{StaticResource Toggle}" IsChecked="{Binding IsAutomaticSelection}"
-                              AutomationProperties.Name="Choose automatically" />
+                              AutomationProperties.Name="{DynamicResource L.Home.ChooseAutomatically}" />
                     <StackPanel>
-                        <TextBlock Text="Choose automatically" Style="{StaticResource Text.Base}" FontWeight="Medium" />
+                        <TextBlock Text="{DynamicResource L.Home.ChooseAutomatically}" Style="{StaticResource Text.Base}" FontWeight="Medium" />
                         <TextBlock Style="{StaticResource Text.Caption}" Margin="0,2,0,0"
-                                   Text="Play uses the build that matches Roblox's live version, preferring Nexstrap's own." />
+                                   Text="{DynamicResource L.Home.PlayUsesTheBuildThatMatches}" />
                     </StackPanel>
                 </DockPanel>
 
-                <TextBlock Text="No Roblox builds found on this PC." Style="{StaticResource Text.Caption}" Margin="0,14,0,0"
+                <TextBlock Text="{DynamicResource L.Home.NoRobloxBuildsFoundOnThis}" Style="{StaticResource Text.Caption}" Margin="0,14,0,0"
                            Visibility="{Binding IsInstalled, Converter={StaticResource InverseBoolToVisibility}}" />
 
                 <ItemsControl ItemsSource="{Binding Installations}" Margin="0,10,0,0" Focusable="False">
@@ -229,19 +229,19 @@
                                     <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
                                         <Border Style="{StaticResource Pill}" Margin="0,0,10,0" VerticalAlignment="Center"
                                                 Visibility="{Binding IsUsedForPlay, Converter={StaticResource BoolToVisibility}}">
-                                            <TextBlock Text="Used for Play" FontSize="11" FontWeight="SemiBold" Style="{StaticResource Text.Base}"
+                                            <TextBlock Text="{DynamicResource L.Home.UsedForPlay}" FontSize="11" FontWeight="SemiBold" Style="{StaticResource Text.Base}"
                                                        Foreground="{DynamicResource Brush.Accent}" />
                                         </Border>
-                                        <Button Content="Use for Play" Padding="10,5"
+                                        <Button Content="{DynamicResource L.Home.UseForPlay}" Padding="10,5"
                                                 Visibility="{Binding IsUsedForPlay, Converter={StaticResource InverseBoolToVisibility}}"
                                                 Command="{Binding DataContext.UseForPlayCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 CommandParameter="{Binding}" />
                                         <Button Style="{StaticResource Button.Icon}" Content="&#xE838;" FontFamily="{StaticResource Font.Icons}" Margin="6,0,0,0"
-                                                ToolTip="Open folder" AutomationProperties.Name="Open folder"
+                                                ToolTip="{DynamicResource L.Home.OpenFolder}" AutomationProperties.Name="{DynamicResource L.Home.OpenFolder}"
                                                 Command="{Binding DataContext.OpenFolderOfCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 CommandParameter="{Binding}" />
                                         <Button Style="{StaticResource Button.Icon}" Content="&#xE74D;" FontFamily="{StaticResource Font.Icons}"
-                                                ToolTip="Remove (Nexstrap builds only)" AutomationProperties.Name="Remove"
+                                                ToolTip="{DynamicResource L.Home.RemoveNexstrapBuildsOnly}" AutomationProperties.Name="{DynamicResource L.Appearance.Remove}"
                                                 Visibility="{Binding CanRemove, Converter={StaticResource BoolToVisibility}}"
                                                 Command="{Binding DataContext.RemoveInstallationCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 CommandParameter="{Binding}" />
@@ -254,7 +254,7 @@
                                         </TextBlock>
                                         <TextBlock Text="{Binding Installation.Directory}" Style="{StaticResource Text.Caption}" Margin="0,3,0,0"
                                                    TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
-                                        <TextBlock Text="Outdated: Roblox has released a newer build"
+                                        <TextBlock Text="{DynamicResource L.Home.OutdatedRobloxHasReleasedANewer}"
                                                    Foreground="{DynamicResource Brush.Warning}" Margin="0,3,0,0">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock" BasedOn="{StaticResource Text.Caption}">
@@ -279,15 +279,15 @@
                 </ItemsControl>
 
                 <TextBlock Style="{StaticResource Text.Caption}"
-                           Text="Builds installed by other launchers are listed so you can use them, but Nexstrap never modifies or deletes them." />
+                           Text="{DynamicResource L.Home.BuildsInstalledByOtherLaunchersAre}" />
 
                 <Border Margin="0,12,0,0" Padding="14,10" CornerRadius="8" Background="{DynamicResource Brush.AccentSoft}"
                         Visibility="{Binding CanAddNexstrapCopy, Converter={StaticResource BoolToVisibility}}">
                     <DockPanel>
-                        <Button DockPanel.Dock="Right" Style="{StaticResource Button.Primary}" Content="Install a Nexstrap copy" ui:Ui.Icon="&#xE896;"
+                        <Button DockPanel.Dock="Right" Style="{StaticResource Button.Primary}" Content="{DynamicResource L.Home.InstallANexstrapCopy}" ui:Ui.Icon="&#xE896;"
                                 Padding="12,6" Margin="12,0,0,0" VerticalAlignment="Center" Command="{Binding InstallCommand}" />
                         <TextBlock Style="{StaticResource Text.Body}" VerticalAlignment="Center"
-                                   Text="FastFlags only apply to Roblox builds Nexstrap installed itself. This downloads the official current build (about 225 MB) from Roblox." />
+                                   Text="{DynamicResource L.Home.FastFlagsOnlyApplyToRobloxBuilds}" />
                     </DockPanel>
                 </Border>
             </StackPanel>
@@ -302,31 +302,31 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel>
-                <TextBlock Text="Quick settings" Style="{StaticResource SectionHeader}" />
-                <ui:SettingCard Icon="&#xE793;" Header="Light theme" Description="Switch between the dark and light look.">
+                <TextBlock Text="{DynamicResource L.Home.QuickSettings}" Style="{StaticResource SectionHeader}" />
+                <ui:SettingCard Icon="&#xE793;" Header="{DynamicResource L.Home.LightTheme}" Description="{DynamicResource L.Home.SwitchBetweenTheDarkAndLight}">
                     <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding IsLightTheme}" AutomationProperties.Name="Light theme toggle" />
                 </ui:SettingCard>
-                <ui:SettingCard Icon="&#xE8BB;" Header="Close Nexstrap after launch" Description="Exit the launcher once Roblox has started.">
+                <ui:SettingCard Icon="&#xE8BB;" Header="{DynamicResource L.Home.CloseNexstrapAfterLaunch}" Description="{DynamicResource L.Home.ExitTheLauncherOnceRobloxHas}">
                     <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding CloseAfterLaunch}" AutomationProperties.Name="Close after launch" />
                 </ui:SettingCard>
-                <ui:SettingCard Icon="&#xE895;" Header="Check for updates on launch" Description="Quickly ask GitHub for a newer Nexstrap every time the app opens. Never slows startup.">
+                <ui:SettingCard Icon="&#xE895;" Header="{DynamicResource L.Home.CheckForUpdatesOnLaunch}" Description="{DynamicResource L.Home.QuicklyAskGitHubForANewer}">
                     <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding CheckForUpdatesOnStartup}" AutomationProperties.Name="Check for updates on startup" />
                 </ui:SettingCard>
             </StackPanel>
 
             <StackPanel x:Name="UpdatesCard" Grid.Column="2">
-                <TextBlock Text="Nexstrap updates" Style="{StaticResource SectionHeader}" />
+                <TextBlock Text="{DynamicResource L.Home.NexstrapUpdates}" Style="{StaticResource SectionHeader}" />
                 <Border Style="{StaticResource Card}" Padding="18,16">
                     <StackPanel>
                         <DockPanel>
                             <Border DockPanel.Dock="Right" Style="{StaticResource Pill}" VerticalAlignment="Center"
                                     Background="{DynamicResource Brush.SuccessSoft}"
                                     Visibility="{Binding IsUpdateAvailable, Converter={StaticResource BoolToVisibility}}">
-                                <TextBlock Text="Update available" FontSize="11" FontWeight="SemiBold" Style="{StaticResource Text.Base}"
+                                <TextBlock Text="{DynamicResource L.Home.UpdateAvailable}" FontSize="11" FontWeight="SemiBold" Style="{StaticResource Text.Base}"
                                            Foreground="{DynamicResource Brush.Success}" />
                             </Border>
                             <StackPanel>
-                                <TextBlock Text="INSTALLED" Style="{StaticResource Text.Overline}" />
+                                <TextBlock Text="{DynamicResource L.Home.INSTALLED}" Style="{StaticResource Text.Overline}" />
                                 <TextBlock Text="{Binding CurrentVersion}" Style="{StaticResource Text.Section}" Margin="0,6,0,0" />
                             </StackPanel>
                         </DockPanel>
@@ -341,25 +341,25 @@
                         <!-- Download progress -->
                         <StackPanel Margin="0,12,0,0" Visibility="{Binding IsUpdating, Converter={StaticResource BoolToVisibility}}">
                             <DockPanel>
-                                <Button DockPanel.Dock="Right" Style="{StaticResource Button.Ghost}" Content="Cancel" Padding="8,3"
+                                <Button DockPanel.Dock="Right" Style="{StaticResource Button.Ghost}" Content="{DynamicResource L.Common.Cancel}" Padding="8,3"
                                         Command="{Binding CancelUpdateCommand}" />
                                 <TextBlock Text="{Binding UpdateStage}" Style="{StaticResource Text.Caption}" VerticalAlignment="Center" />
                             </DockPanel>
                             <ProgressBar Margin="0,6,0,0" Maximum="1" Value="{Binding UpdateFraction, Mode=OneWay}" />
                         </StackPanel>
 
-                        <Button Style="{StaticResource Button.Primary}" ui:Ui.Icon="&#xE896;" Content="Download &amp; install" Margin="0,12,0,0"
+                        <Button Style="{StaticResource Button.Primary}" ui:Ui.Icon="&#xE896;" Content="{DynamicResource L.Home.DownloadInstall}" Margin="0,12,0,0"
                                 HorizontalAlignment="Left" Padding="12,6" Command="{Binding InstallUpdateCommand}"
                                 Visibility="{Binding IsUpdateAvailable, Converter={StaticResource BoolToVisibility}}" />
 
-                        <StackPanel Orientation="Horizontal" Margin="0,14,0,0">
-                            <Button Style="{StaticResource Button.Secondary}" Padding="10,6" ui:Ui.Icon="&#xE895;" Content="Check now"
+                        <WrapPanel Margin="0,14,0,0">
+                            <Button Style="{StaticResource Button.Secondary}" Padding="10,6" Margin="0,0,6,4" ui:Ui.Icon="&#xE895;" Content="{DynamicResource L.Home.CheckNow}"
                                     Command="{Binding CheckForUpdatesCommand}" />
-                            <Button Style="{StaticResource Button.Ghost}" Padding="10,6" Margin="6,0,0,0" ui:Ui.Icon="&#xE8A7;" Content="Release page"
+                            <Button Style="{StaticResource Button.Ghost}" Padding="10,6" Margin="0,0,0,4" ui:Ui.Icon="&#xE8A7;" Content="{DynamicResource L.Home.ReleasePage}"
                                     Command="{Binding OpenReleaseCommand}" />
-                        </StackPanel>
+                        </WrapPanel>
                         <TextBlock Style="{StaticResource Text.Caption}" Margin="0,10,0,0"
-                                   Text="Updates come only from this project's GitHub releases and are checked (size, SHA-256 checksum, product and version) before anything is installed." />
+                                   Text="{DynamicResource L.Home.UpdatesComeOnlyFromThisProjects}" />
                     </StackPanel>
                 </Border>
             </StackPanel>

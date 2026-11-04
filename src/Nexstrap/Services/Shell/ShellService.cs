@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using Microsoft.Extensions.Logging;
+using Nexstrap.Core;
 using Nexstrap.Services.Dialogs;
 
 namespace Nexstrap.Services.Shell;
@@ -25,13 +26,13 @@ public sealed class ShellService(IDialogService dialogs, ILogger<ShellService> l
             logger.LogWarning("Refused to open non-web URL {Url}", url);
             return;
         }
-        Start(uri.AbsoluteUri, "open the link");
+        Start(uri.AbsoluteUri, "Shell.OpenLink");
     }
 
     public void OpenFolder(string path)
     {
         Directory.CreateDirectory(path);
-        Start(path, "open the folder");
+        Start(path, "Shell.OpenFolder");
     }
 
     public void CopyToClipboard(string text)
@@ -40,7 +41,7 @@ public sealed class ShellService(IDialogService dialogs, ILogger<ShellService> l
         catch (Exception ex) { logger.LogWarning(ex, "Clipboard is busy"); }
     }
 
-    private void Start(string target, string action)
+    private void Start(string target, string titleKey)
     {
         try
         {
@@ -48,8 +49,8 @@ public sealed class ShellService(IDialogService dialogs, ILogger<ShellService> l
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to {Action}: {Target}", action, target);
-            dialogs.Show("Couldn't " + action, $"Windows could not open:\n{target}", DialogKind.Warning, ex.Message);
+            logger.LogError(ex, "Windows could not open {Target}", target);
+            dialogs.Show(Loc.Get(titleKey), Loc.Format("Shell.Failed", target), DialogKind.Warning, ex.Message);
         }
     }
 }

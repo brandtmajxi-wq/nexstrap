@@ -77,32 +77,32 @@ public sealed class UpdateService(HttpClient http, ILogger<UpdateService> logger
 
             using var response = await http.SendAsync(request, cancellationToken);
             if (response.StatusCode == HttpStatusCode.NotFound)
-                return Remember(new UpdateCheckResult(UpdateStatus.NoReleases, "No Nexstrap releases have been published yet."));
+                return Remember(new UpdateCheckResult(UpdateStatus.NoReleases, Loc.Get("Update.NoNexstrapReleasesHaveBeenPublished")));
             if (response.StatusCode == HttpStatusCode.Forbidden)
-                return Remember(new UpdateCheckResult(UpdateStatus.Failed, "GitHub is rate-limiting update checks. Try again later."));
+                return Remember(new UpdateCheckResult(UpdateStatus.Failed, Loc.Get("Update.GitHubIsRateLimitingUpdateChecks")));
             response.EnsureSuccessStatusCode();
 
             var release = await JsonSerializer.DeserializeAsync<GitHubRelease>(
                 await response.Content.ReadAsStreamAsync(cancellationToken), cancellationToken: cancellationToken);
 
             if (release is null || !TryParseVersion(release.TagName, out var latest))
-                return Remember(new UpdateCheckResult(UpdateStatus.Failed, "The latest release has an unrecognised version tag."));
+                return Remember(new UpdateCheckResult(UpdateStatus.Failed, Loc.Get("Update.TheLatestReleaseHasAnUnrecognised")));
 
             var current = new Version(AppInfo.Version.Major, AppInfo.Version.Minor, AppInfo.Version.Build);
             var result = latest > current
-                ? new UpdateCheckResult(UpdateStatus.UpdateAvailable, $"Nexstrap {latest} is available.", latest, release.Body, release.HtmlUrl, release)
-                : new UpdateCheckResult(UpdateStatus.UpToDate, "You're on the latest version.", latest, release.Body, release.HtmlUrl, release);
+                ? new UpdateCheckResult(UpdateStatus.UpdateAvailable, Loc.Format("Update.NexstrapIsAvailable", latest), latest, release.Body, release.HtmlUrl, release)
+                : new UpdateCheckResult(UpdateStatus.UpToDate, Loc.Get("Update.YoureOnTheLatestVersion"), latest, release.Body, release.HtmlUrl, release);
             logger.LogInformation("Update check: current {Current}, latest {Latest}", current, latest);
             return Remember(result);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
-            return Remember(new UpdateCheckResult(UpdateStatus.Failed, "The update check took too long. Try \"Check now\" later."));
+            return Remember(new UpdateCheckResult(UpdateStatus.Failed, Loc.Get("Update.TheUpdateCheckTookTooLong")));
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or JsonException)
         {
             logger.LogWarning(ex, "Update check failed");
-            return Remember(new UpdateCheckResult(UpdateStatus.Failed, "Couldn't reach GitHub. Check your connection and try again."));
+            return Remember(new UpdateCheckResult(UpdateStatus.Failed, Loc.Get("Update.CouldntReachGitHubCheckYourConnection")));
         }
     }
 

@@ -74,10 +74,10 @@ public sealed partial class IntegrationsViewModel : PageViewModel
     [RelayCommand]
     private void AddCompanion()
     {
-        var path = _files.OpenFile("Choose a program to start with Roblox", "Programs (*.exe)|*.exe");
+        var path = _files.OpenFile(Loc.Get("Integrations.ChooseAProgramToStartWith"), "Programs (*.exe)|*.exe");
         if (path is null) return;
         if (_companions.Add(path) is { } error)
-            _dialogs.Show("Couldn't add that program", error, DialogKind.Warning);
+            _dialogs.Show(Loc.Get("Integrations.CouldntAddThatProgram"), error, DialogKind.Warning);
     }
 
     [RelayCommand]
@@ -87,7 +87,7 @@ public sealed partial class IntegrationsViewModel : PageViewModel
     private void TestCompanion(CompanionRow row)
     {
         if (_companions.TestLaunch(row.App) is { } error)
-            _dialogs.Show("Couldn't start it", error, DialogKind.Warning);
+            _dialogs.Show(Loc.Get("Integrations.CouldntStartIt"), error, DialogKind.Warning);
     }
 
     private void RebuildCompanions()
@@ -105,28 +105,27 @@ public sealed partial class IntegrationsViewModel : PageViewModel
     [RelayCommand]
     private void ExportConfig()
     {
-        var path = _files.SaveFile("Export Nexstrap configuration", "Nexstrap configuration (*.json)|*.json",
+        var path = _files.SaveFile(Loc.Get("Integrations.ExportNexstrapConfiguration"), "Nexstrap configuration (*.json)|*.json",
             $"Nexstrap-config-{DateTime.Now:yyyy-MM-dd}.json");
         if (path is null) return;
         try
         {
             _transfer.Export(path);
-            TransferMessage = $"Exported to {System.IO.Path.GetFileName(path)}.";
+            TransferMessage = Loc.Format("Integrations.ExportedTo", System.IO.Path.GetFileName(path));
         }
         catch (Exception ex) when (ex is System.IO.IOException or UnauthorizedAccessException)
         {
-            _dialogs.Show("Couldn't export", ex.Message, DialogKind.Error);
+            _dialogs.Show(Loc.Get("FastFlags.CouldntExport"), ex.Message, DialogKind.Error);
         }
     }
 
     [RelayCommand]
     private void ImportConfig()
     {
-        var path = _files.OpenFile("Import Nexstrap configuration", "Nexstrap configuration (*.json)|*.json");
+        var path = _files.OpenFile(Loc.Get("Integrations.ImportNexstrapConfiguration"), "Nexstrap configuration (*.json)|*.json");
         if (path is null) return;
-        if (!_dialogs.Confirm("Import this configuration?",
-                "Your appearance, launch and Discord settings, FastFlags, saved themes and companion apps will be replaced by the file's. " +
-                "Your current setup is backed up first.", "Import"))
+        if (!_dialogs.Confirm(Loc.Get("Integrations.ImportThisConfiguration"),
+                Loc.Get("Integrations.YourAppearanceLaunchAndDiscordSettings"), Loc.Get("Integrations.Import2")))
             return;
         try
         {
@@ -135,17 +134,17 @@ public sealed partial class IntegrationsViewModel : PageViewModel
             OnPropertyChanged(string.Empty);
             RebuildCompanions();
             _ = _presence.RefreshAsync();
-            TransferMessage = $"Imported {result.FastFlags} FastFlags, {result.Themes} themes and {result.CompanionApps} companion apps. A backup was made first.";
+            TransferMessage = Loc.Format("Integrations.ImportedFastFlagsThemesAndCompanionApps", result.FastFlags, result.Themes, result.CompanionApps);
             if (result.Notes.Count > 0)
-                _dialogs.Show("Imported with notes", "Some parts couldn't be used on this PC.", DialogKind.Info, string.Join(Environment.NewLine, result.Notes));
+                _dialogs.Show(Loc.Get("Integrations.ImportedWithNotes"), Loc.Get("Integrations.SomePartsCouldntBeUsedOn"), DialogKind.Info, string.Join(Environment.NewLine, result.Notes));
         }
         catch (System.IO.InvalidDataException ex)
         {
-            _dialogs.Show("Couldn't import", ex.Message, DialogKind.Warning);
+            _dialogs.Show(Loc.Get("FastFlags.CouldntImport"), ex.Message, DialogKind.Warning);
         }
         catch (Exception ex) when (ex is System.IO.IOException or UnauthorizedAccessException)
         {
-            _dialogs.Show("Couldn't import", ex.Message, DialogKind.Error);
+            _dialogs.Show(Loc.Get("FastFlags.CouldntImport"), ex.Message, DialogKind.Error);
         }
     }
 
@@ -161,7 +160,7 @@ public sealed partial class IntegrationsViewModel : PageViewModel
 
     public bool IsPreviewing => _presence.IsPreviewing;
 
-    public string PreviewButtonText => IsPreviewing ? "Stop preview" : "Preview on Discord";
+    public string PreviewButtonText => IsPreviewing ? Loc.Get("Integrations.StopPreview") : Loc.Get("Integrations.PreviewOnDiscord");
 
     public bool RichPresence
     {
@@ -198,7 +197,7 @@ public sealed partial class IntegrationsViewModel : PageViewModel
             var text = value.Trim();
             if (text.Length > 0 && !RichPresenceService.IsValidImage(text))
             {
-                MenuImageError = "Use a direct https:// image link, or an Art Asset name (letters, numbers, _ and - only).";
+                MenuImageError = Loc.Get("Integrations.UseADirectHttpsImageLink");
                 return;
             }
             MenuImageError = null;
@@ -232,7 +231,7 @@ public sealed partial class IntegrationsViewModel : PageViewModel
         var trimmed = value.Trim();
         if (trimmed.Length > 0 && !RichPresenceService.IsValidApplicationId(trimmed))
         {
-            ApplicationIdError = "An application ID is 17–20 digits (Discord Developer Portal → your app → General Information).";
+            ApplicationIdError = Loc.Get("Integrations.AnApplicationIDIs1720");
             return;
         }
         ApplicationIdError = null;

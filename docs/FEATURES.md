@@ -11,7 +11,7 @@ A page-by-page guide. Everything Nexstrap stores lives in `%LocalAppData%\Nexstr
 | **Run without installing** | Skips setup and remembers that choice. |
 | **Update** | Running a newer `Nexstrap.exe` offers to replace the installed copy. The in-app updater also updates it in place. |
 | **Uninstall** | From Installed apps in Windows Settings. Removes the exe, shortcuts and Windows entry, gives Roblox links back to your previous launcher, and asks whether to delete your data. A folder you chose is only removed if it's empty. |
-| **Languages** | English, Deutsch, Español, Français, Português (Brasil) and Русский, following Windows by default. Setup, the menu and page titles are translated; other pages are in English for now. Change it under Appearance. |
+| **Languages** | English, Deutsch, Español, Français, Português (Brasil) and Русский, following Windows by default. The whole app is translated, except a few rare technical error messages and screen-reader labels. Change it under Appearance; it applies right away. Text from Roblox, such as game names, stays as Roblox provides it. |
 
 ## Home
 

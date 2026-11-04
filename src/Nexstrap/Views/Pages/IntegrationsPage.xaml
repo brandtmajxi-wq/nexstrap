@@ -20,7 +20,7 @@
                 <StackPanel>
                     <TextBlock Text="Rich Presence" Style="{StaticResource Text.Section}" />
                     <TextBlock Style="{StaticResource Text.Secondary}" Margin="0,4,0,0"
-                               Text="While Roblox runs from Nexstrap, your Discord profile shows that you're browsing Roblox, or which experience you're in. Requires the Discord desktop app." />
+                               Text="{DynamicResource L.Integrations.WhileRobloxRunsFromNexstrapYour}" />
                     <Border Margin="0,14,0,0">
                         <Border.Style>
                             <Style TargetType="Border" BasedOn="{StaticResource Pill}">
@@ -65,7 +65,7 @@
                 <Border Grid.Column="2" CornerRadius="10" Padding="14,12" Background="#1E1F24" BorderBrush="#2B2D33" BorderThickness="1"
                         VerticalAlignment="Top">
                     <StackPanel>
-                        <TextBlock Text="Playing" FontSize="12" FontWeight="SemiBold" Foreground="#DBDEE1" FontFamily="{DynamicResource Font.Primary}" />
+                        <TextBlock Text="{DynamicResource L.Integrations.Playing}" FontSize="12" FontWeight="SemiBold" Foreground="#DBDEE1" FontFamily="{DynamicResource Font.Primary}" />
                         <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                             <Border Width="64" Height="64" CornerRadius="10" Background="#141519">
                                 <ContentPresenter Margin="8" ContentTemplate="{StaticResource Template.LogoMark}" Content="{Binding}" />
@@ -79,50 +79,50 @@
                                 <TextBlock Text="0:12:34" FontSize="12" Foreground="#3BA55D" Margin="0,2,0,0" FontFamily="{DynamicResource Font.Primary}" />
                             </StackPanel>
                         </StackPanel>
-                        <TextBlock Text="The header shows your Discord application's name." FontSize="10.5" Foreground="#949BA4" Margin="0,10,0,0"
+                        <TextBlock Text="{DynamicResource L.Integrations.TheHeaderShowsYourDiscordApplications}" FontSize="10.5" Foreground="#949BA4" Margin="0,10,0,0"
                                    TextWrapping="Wrap" FontFamily="{DynamicResource Font.Primary}" />
                     </StackPanel>
                 </Border>
             </Grid>
         </Border>
 
-        <ui:SettingCard Icon="&#xE7FC;" Header="Show activity on Discord" Description="Turn Rich Presence on or off." Margin="0,10,0,6">
+        <ui:SettingCard Icon="&#xE7FC;" Header="{DynamicResource L.Integrations.ShowActivityOnDiscord}" Description="{DynamicResource L.Integrations.TurnRichPresenceOnOrOff}" Margin="0,10,0,6">
             <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding RichPresence}" AutomationProperties.Name="Rich Presence" />
         </ui:SettingCard>
-        <ui:SettingCard Icon="&#xE8D2;" Header="Menu text: first line"
-                        Description="Shown while you're in the Roblox menu. Leave empty for the default.">
+        <ui:SettingCard Icon="&#xE8D2;" Header="{DynamicResource L.Integrations.MenuTextFirstLine}"
+                        Description="{DynamicResource L.Integrations.ShownWhileYoureInTheRoblox}">
             <TextBox Width="220" MaxLength="128" ui:Ui.Placeholder="Inside Nexstrap" AutomationProperties.Name="Menu text first line"
                      Text="{Binding MenuTopLine, UpdateSourceTrigger=LostFocus}" />
         </ui:SettingCard>
-        <ui:SettingCard Icon="&#xE8D2;" Header="Menu text: second line"
-                        Description="For example &quot;Browsing Zovstrap&quot;. Updates on Discord when you click away from the box.">
+        <ui:SettingCard Icon="&#xE8D2;" Header="{DynamicResource L.Integrations.MenuTextSecondLine}"
+                        Description="{DynamicResource L.Integrations.ForExampleBrowsingZovstrapUpdatesOn}">
             <TextBox Width="220" MaxLength="128" ui:Ui.Placeholder="Browsing Roblox" AutomationProperties.Name="Menu text second line"
                      Text="{Binding MenuBottomLine, UpdateSourceTrigger=LostFocus}" />
         </ui:SettingCard>
-        <ui:SettingCard Icon="&#xEB9F;" Header="Card icon"
-                        Description="A direct https:// link to a PNG or JPG, or the name of an Art Asset in your Discord app. Leave empty for the built-in logo. In a game, the game's icon stays large and this is only used if your avatar isn't shown.">
-            <TextBox Width="220" MaxLength="256" ui:Ui.Placeholder="Built-in logo" AutomationProperties.Name="Card icon"
+        <ui:SettingCard Icon="&#xEB9F;" Header="{DynamicResource L.Integrations.CardIcon}"
+                        Description="{DynamicResource L.Integrations.ADirectHttpsLinkToA}">
+            <TextBox Width="220" MaxLength="256" ui:Ui.Placeholder="{DynamicResource L.Integrations.BuiltInLogo}" AutomationProperties.Name="{DynamicResource L.Integrations.CardIcon}"
                      Text="{Binding MenuImage, UpdateSourceTrigger=LostFocus}" />
         </ui:SettingCard>
         <TextBlock Text="{Binding MenuImageError}" Style="{StaticResource Text.Caption}" Foreground="{DynamicResource Brush.Danger}"
                    Margin="2,0,0,6" Visibility="{Binding MenuImageError, Converter={StaticResource NullToVisibility}}" />
-        <ui:SettingCard Icon="&#xE8B9;" Header="Show experience name and icon"
-                        Description="Off keeps it private: Discord just says you're in a Roblox experience.">
+        <ui:SettingCard Icon="&#xE8B9;" Header="{DynamicResource L.Integrations.ShowExperienceNameAndIcon}"
+                        Description="{DynamicResource L.Integrations.OffKeepsItPrivateDiscordJust}">
             <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding ShowExperienceDetails}" AutomationProperties.Name="Show experience details" />
         </ui:SettingCard>
-        <ui:SettingCard Icon="&#xE77B;" Header="Show my avatar and username"
-                        Description="Your Roblox headshot sits in the corner of the game icon; hover shows your name.">
+        <ui:SettingCard Icon="&#xE77B;" Header="{DynamicResource L.Integrations.ShowMyAvatarAndUsername}"
+                        Description="{DynamicResource L.Integrations.YourRobloxHeadshotSitsInThe}">
             <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding ShowAvatar}" AutomationProperties.Name="Show avatar" />
         </ui:SettingCard>
-        <ui:SettingCard Icon="&#xE71B;" Header="&quot;View game&quot; button"
-                        Description="Lets friends open the game's page from your profile.">
+        <ui:SettingCard Icon="&#xE71B;" Header="{DynamicResource L.Integrations.ViewGameButton}"
+                        Description="{DynamicResource L.Integrations.LetsFriendsOpenTheGamesPage}">
             <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding ShowExperienceButton}" AutomationProperties.Name="View game button" />
         </ui:SettingCard>
-        <ui:SettingCard Icon="&#xE943;" Header="Discord application ID"
-                        Description="Advanced. Leave empty to use Nexstrap's built-in Discord app.">
+        <ui:SettingCard Icon="&#xE943;" Header="{DynamicResource L.Integrations.DiscordApplicationID}"
+                        Description="{DynamicResource L.Integrations.AdvancedLeaveEmptyToUseNexstraps}">
             <StackPanel>
-                <TextBox Width="220" FontFamily="{StaticResource Font.Mono}" ui:Ui.Placeholder="Built-in" MaxLength="20"
-                         AutomationProperties.Name="Discord application ID"
+                <TextBox Width="220" FontFamily="{StaticResource Font.Mono}" ui:Ui.Placeholder="{DynamicResource L.Integrations.BuiltIn}" MaxLength="20"
+                         AutomationProperties.Name="{DynamicResource L.Integrations.DiscordApplicationID}"
                          Text="{Binding ApplicationId, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
         </ui:SettingCard>
@@ -130,21 +130,21 @@
                    Margin="2,0,0,6" Visibility="{Binding ApplicationIdError, Converter={StaticResource NullToVisibility}}" />
 
         <TextBlock Style="{StaticResource Text.Caption}" Margin="2,12,0,0"
-                   Text="Nexstrap keeps running in the background while Roblox is open (also with 'Close Nexstrap after launch'), and exits when Roblox closes. Closing the Nexstrap window ends the presence." />
+                   Text="{DynamicResource L.Integrations.NexstrapKeepsRunningInTheBackground}" />
 
         <!-- ===== Companion apps ===== -->
         <DockPanel Margin="2,22,0,10">
-            <Button DockPanel.Dock="Right" Style="{StaticResource Button.Ghost}" Content="Add program…" ui:Ui.Icon="&#xE710;" Padding="10,4"
+            <Button DockPanel.Dock="Right" Style="{StaticResource Button.Ghost}" Content="{DynamicResource L.Integrations.AddProgram}" ui:Ui.Icon="&#xE710;" Padding="10,4"
                     Command="{Binding AddCompanionCommand}" />
             <StackPanel>
-                <TextBlock Text="Start with Roblox" Style="{StaticResource Text.Section}" />
+                <TextBlock Text="{DynamicResource L.Integrations.StartWithRoblox}" Style="{StaticResource Text.Section}" />
                 <TextBlock Style="{StaticResource Text.Caption}" Margin="0,2,0,0"
-                           Text="Programs Nexstrap opens when you start Roblox from it, such as a recorder or voice app." />
+                           Text="{DynamicResource L.Integrations.ProgramsNexstrapOpensWhenYouStart}" />
             </StackPanel>
         </DockPanel>
         <Border Style="{StaticResource Card}" Padding="18,10">
             <StackPanel>
-                <TextBlock Text="No programs yet." Style="{StaticResource Text.Caption}" Margin="0,6"
+                <TextBlock Text="{DynamicResource L.Integrations.NoProgramsYet}" Style="{StaticResource Text.Caption}" Margin="0,6"
                            Visibility="{Binding HasCompanions, Converter={StaticResource InverseBoolToVisibility}}" />
                 <ItemsControl ItemsSource="{Binding Companions}" Focusable="False">
                     <ItemsControl.ItemTemplate>
@@ -157,29 +157,29 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding Enabled}" Margin="0,0,14,0" VerticalAlignment="Top"
-                                              AutomationProperties.Name="{Binding Name, StringFormat='Enable {0}'}" ToolTip="Start with Roblox" />
+                                              AutomationProperties.Name="{Binding Name, StringFormat='Enable {0}'}" ToolTip="{DynamicResource L.Integrations.StartWithRoblox}" />
                                     <StackPanel Grid.Column="1" Margin="0,0,12,0">
                                         <TextBlock Text="{Binding Name}" Style="{StaticResource Text.Base}" FontWeight="Medium" />
                                         <TextBlock Text="{Binding Path}" Style="{StaticResource Text.Caption}" TextTrimming="CharacterEllipsis" Margin="0,2,0,0" />
-                                        <TextBlock Text="This program can't be found anymore." Style="{StaticResource Text.Caption}"
+                                        <TextBlock Text="{DynamicResource L.Integrations.ThisProgramCantBeFoundAnymore}" Style="{StaticResource Text.Caption}"
                                                    Foreground="{DynamicResource Brush.Danger}" Margin="0,2,0,0"
                                                    Visibility="{Binding Exists, Converter={StaticResource InverseBoolToVisibility}}" />
                                         <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                                            <TextBox Width="220" FontFamily="{StaticResource Font.Mono}" Padding="8,4" ui:Ui.Placeholder="Arguments (optional)"
+                                            <TextBox Width="220" FontFamily="{StaticResource Font.Mono}" Padding="8,4" ui:Ui.Placeholder="{DynamicResource L.Integrations.ArgumentsOptional}"
                                                      AutomationProperties.Name="{Binding Name, StringFormat='Arguments for {0}'}"
                                                      Text="{Binding Arguments, UpdateSourceTrigger=LostFocus}" />
                                             <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding CloseWithRoblox}" Margin="16,0,0,0"
                                                       AutomationProperties.Name="{Binding Name, StringFormat='Close {0} with Roblox'}">
-                                                <TextBlock Text="Close when Roblox closes" Style="{StaticResource Text.Caption}" FontSize="12" />
+                                                <TextBlock Text="{DynamicResource L.Integrations.CloseWhenRobloxCloses}" Style="{StaticResource Text.Caption}" FontSize="12" />
                                             </CheckBox>
                                         </StackPanel>
                                     </StackPanel>
                                     <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Top">
-                                        <Button Content="Test" Padding="10,4"
+                                        <Button Content="{DynamicResource L.Integrations.Test}" Padding="10,4"
                                                 Command="{Binding DataContext.TestCompanionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 CommandParameter="{Binding}" />
                                         <Button Style="{StaticResource Button.Icon}" Content="&#xE74D;" FontFamily="{StaticResource Font.Icons}" Margin="6,0,0,0"
-                                                ToolTip="Remove" AutomationProperties.Name="{Binding Name, StringFormat='Remove {0}'}"
+                                                ToolTip="{DynamicResource L.Appearance.Remove}" AutomationProperties.Name="{Binding Name, StringFormat='Remove {0}'}"
                                                 Command="{Binding DataContext.RemoveCompanionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 CommandParameter="{Binding}" />
                                     </StackPanel>
@@ -189,29 +189,29 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
                 <TextBlock Style="{StaticResource Text.Caption}" Margin="0,8,0,4"
-                           Text="'Close when Roblox closes' asks the program to close, like clicking its X, and only for programs Nexstrap started. Nothing is force-closed. Some apps (for example Store apps, or ones already running) hand off to another process and can't be closed this way." />
+                           Text="{DynamicResource L.Integrations.CloseWhenRobloxClosesAsksThe}" />
             </StackPanel>
         </Border>
 
         <!-- ===== Configuration ===== -->
-        <TextBlock Text="Move your setup" Style="{StaticResource SectionHeader}" />
-        <ui:SettingCard Icon="&#xE8F4;" Header="Export or import Nexstrap's configuration"
-                        Description="One file with your appearance, launch and Discord settings, FastFlags, saved themes and companion apps. Window size, background images and your chosen Roblox build stay on this PC.">
+        <TextBlock Text="{DynamicResource L.Integrations.MoveYourSetup}" Style="{StaticResource SectionHeader}" />
+        <ui:SettingCard Icon="&#xE8F4;" Header="{DynamicResource L.Integrations.ExportOrImportNexstrapsConfiguration}"
+                        Description="{DynamicResource L.Integrations.OneFileWithYourAppearanceLaunch}">
             <StackPanel Orientation="Horizontal">
-                <Button Content="Export…" ui:Ui.Icon="&#xEDE1;" Padding="10,5" Command="{Binding ExportConfigCommand}" />
-                <Button Content="Import…" ui:Ui.Icon="&#xE8B5;" Padding="10,5" Margin="6,0,0,0" Command="{Binding ImportConfigCommand}" />
+                <Button Content="{DynamicResource L.FastFlags.Export}" ui:Ui.Icon="&#xEDE1;" Padding="10,5" Command="{Binding ExportConfigCommand}" />
+                <Button Content="{DynamicResource L.Integrations.Import}" ui:Ui.Icon="&#xE8B5;" Padding="10,5" Margin="6,0,0,0" Command="{Binding ImportConfigCommand}" />
             </StackPanel>
         </ui:SettingCard>
         <TextBlock Text="{Binding TransferMessage}" Style="{StaticResource Text.Caption}" Foreground="{DynamicResource Brush.Success}" Margin="2,0,0,6"
                    Visibility="{Binding TransferMessage, Converter={StaticResource NullToVisibility}}" />
 
         <!-- ===== Multi-instance ===== -->
-        <TextBlock Text="Multiple Roblox windows" Style="{StaticResource SectionHeader}" />
+        <TextBlock Text="{DynamicResource L.Integrations.MultipleRobloxWindows}" Style="{StaticResource SectionHeader}" />
         <Border Style="{StaticResource Card}" Padding="18,14">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="&#xE946;" Style="{StaticResource Text.Icon}" Foreground="{DynamicResource Brush.TextSecondary}" Margin="0,2,12,0" VerticalAlignment="Top" />
                 <TextBlock Style="{StaticResource Text.Secondary}" MaxWidth="720"
-                           Text="Not available. The Roblox Player only allows one game at a time, and running more means getting around that check, which Roblox doesn't permit. Nexstrap doesn't do that. If you open another game, Roblox switches to it instead." />
+                           Text="{DynamicResource L.Integrations.NotAvailableTheRobloxPlayerOnly}" />
             </StackPanel>
         </Border>
     </StackPanel>

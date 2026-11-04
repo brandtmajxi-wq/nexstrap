@@ -16,7 +16,28 @@ using Nexstrap.Services.Roblox;
 namespace Nexstrap.ViewModels.Pages;
 
 /// <summary>A value plus its human label, for combo boxes.</summary>
-public sealed record Choice<T>(T Value, string Label);
+/// <summary>A dropdown entry. A label given as a function follows the app language.</summary>
+public sealed class Choice<T> : ObservableObject
+{
+    private readonly Func<string> _label;
+
+    public Choice(T value, string label)
+    {
+        Value = value;
+        _label = () => label;
+    }
+
+    public Choice(T value, Func<string> label)
+    {
+        Value = value;
+        _label = label;
+        Loc.Changed += (_, _) => OnPropertyChanged(nameof(Label));
+    }
+
+    public T Value { get; }
+
+    public string Label => _label();
+}
 
 public sealed partial class AppearanceViewModel : PageViewModel
 {
@@ -100,7 +121,7 @@ public sealed partial class AppearanceViewModel : PageViewModel
         if (_appearance.SetAccent(value))
             AccentError = null;
         else
-            AccentError = string.IsNullOrWhiteSpace(value) ? "Enter a colour like #7C6CFF." : "Use #RGB or #RRGGBB, e.g. #7C6CFF.";
+            AccentError = string.IsNullOrWhiteSpace(value) ? Loc.Get("Appearance.EnterAColourLike7C6CFF") : Loc.Get("Appearance.UseRGBOrRRGGBBEG");
     }
 
     [RelayCommand]
@@ -123,7 +144,7 @@ public sealed partial class AppearanceViewModel : PageViewModel
     public string CurrentFontName => Current.FontFamily;
 
     [ObservableProperty]
-    private string _previewText = "The quick brown fox jumps over the lazy dog · 0123456789";
+    private string _previewText = Loc.Get("Appearance.TheQuickBrownFoxJumpsOver");
 
     private FontOption? _selectedFont;
 
@@ -196,13 +217,11 @@ public sealed partial class AppearanceViewModel : PageViewModel
         {
             if (value && RobloxFontOptions.FontFile is null)
             {
-                _dialogs.Show("Choose a font first", "Pick a font file, or use your Nexstrap font, then turn this on.", DialogKind.Info);
+                _dialogs.Show(Loc.Get("Appearance.ChooseAFontFirst"), Loc.Get("Appearance.PickAFontFileOrUse"), DialogKind.Info);
             }
-            else if (value && !_dialogs.Confirm("Change Roblox's fonts?",
-                         "This edits font settings inside Nexstrap's own Roblox build, so that build is no longer unmodified. " +
-                         "Roblox doesn't support this: it may stop working after a Roblox update, and it's your choice to use it. " +
-                         "Game text from a game's own fonts may not change. Turning this off restores the originals at the next launch.",
-                         "Turn on"))
+            else if (value && !_dialogs.Confirm(Loc.Get("Appearance.ChangeRobloxsFonts"),
+                         Loc.Get("Appearance.ThisEditsFontSettingsInsideNexstraps"),
+                         Loc.Get("Appearance.TurnOn")))
             {
                 // Declined: the toggle goes back below.
             }
@@ -216,23 +235,23 @@ public sealed partial class AppearanceViewModel : PageViewModel
         }
     }
 
-    public string RobloxFontName => RobloxFontOptions.DisplayName ?? "None chosen";
+    public string RobloxFontName => RobloxFontOptions.DisplayName ?? Loc.Get("Appearance.NoneChosen");
 
     public string RobloxFontStatus
     {
         get
         {
-            if (!RobloxFontOptions.Enabled) return "Off. Roblox uses its own fonts.";
+            if (!RobloxFontOptions.Enabled) return Loc.Get("Appearance.OffRobloxUsesItsOwnFonts");
             return _client.State.Preferred?.Source == InstallationSource.Nexstrap
-                ? "On. Applied each time you start Roblox from Nexstrap."
-                : "On, but Play isn't using a Nexstrap-installed build, so it won't apply. Install one from Home.";
+                ? Loc.Get("Appearance.OnAppliedEachTimeYouStart")
+                : Loc.Get("Appearance.OnButPlayIsntUsingA");
         }
     }
 
     [RelayCommand]
     private void ChooseRobloxFontFile()
     {
-        if (_files.OpenFile("Choose a font for Roblox", "Fonts (*.ttf;*.otf)|*.ttf;*.otf") is not { } path) return;
+        if (_files.OpenFile(Loc.Get("Appearance.ChooseAFontForRoblox"), "Fonts (*.ttf;*.otf)|*.ttf;*.otf") is not { } path) return;
         ShowRobloxFontResult(_robloxFont.SetFontFile(path));
     }
 
@@ -241,7 +260,7 @@ public sealed partial class AppearanceViewModel : PageViewModel
 
     private void ShowRobloxFontResult(string? error)
     {
-        if (error is not null) _dialogs.Show("Couldn't use that font", error, DialogKind.Warning);
+        if (error is not null) _dialogs.Show(Loc.Get("Appearance.CouldntUseThatFont"), error, DialogKind.Warning);
         OnPropertyChanged(nameof(RobloxFontName));
     }
 
@@ -249,20 +268,20 @@ public sealed partial class AppearanceViewModel : PageViewModel
 
     public IReadOnlyList<Choice<BackgroundFit>> FitChoices { get; } =
     [
-        new(BackgroundFit.Fill, "Fill (crop to cover)"),
-        new(BackgroundFit.Fit, "Fit (show whole image)"),
-        new(BackgroundFit.Stretch, "Stretch"),
-        new(BackgroundFit.Center, "Center (original size)"),
-        new(BackgroundFit.Tile, "Tile")
+        new(BackgroundFit.Fill, () => Loc.Get("Appearance.FillCropToCover")),
+        new(BackgroundFit.Fit, () => Loc.Get("Appearance.FitShowWholeImage")),
+        new(BackgroundFit.Stretch, () => Loc.Get("Appearance.Stretch")),
+        new(BackgroundFit.Center, () => Loc.Get("Appearance.CenterOriginalSize")),
+        new(BackgroundFit.Tile, () => Loc.Get("Appearance.Tile"))
     ];
 
     public IReadOnlyList<Choice<BackgroundAnchor>> AnchorChoices { get; } =
     [
-        new(BackgroundAnchor.Center, "Center"),
-        new(BackgroundAnchor.Top, "Top"),
-        new(BackgroundAnchor.Bottom, "Bottom"),
-        new(BackgroundAnchor.Left, "Left"),
-        new(BackgroundAnchor.Right, "Right")
+        new(BackgroundAnchor.Center, () => Loc.Get("Appearance.Center")),
+        new(BackgroundAnchor.Top, () => Loc.Get("Appearance.Top")),
+        new(BackgroundAnchor.Bottom, () => Loc.Get("Appearance.Bottom")),
+        new(BackgroundAnchor.Left, () => Loc.Get("Appearance.Left")),
+        new(BackgroundAnchor.Right, () => Loc.Get("Appearance.Right"))
     ];
 
     public bool HasBackground => Current.BackgroundImage is not null;
@@ -291,11 +310,11 @@ public sealed partial class AppearanceViewModel : PageViewModel
     private void ChooseBackground()
     {
         var filter = "Images|" + string.Join(';', AppearanceService.SupportedImageExtensions.Select(e => "*" + e));
-        var path = _files.OpenFile("Choose a background image", filter);
+        var path = _files.OpenFile(Loc.Get("Appearance.ChooseABackgroundImage"), filter);
         if (path is null) return;
 
         if (_appearance.SetBackgroundFromFile(path) is { } error)
-            _dialogs.Show("Couldn't use that image", error, DialogKind.Warning);
+            _dialogs.Show(Loc.Get("Appearance.CouldntUseThatImage"), error, DialogKind.Warning);
     }
 
     [RelayCommand]
@@ -321,7 +340,7 @@ public sealed partial class AppearanceViewModel : PageViewModel
     {
         var name = NewProfileName.Trim();
         if (_appearance.ProfileExists(name) &&
-            !_dialogs.Confirm("Replace theme?", $"A theme called \"{name}\" already exists. Replace it with the current look?", "Replace"))
+            !_dialogs.Confirm(Loc.Get("Appearance.ReplaceTheme"), Loc.Format("Appearance.AThemeCalledAlreadyExistsReplace", name), Loc.Get("Appearance.Replace")))
             return;
 
         try
@@ -332,7 +351,7 @@ public sealed partial class AppearanceViewModel : PageViewModel
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            _dialogs.Show("Couldn't save theme", ex.Message, DialogKind.Error);
+            _dialogs.Show(Loc.Get("Appearance.CouldntSaveTheme"), ex.Message, DialogKind.Error);
         }
     }
 
@@ -342,7 +361,7 @@ public sealed partial class AppearanceViewModel : PageViewModel
     [RelayCommand]
     private void DeleteSaved(ThemeProfile profile)
     {
-        if (!_dialogs.Confirm("Delete theme?", $"\"{profile.Name}\" will be removed. Your current look won't change.", "Delete"))
+        if (!_dialogs.Confirm(Loc.Get("Appearance.DeleteTheme"), Loc.Format("Appearance.WillBeRemovedYourCurrentLook", profile.Name), Loc.Get("Appearance.Delete")))
             return;
         try
         {
@@ -350,7 +369,7 @@ public sealed partial class AppearanceViewModel : PageViewModel
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            _dialogs.Show("Couldn't delete theme", ex.Message, DialogKind.Error);
+            _dialogs.Show(Loc.Get("Appearance.CouldntDeleteTheme"), ex.Message, DialogKind.Error);
         }
         RefreshSavedProfiles();
     }
@@ -358,7 +377,7 @@ public sealed partial class AppearanceViewModel : PageViewModel
     [RelayCommand]
     private void ExportSaved(ThemeProfile profile)
     {
-        var path = _files.SaveFile("Export theme", ThemeFileFilter, profile.Name + ".json");
+        var path = _files.SaveFile(Loc.Get("Appearance.ExportTheme"), ThemeFileFilter, profile.Name + ".json");
         if (path is null) return;
         try
         {
@@ -366,37 +385,37 @@ public sealed partial class AppearanceViewModel : PageViewModel
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            _dialogs.Show("Couldn't export theme", ex.Message, DialogKind.Error);
+            _dialogs.Show(Loc.Get("Appearance.CouldntExportTheme"), ex.Message, DialogKind.Error);
         }
     }
 
     [RelayCommand]
     private void ImportProfile()
     {
-        var path = _files.OpenFile("Import theme", ThemeFileFilter);
+        var path = _files.OpenFile(Loc.Get("Appearance.ImportTheme2"), ThemeFileFilter);
         if (path is null) return;
         try
         {
             var profile = _appearance.ImportProfile(path);
             RefreshSavedProfiles();
-            if (_dialogs.Confirm("Theme imported", $"\"{profile.Name}\" was added to your themes. Apply it now?", "Apply", "Later"))
+            if (_dialogs.Confirm(Loc.Get("Appearance.ThemeImported"), Loc.Format("Appearance.WasAddedToYourThemesApply", profile.Name), Loc.Get("Appearance.Apply"), Loc.Get("Appearance.Later")))
                 _appearance.ApplyProfile(profile);
         }
         catch (InvalidDataException ex)
         {
-            _dialogs.Show("Couldn't import theme", ex.Message, DialogKind.Warning);
+            _dialogs.Show(Loc.Get("Appearance.CouldntImportTheme"), ex.Message, DialogKind.Warning);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            _dialogs.Show("Couldn't import theme", ex.Message, DialogKind.Error);
+            _dialogs.Show(Loc.Get("Appearance.CouldntImportTheme"), ex.Message, DialogKind.Error);
         }
     }
 
     [RelayCommand]
     private void ResetAppearance()
     {
-        if (_dialogs.Confirm("Reset appearance?",
-                "Theme, accent colour, font and background go back to the Nexstrap defaults. Your saved themes are kept.", "Reset"))
+        if (_dialogs.Confirm(Loc.Get("Appearance.ResetAppearance2"),
+                Loc.Get("Appearance.ThemeAccentColourFontAndBackground"), Loc.Get("Appearance.Reset")))
             _appearance.Reset();
     }
 

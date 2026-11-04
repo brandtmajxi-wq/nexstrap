@@ -96,9 +96,9 @@ public sealed class RobloxUserSettingsService : IRobloxUserSettingsService
     public void Save(RobloxUserSettings changes)
     {
         if (!Exists)
-            throw new InvalidOperationException("Roblox hasn't created its settings file yet. Start Roblox once, then try again.");
+            throw new InvalidOperationException(Loc.Get("RobloxSettings.RobloxHasntCreatedItsSettingsFile"));
         if (_launcher.IsRobloxRunning())
-            throw new InvalidOperationException("Close Roblox first: it saves its own settings when it exits and would undo these changes.");
+            throw new InvalidOperationException(Loc.Get("RobloxSettings.CloseRobloxFirstItSavesIts"));
 
         var (doc, props) = LoadDocument();
         BackupNow();
@@ -119,7 +119,7 @@ public sealed class RobloxUserSettingsService : IRobloxUserSettingsService
 
     public SettingsBackup BackupNow()
     {
-        if (!Exists) throw new InvalidOperationException("There's no Roblox settings file to back up yet.");
+        if (!Exists) throw new InvalidOperationException(Loc.Get("RobloxSettings.TheresNoRobloxSettingsFileTo"));
         Directory.CreateDirectory(_backupDir);
         var path = Path.Combine(_backupDir, $"GlobalBasicSettings-{DateTime.Now:yyyyMMdd-HHmmss-fff}.xml");
         File.Copy(FilePath, path, overwrite: true);
@@ -140,13 +140,13 @@ public sealed class RobloxUserSettingsService : IRobloxUserSettingsService
     public void Restore(SettingsBackup backup)
     {
         if (_launcher.IsRobloxRunning())
-            throw new InvalidOperationException("Close Roblox before restoring its settings.");
+            throw new InvalidOperationException(Loc.Get("RobloxSettings.CloseRobloxBeforeRestoringItsSettings"));
 
         // Make sure the backup is a Roblox settings document before it replaces the real one.
         var check = new XmlDocument();
         check.Load(backup.FilePath);
         if (check.SelectSingleNode("/roblox/Item/Properties") is null)
-            throw new InvalidDataException("That backup isn't a Roblox settings file.");
+            throw new InvalidDataException(Loc.Get("RobloxSettings.ThatBackupIsntARobloxSettings"));
 
         if (Exists) BackupNow();
         File.Copy(backup.FilePath, FilePath, overwrite: true);

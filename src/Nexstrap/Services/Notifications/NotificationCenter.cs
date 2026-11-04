@@ -1,3 +1,4 @@
+using Nexstrap.Core;
 using System.IO;
 using Nexstrap.Models;
 using Nexstrap.Services.Configuration;
@@ -19,9 +20,9 @@ public sealed record AppNotification(string Key, NotificationCategory Category, 
 
     public string CategoryLabel => Category switch
     {
-        NotificationCategory.NexstrapUpdate => "Nexstrap update",
-        NotificationCategory.RobloxUpdate => "Roblox update",
-        _ => "Configuration"
+        NotificationCategory.NexstrapUpdate => Loc.Get("Notifications.NexstrapUpdate"),
+        NotificationCategory.RobloxUpdate => Loc.Get("Notifications.RobloxUpdate"),
+        _ => Loc.Get("Notifications.Configuration")
     };
 }
 
@@ -41,29 +42,29 @@ public static class NotificationRules
         var list = new List<AppNotification>();
 
         if (input.NexstrapUpdate is { } version)
-            list.Add(new($"nexstrap-update:{version}", NotificationCategory.NexstrapUpdate, $"Nexstrap {version} is available",
-                "Open Home to read what's new and install it.", NotificationTarget.Home));
+            list.Add(new($"nexstrap-update:{version}", NotificationCategory.NexstrapUpdate, Loc.Format("Notifications.NexstrapIsAvailable", version),
+                Loc.Get("Notifications.OpenHomeToReadWhatsNew"), NotificationTarget.Home));
 
         if (input.LatestRoblox is { } latest && input.Installation is { } build && build.VersionHash != latest.VersionHash)
-            list.Add(new($"roblox-update:{latest.VersionHash}", NotificationCategory.RobloxUpdate, $"Roblox {latest.Version} is available",
-                $"Play is using {build.DisplayVersion} ({build.SourceLabel}). Outdated clients may refuse to join games.", NotificationTarget.Home));
+            list.Add(new($"roblox-update:{latest.VersionHash}", NotificationCategory.RobloxUpdate, Loc.Format("Notifications.RobloxIsAvailable", latest.Version),
+                Loc.Format("Notifications.PlayIsUsingOutdatedClientsMay", build.DisplayVersion, build.SourceLabel), NotificationTarget.Home));
 
         var enabled = input.Flags.Where(f => f.Enabled).ToList();
 
         var ignored = enabled.Count(f => !FastFlagCatalog.IsAllowlisted(f.Name));
         if (ignored > 0)
             list.Add(new($"config-ignored-flags:{ignored}", NotificationCategory.Configuration,
-                ignored == 1 ? "1 FastFlag is ignored by Roblox" : $"{ignored} FastFlags are ignored by Roblox",
-                "They aren't on Roblox's allowlist, so they do nothing. It's harmless, but you can remove them.", NotificationTarget.FastFlags));
+                ignored == 1 ? Loc.Get("Notifications.1FastFlagIsIgnoredByRoblox") : Loc.Format("Notifications.FastFlagsAreIgnoredByRoblox", ignored),
+                Loc.Get("Notifications.TheyArentOnRobloxsAllowlistSo"), NotificationTarget.FastFlags));
 
         if (enabled.Count > 0 && input.Installation is { Source: not InstallationSource.Nexstrap } other)
-            list.Add(new($"config-flags-wrong-build:{other.Source}", NotificationCategory.Configuration, "Your FastFlags aren't being applied",
-                $"Play uses {other.SourceLabel}'s build, and Nexstrap doesn't change other launchers' files. Install a Nexstrap copy of Roblox from Home.",
+            list.Add(new($"config-flags-wrong-build:{other.Source}", NotificationCategory.Configuration, Loc.Get("Notifications.YourFastFlagsArentBeingApplied"),
+                Loc.Format("Notifications.PlayUsesSBuildAndNexstrap", other.SourceLabel),
                 NotificationTarget.Home));
 
         if (input.FramerateCap is { } cap && input.RefreshRate is { } hz && cap > hz + 1)
-            list.Add(new($"config-cap-above-display:{cap}-{hz}", NotificationCategory.Configuration, $"Frame-rate cap is above your display's {hz} Hz",
-                $"Your cap is {cap} FPS, but frames above {hz} can't appear on screen. A lower cap can reduce heat and fan noise.", NotificationTarget.Performance));
+            list.Add(new($"config-cap-above-display:{cap}-{hz}", NotificationCategory.Configuration, Loc.Format("Notifications.FrameRateCapIsAboveYour", hz),
+                Loc.Format("Notifications.YourCapIsFPSButFrames", cap, hz), NotificationTarget.Performance));
 
         return list;
     }
@@ -120,6 +121,7 @@ public sealed class NotificationCenter : INotificationCenter
         updates.Checked += (_, _) => Refresh();
         client.StateChanged += (_, _) => Refresh();
         flags.Changed += (_, _) => Refresh();
+        Loc.Changed += (_, _) => Refresh();
     }
 
     private NotificationSettings Options => _settings.Current.Notifications;

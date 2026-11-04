@@ -32,8 +32,8 @@ public sealed partial class PerformanceViewModel(
     public ObservableCollection<StatusLine> Status { get; } = [];
 
     public string DisplayText => display.RefreshRate is { } hz
-        ? $"Primary display: {hz} Hz. Recommended cap: {PerformancePlanner.RecommendedCap(hz)} FPS."
-        : "Windows didn't report your display's refresh rate.";
+        ? Loc.Format("Performance.PrimaryDisplayHzRecommendedCapFPS", hz, PerformancePlanner.RecommendedCap(hz))
+        : Loc.Get("Performance.WindowsDidntReportYourDisplaysRefresh");
 
     public bool PlayUsesNexstrapBuild => client.State.Preferred?.Source == InstallationSource.Nexstrap;
 
@@ -49,7 +49,7 @@ public sealed partial class PerformanceViewModel(
 
     partial void OnCapChanged(int value)
     {
-        if (!_loading) SaveToRoblox(new RobloxUserSettings { FramerateCap = value }, $"Frame-rate cap set to {value} FPS.");
+        if (!_loading) SaveToRoblox(new RobloxUserSettings { FramerateCap = value }, Loc.Format("Performance.FrameRateCapSetToFPS", value));
     }
 
     // ===== Presets =====
@@ -61,7 +61,8 @@ public sealed partial class PerformanceViewModel(
     {
         var cap = PerformancePlanner.ResolveCap(preset, display.RefreshRate);
         SaveToRoblox(new RobloxUserSettings { FramerateCap = cap, SavedQualityLevel = preset.Quality },
-            $"{preset.Name} applied: {cap} FPS cap, quality {(preset.Quality == 0 ? "automatic" : preset.Quality + " of 10")}.");
+            Loc.Format("Performance.PresetApplied", preset.Name, cap,
+                preset.Quality == 0 ? Loc.Get("Performance.QualityAutomatic") : Loc.Format("Performance.QualityOutOf10", preset.Quality)));
     }
 
     private void SaveToRoblox(RobloxUserSettings changes, string success)
@@ -69,11 +70,11 @@ public sealed partial class PerformanceViewModel(
         try
         {
             robloxSettings.Save(changes);
-            Message = success + " Roblox uses this next time it starts.";
+            Message = success + Loc.Get("Performance.RobloxUsesThisNextTimeIt");
         }
         catch (Exception ex) when (ex is InvalidOperationException or IOException or UnauthorizedAccessException or InvalidDataException or System.Xml.XmlException)
         {
-            dialogs.Show("Couldn't change Roblox's settings", ex.Message, DialogKind.Warning);
+            dialogs.Show(Loc.Get("Performance.CouldntChangeRobloxsSettings"), ex.Message, DialogKind.Warning);
         }
         Load();
     }
@@ -82,7 +83,7 @@ public sealed partial class PerformanceViewModel(
 
     public IReadOnlyList<Choice<GraphicsApi>> ApiChoices { get; } =
     [
-        new(GraphicsApi.Automatic, "Automatic"),
+        new(GraphicsApi.Automatic, () => Loc.Get("Performance.Automatic")),
         new(GraphicsApi.Direct3D11, "Direct3D 11"),
         new(GraphicsApi.Vulkan, "Vulkan"),
         new(GraphicsApi.OpenGL, "OpenGL")
@@ -90,12 +91,12 @@ public sealed partial class PerformanceViewModel(
 
     public IReadOnlyList<Choice<int>> MsaaChoices { get; } =
     [
-        new(-1, "Automatic"), new(0, "Off"), new(1, "1x"), new(2, "2x"), new(4, "4x"), new(8, "8x")
+        new(-1, () => Loc.Get("Performance.Automatic")), new(0, () => Loc.Get("Performance.Off")), new(1, "1x"), new(2, "2x"), new(4, "4x"), new(8, "8x")
     ];
 
     public IReadOnlyList<Choice<int>> TextureChoices { get; } =
     [
-        new(-1, "Automatic"), new(0, "Lowest"), new(1, "Low"), new(2, "Medium"), new(3, "Highest")
+        new(-1, () => Loc.Get("Performance.Automatic")), new(0, () => Loc.Get("Performance.Lowest")), new(1, () => Loc.Get("Performance.Low")), new(2, () => Loc.Get("Performance.Medium")), new(3, () => Loc.Get("Performance.Highest"))
     ];
 
     [ObservableProperty]
@@ -152,7 +153,7 @@ public sealed partial class PerformanceViewModel(
             var cap = current.FramerateCap ?? PerformancePlanner.RecommendedCap(display.RefreshRate);
             CapChoices.Clear();
             foreach (var fps in PerformancePlanner.StandardCaps) CapChoices.Add(new Choice<int>(fps, $"{fps} FPS"));
-            if (!PerformancePlanner.StandardCaps.Contains(cap)) CapChoices.Add(new Choice<int>(cap, $"{cap} FPS (current)"));
+            if (!PerformancePlanner.StandardCaps.Contains(cap)) CapChoices.Add(new Choice<int>(cap, Loc.Format("Performance.FPSCurrent", cap)));
             Cap = cap;
             OnPropertyChanged(nameof(Cap)); // re-select after the list was rebuilt
 

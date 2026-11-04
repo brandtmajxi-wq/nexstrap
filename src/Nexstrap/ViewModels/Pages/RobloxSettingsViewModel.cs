@@ -60,8 +60,8 @@ public sealed partial class RobloxSettingsViewModel : PageViewModel
     public bool CanEdit => SettingsFileExists && !RobloxRunning;
 
     public string? EditBlockedReason =>
-        !SettingsFileExists ? "Roblox hasn't created its settings file yet. Start Roblox once, then come back."
-        : RobloxRunning ? "Roblox is open. Close it to change these settings, because Roblox saves its own copy when it exits."
+        !SettingsFileExists ? Loc.Get("Performance.RobloxHasntCreatedItsSettingsFile")
+        : RobloxRunning ? Loc.Get("RobloxSettings.RobloxIsOpenCloseItTo")
         : null;
 
     [ObservableProperty]
@@ -86,7 +86,7 @@ public sealed partial class RobloxSettingsViewModel : PageViewModel
     [NotifyPropertyChangedFor(nameof(QualityLabel))]
     private double _qualityLevel = 5;
 
-    public string QualityLabel => QualityAutomatic ? "Automatic" : $"{QualityLevel:0} / 10";
+    public string QualityLabel => QualityAutomatic ? Loc.Get("Performance.Automatic") : Loc.Format("RobloxSettings.10", QualityLevel);
 
     [ObservableProperty]
     private bool _fullscreen;
@@ -123,7 +123,7 @@ public sealed partial class RobloxSettingsViewModel : PageViewModel
         RefreshStatus();
         if (!CanEdit)
         {
-            _dialogs.Show("Can't save right now", EditBlockedReason!, DialogKind.Warning);
+            _dialogs.Show(Loc.Get("RobloxSettings.CantSaveRightNow"), EditBlockedReason!, DialogKind.Warning);
             return;
         }
 
@@ -131,11 +131,11 @@ public sealed partial class RobloxSettingsViewModel : PageViewModel
         {
             _robloxSettings.Save(BuildChanges());
             Load();
-            StatusMessage = "Saved. Roblox uses these the next time it starts. A backup of the old file was made.";
+            StatusMessage = Loc.Get("RobloxSettings.SavedRobloxUsesTheseTheNext");
         }
         catch (Exception ex) when (ex is InvalidOperationException or IOException or UnauthorizedAccessException or InvalidDataException or System.Xml.XmlException)
         {
-            _dialogs.Show("Couldn't save Roblox's settings", ex.Message, DialogKind.Error);
+            _dialogs.Show(Loc.Get("RobloxSettings.CouldntSaveRobloxsSettings"), ex.Message, DialogKind.Error);
         }
     }
 
@@ -160,7 +160,7 @@ public sealed partial class RobloxSettingsViewModel : PageViewModel
     private void Discard()
     {
         Load();
-        StatusMessage = "Changes discarded.";
+        StatusMessage = Loc.Get("RobloxSettings.ChangesDiscarded");
     }
 
     // ===== Launch preferences =====
@@ -189,7 +189,7 @@ public sealed partial class RobloxSettingsViewModel : PageViewModel
             }
             catch (Exception ex) when (ex is UnauthorizedAccessException or IOException or System.Security.SecurityException)
             {
-                _dialogs.Show("Couldn't change the link handler", ex.Message, DialogKind.Error);
+                _dialogs.Show(Loc.Get("RobloxSettings.CouldntChangeTheLinkHandler"), ex.Message, DialogKind.Error);
             }
             OnPropertyChanged();
             OnPropertyChanged(nameof(LinkHandlerText));
@@ -197,14 +197,14 @@ public sealed partial class RobloxSettingsViewModel : PageViewModel
     }
 
     public string LinkHandlerText => _protocol.IsRegistered
-        ? "roblox.com Play buttons open Nexstrap. Turning this off gives them back to the previous launcher. If you move Nexstrap.exe, turn this off and on again."
-        : $"Currently handled by {_client.State.ProtocolHandler.OwnerName}. Turning this on makes the website's Play buttons go through Nexstrap (your Discord presence and FastFlags then apply to them too).";
+        ? Loc.Get("RobloxSettings.RobloxComPlayButtonsOpenNexstrap")
+        : Loc.Format("RobloxSettings.CurrentlyHandledByTurningThisOn", _client.State.ProtocolHandler.OwnerName);
 
     // ===== Installation =====
 
     public string InstallationText => _client.State.Preferred is { } p
-        ? $"Play uses Roblox {p.DisplayVersion} ({p.SourceLabel})."
-        : "No Roblox build found.";
+        ? Loc.Format("RobloxSettings.PlayUsesRoblox", p.DisplayVersion, p.SourceLabel)
+        : Loc.Get("RobloxSettings.NoRobloxBuildFound");
 
     [RelayCommand]
     private void ManageInstallations() => _navigation.NavigateTo<HomeViewModel>();
@@ -221,30 +221,30 @@ public sealed partial class RobloxSettingsViewModel : PageViewModel
         try
         {
             var b = _robloxSettings.BackupNow();
-            StatusMessage = $"Backed up Roblox's settings ({b.CreatedLocal:g}).";
+            StatusMessage = Loc.Format("RobloxSettings.BackedUpRobloxsSettings", b.CreatedLocal);
             RefreshBackups();
         }
         catch (Exception ex) when (ex is InvalidOperationException or IOException or UnauthorizedAccessException)
         {
-            _dialogs.Show("Couldn't back up", ex.Message, DialogKind.Warning);
+            _dialogs.Show(Loc.Get("RobloxSettings.CouldntBackUp"), ex.Message, DialogKind.Warning);
         }
     }
 
     [RelayCommand]
     private void Restore(SettingsBackup backup)
     {
-        if (!_dialogs.Confirm("Restore Roblox's settings?",
-                $"Roblox's settings will go back to how they were on {backup.CreatedLocal:g}. The current file is backed up first.", "Restore"))
+        if (!_dialogs.Confirm(Loc.Get("RobloxSettings.RestoreRobloxsSettings"),
+                Loc.Format("RobloxSettings.RobloxsSettingsWillGoBackTo", backup.CreatedLocal), Loc.Get("FastFlags.Restore")))
             return;
         try
         {
             _robloxSettings.Restore(backup);
             Load();
-            StatusMessage = $"Restored the backup from {backup.CreatedLocal:g}.";
+            StatusMessage = Loc.Format("FastFlags.RestoredTheBackupFrom", backup.CreatedLocal);
         }
         catch (Exception ex) when (ex is InvalidOperationException or IOException or UnauthorizedAccessException or InvalidDataException or System.Xml.XmlException)
         {
-            _dialogs.Show("Couldn't restore", ex.Message, DialogKind.Error);
+            _dialogs.Show(Loc.Get("FastFlags.CouldntRestore"), ex.Message, DialogKind.Error);
         }
     }
 
@@ -260,7 +260,7 @@ public sealed partial class RobloxSettingsViewModel : PageViewModel
     [RelayCommand]
     private void Refresh()
     {
-        if (HasChanges && !_dialogs.Confirm("Discard your changes?", "Reloading reads Roblox's file again and drops unsaved changes.", "Reload"))
+        if (HasChanges && !_dialogs.Confirm(Loc.Get("RobloxSettings.DiscardYourChanges"), Loc.Get("RobloxSettings.ReloadingReadsRobloxsFileAgainAnd"), Loc.Get("RobloxSettings.Reload")))
             return;
         Load();
     }
@@ -296,13 +296,13 @@ public sealed partial class RobloxSettingsViewModel : PageViewModel
             catch (Exception ex) when (ex is IOException or System.Xml.XmlException or InvalidDataException)
             {
                 _loaded = new RobloxUserSettings();
-                StatusMessage = "Roblox's settings file couldn't be read: " + ex.Message;
+                StatusMessage = Loc.Get("RobloxSettings.RobloxsSettingsFileCouldntBeRead") + ex.Message;
             }
 
             FramerateChoices.Clear();
             foreach (var fps in StandardFramerates) FramerateChoices.Add(new Choice<int>(fps, $"{fps} FPS"));
             var cap = _loaded.FramerateCap ?? 60;
-            if (!StandardFramerates.Contains(cap)) FramerateChoices.Add(new Choice<int>(cap, $"{cap} FPS (current)"));
+            if (!StandardFramerates.Contains(cap)) FramerateChoices.Add(new Choice<int>(cap, Loc.Format("Performance.FPSCurrent", cap)));
             FramerateCap = cap;
 
             QualityAutomatic = (_loaded.SavedQualityLevel ?? 0) == 0;

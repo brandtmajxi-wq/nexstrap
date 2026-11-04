@@ -62,9 +62,9 @@ public sealed class LaunchScreenService(ISettingsService settings, IThemeService
     {
         var ext = Path.GetExtension(sourcePath).ToLowerInvariant();
         if (!AppearanceService.SupportedImageExtensions.Contains(ext))
-            return "Use a PNG, JPG, BMP or GIF image.";
+            return Loc.Get("LaunchScreen.UseAPNGJPGBMPOr");
         if (theme.LoadImage(sourcePath) is null)
-            return "That file couldn't be read as an image.";
+            return Loc.Get("Appearance.ThatFileCouldntBeReadAs");
 
         try
         {
@@ -80,7 +80,7 @@ public sealed class LaunchScreenService(ISettingsService settings, IThemeService
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            return "Nexstrap couldn't copy that image: " + ex.Message;
+            return Loc.Get("Appearance.NexstrapCouldntCopyThatImage") + ex.Message;
         }
     }
 

@@ -8,11 +8,8 @@ public abstract class PageViewModel : ObservableObject
 {
     protected PageViewModel()
     {
-        Loc.Changed += (_, _) =>
-        {
-            OnPropertyChanged(nameof(Title));
-            OnPropertyChanged(nameof(Subtitle));
-        };
+        // An empty name refreshes every binding, so calculated text follows the new language.
+        Loc.Changed += (_, _) => OnPropertyChanged(string.Empty);
     }
 
     public abstract string Title { get; }

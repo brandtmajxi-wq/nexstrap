@@ -74,9 +74,9 @@
 
             <!-- Title bar: draggable area + caption buttons -->
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
-                <Button Style="{StaticResource Button.Caption}" Content="&#xE921;" ToolTip="Minimize" Click="OnMinimize" />
-                <Button x:Name="MaximizeButton" Style="{StaticResource Button.Caption}" Content="&#xE922;" ToolTip="Maximize" Click="OnMaximize" />
-                <Button Style="{StaticResource Button.CaptionClose}" Content="&#xE8BB;" ToolTip="Close" Click="OnClose" />
+                <Button Style="{StaticResource Button.Caption}" Content="&#xE921;" ToolTip="{DynamicResource L.Main.Minimize}" Click="OnMinimize" />
+                <Button x:Name="MaximizeButton" Style="{StaticResource Button.Caption}" Content="&#xE922;" ToolTip="{DynamicResource L.Main.Maximize}" Click="OnMaximize" />
+                <Button Style="{StaticResource Button.CaptionClose}" Content="&#xE8BB;" ToolTip="{DynamicResource L.Main.Close}" Click="OnClose" />
             </StackPanel>
 
             <!-- Page host -->
@@ -94,9 +94,9 @@
                             Visibility="{Binding UpdateBanner, Converter={StaticResource NullToVisibility}}">
                         <DockPanel>
                             <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                                <Button Style="{StaticResource Button.Primary}" Content="View update" Padding="10,4" Command="{Binding ViewUpdateCommand}" />
+                                <Button Style="{StaticResource Button.Primary}" Content="{DynamicResource L.Main.ViewUpdate}" Padding="10,4" Command="{Binding ViewUpdateCommand}" />
                                 <Button Style="{StaticResource Button.Icon}" Content="&#xE711;" FontFamily="{StaticResource Font.Icons}" FontSize="11"
-                                        Width="28" Height="28" Margin="4,0,0,0" ToolTip="Dismiss" AutomationProperties.Name="Dismiss update banner"
+                                        Width="28" Height="28" Margin="4,0,0,0" ToolTip="{DynamicResource L.Main.Dismiss}" AutomationProperties.Name="Dismiss update banner"
                                         Command="{Binding DismissUpdateCommand}" />
                             </StackPanel>
                             <TextBlock Text="&#xE896;" Style="{StaticResource Text.Icon}" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,10,0" />

@@ -37,7 +37,7 @@ public sealed class RobloxLauncher(IFastFlagService fastFlags, IRobloxFontServic
     public LaunchResult LaunchUri(RobloxInstallation installation, string uri)
     {
         if (!RobloxLinks.IsLaunchUri(uri))
-            return Fail("That isn't a Roblox launch link.");
+            return Fail(Loc.Get("Launch.ThatIsntARobloxLaunchLink"));
         return Start(installation, uri, RobloxLinks.Redact(uri));
     }
 
@@ -51,7 +51,7 @@ public sealed class RobloxLauncher(IFastFlagService fastFlags, IRobloxFontServic
     private LaunchResult Start(RobloxInstallation installation, string argument, string description)
     {
         if (!File.Exists(installation.ExecutablePath))
-            return Fail($"Roblox is no longer at {installation.Directory}. Refresh the installation status and try again.");
+            return Fail(Loc.Format("Launch.RobloxIsNoLongerAtRefresh", installation.Directory));
 
         // Roblox reads ClientAppSettings.json at startup, so flags must be in place first.
         string? flagWarning = null;
@@ -62,7 +62,7 @@ public sealed class RobloxLauncher(IFastFlagService fastFlags, IRobloxFontServic
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
             logger.LogWarning(ex, "Could not write FastFlags");
-            flagWarning = " (your FastFlags couldn't be written: " + ex.Message + ")";
+            flagWarning = Loc.Get("Launch.YourFastFlagsCouldntBeWritten") + ex.Message + ")";
         }
 
         try
@@ -73,7 +73,7 @@ public sealed class RobloxLauncher(IFastFlagService fastFlags, IRobloxFontServic
         {
             // Files can be in use if Roblox is already open; the next launch tries again.
             logger.LogWarning(ex, "Could not update Roblox's fonts");
-            flagWarning += " (your Roblox font couldn't be updated: " + ex.Message + ")";
+            flagWarning += Loc.Get("Launch.YourRobloxFontCouldntBeUpdated") + ex.Message + ")";
         }
 
         try
@@ -89,16 +89,16 @@ public sealed class RobloxLauncher(IFastFlagService fastFlags, IRobloxFontServic
 
             var process = Process.Start(info);
             if (process is null)
-                return Fail("Windows did not start Roblox.");
+                return Fail(Loc.Get("Launch.WindowsDidNotStartRoblox"));
 
             logger.LogInformation("Started Roblox {Version} with {What} (pid {Pid})",
                 installation.DisplayVersion, description, process.Id);
-            return new LaunchResult(true, "Roblox is starting…" + flagWarning, process.Id);
+            return new LaunchResult(true, Loc.Get("Launch.RobloxIsStarting") + flagWarning, process.Id);
         }
         catch (Win32Exception ex)
         {
             logger.LogError(ex, "Failed to start {Exe}", installation.ExecutablePath);
-            return Fail($"Windows could not start Roblox: {ex.Message}");
+            return Fail(Loc.Format("Launch.WindowsCouldNotStartRoblox", ex.Message));
         }
     }
 

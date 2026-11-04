@@ -1,3 +1,4 @@
+using Nexstrap.Core;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Nexstrap.Models;
@@ -98,10 +99,10 @@ public static partial class FastFlagCatalog
     /// <returns>An error message, or null if the name is acceptable.</returns>
     public static string? ValidateName(string? name)
     {
-        if (string.IsNullOrWhiteSpace(name)) return "Enter a flag name.";
-        if (name.Trim().Length > 200) return "That name is too long.";
+        if (string.IsNullOrWhiteSpace(name)) return Loc.Get("FastFlags.EnterAFlagName");
+        if (name.Trim().Length > 200) return Loc.Get("FastFlags.ThatNameIsTooLong");
         if (KindOf(name) is null)
-            return "Flag names start with FFlag, DFFlag, FInt, DFInt, FString, DFString, FLog or DFLog, followed by letters, digits or _.";
+            return Loc.Get("FastFlags.FlagNamesStartWithFFlagDFFlag");
         return null;
     }
 
@@ -112,11 +113,11 @@ public static partial class FastFlagCatalog
         switch (KindOf(name))
         {
             case FastFlagKind.Bool when !bool.TryParse(value.Trim(), out _):
-                return "This flag needs True or False.";
+                return Loc.Get("FastFlags.ThisFlagNeedsTrueOrFalse");
             case FastFlagKind.Int when !int.TryParse(value.Trim(), NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out _):
-                return "This flag needs a whole number (−2147483648 to 2147483647).";
+                return Loc.Get("FastFlags.ThisFlagNeedsAWholeNumber");
             case FastFlagKind.String when value.Length > MaxStringLength:
-                return $"Text values are limited to {MaxStringLength} characters.";
+                return Loc.Format("FastFlags.TextValuesAreLimitedToCharacters", MaxStringLength);
             case null:
                 return ValidateName(name);
             default:

@@ -2,6 +2,15 @@
 
 All notable changes to Nexstrap are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.7.0] - 2026-11-04
+
+### Added
+- **The whole app is translated**: every page, dropdown, tooltip, dialog and notification now follows your language (English, Deutsch, Español, Français, Português (Brasil) and Русский). Change it under Appearance and it applies right away, no restart needed.
+
+### Changed
+- Dates and numbers on the pages follow your Windows region.
+- Buttons on the Home cards wrap onto a second line when their text is long.
+
 ## [1.6.0] - 2026-11-04
 
 ### Added
@@ -87,6 +96,7 @@ First public release.
 - Quick update check on every launch with an in-app banner; release notes, progress and cancel.
 - Updates are installed only after verifying source, size, SHA-256, product name and version; failed swaps roll back.
 
+[1.7.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.7.0
 [1.6.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.6.0
 [1.5.2]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.5.2
 [1.5.1]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.5.1

@@ -18,7 +18,7 @@ public sealed partial class AboutViewModel(IShellService shell, FileLoggerProvid
 
     public string Tagline => AppInfo.Tagline;
 
-    public string Version => $"Version {AppInfo.VersionString}";
+    public string Version => Loc.Format("About.Version", AppInfo.VersionString);
 
     public string Runtime => $"{RuntimeInformation.FrameworkDescription} · {RuntimeInformation.OSDescription} · {RuntimeInformation.ProcessArchitecture}";
 

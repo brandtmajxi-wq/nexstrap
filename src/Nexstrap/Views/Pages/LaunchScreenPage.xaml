@@ -7,14 +7,14 @@
              xmlns:vm="clr-namespace:Nexstrap.ViewModels.Pages"
              mc:Ignorable="d" d:DataContext="{d:DesignInstance vm:LaunchScreenViewModel}">
     <StackPanel>
-        <ui:SettingCard Icon="&#xE7F4;" Header="Show a loading screen" Description="Appears when you start Roblox from Nexstrap. Roblox's own start-up isn't changed.">
+        <ui:SettingCard Icon="&#xE7F4;" Header="{DynamicResource L.LaunchScreen.ShowALoadingScreen}" Description="{DynamicResource L.LaunchScreen.AppearsWhenYouStartRobloxFrom}">
             <StackPanel Orientation="Horizontal">
-                <Button Content="Preview" ui:Ui.Icon="&#xE7B3;" Padding="10,5" Margin="0,0,14,0" Command="{Binding PreviewCommand}" />
-                <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding Enabled}" AutomationProperties.Name="Show a loading screen" />
+                <Button Content="{DynamicResource L.LaunchScreen.Preview}" ui:Ui.Icon="&#xE7B3;" Padding="10,5" Margin="0,0,14,0" Command="{Binding PreviewCommand}" />
+                <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding Enabled}" AutomationProperties.Name="{DynamicResource L.LaunchScreen.ShowALoadingScreen}" />
             </StackPanel>
         </ui:SettingCard>
 
-        <TextBlock Text="Presets" Style="{StaticResource SectionHeader}" />
+        <TextBlock Text="{DynamicResource L.Appearance.Presets}" Style="{StaticResource SectionHeader}" />
         <ItemsControl ItemsSource="{Binding Presets}" Focusable="False">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -40,28 +40,28 @@
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <TextBlock Text="Customize" Style="{StaticResource SectionHeader}" Margin="2,8,0,10" />
-        <ui:SettingCard Icon="&#xE8D2;" Header="Text" Description="The line under the logo.">
+        <TextBlock Text="{DynamicResource L.LaunchScreen.Customize}" Style="{StaticResource SectionHeader}" Margin="2,8,0,10" />
+        <ui:SettingCard Icon="&#xE8D2;" Header="{DynamicResource L.LaunchScreen.Text}" Description="{DynamicResource L.LaunchScreen.TheLineUnderTheLogo}">
             <TextBox Width="220" MaxLength="60" AutomationProperties.Name="Loading text" Text="{Binding ScreenTitle, UpdateSourceTrigger=LostFocus}" />
         </ui:SettingCard>
-        <ui:SettingCard Icon="&#xE790;" Header="Background colour" Description="Text switches between black and white to stay readable.">
+        <ui:SettingCard Icon="&#xE790;" Header="{DynamicResource L.LaunchScreen.BackgroundColour}" Description="{DynamicResource L.LaunchScreen.TextSwitchesBetweenBlackAndWhite}">
             <TextBox Width="150" FontFamily="{StaticResource Font.Mono}" MaxLength="9" AutomationProperties.Name="Loading background colour"
                      Text="{Binding BackgroundColor, UpdateSourceTrigger=LostFocus}" />
         </ui:SettingCard>
-        <ui:SettingCard Icon="&#xE790;" Header="Accent colour" Description="Colour of the spinner or bar.">
+        <ui:SettingCard Icon="&#xE790;" Header="{DynamicResource L.Appearance.AccentColour}" Description="{DynamicResource L.LaunchScreen.ColourOfTheSpinnerOrBar}">
             <TextBox Width="150" FontFamily="{StaticResource Font.Mono}" MaxLength="9" AutomationProperties.Name="Loading accent colour"
                      Text="{Binding AccentColor, UpdateSourceTrigger=LostFocus}" />
         </ui:SettingCard>
         <TextBlock Text="{Binding ColorError}" Style="{StaticResource Text.Caption}" Foreground="{DynamicResource Brush.Danger}" Margin="2,0,0,6"
                    Visibility="{Binding ColorError, Converter={StaticResource NullToVisibility}}" />
-        <ui:SettingCard Icon="&#xE768;" Header="Animation" Description="Shown while Roblox loads.">
+        <ui:SettingCard Icon="&#xE768;" Header="{DynamicResource L.LaunchScreen.Animation}" Description="{DynamicResource L.LaunchScreen.ShownWhileRobloxLoads}">
             <ComboBox Width="170" ItemsSource="{Binding AnimationChoices}" DisplayMemberPath="Label" SelectedValuePath="Value"
                       SelectedValue="{Binding Animation}" AutomationProperties.Name="Loading animation" />
         </ui:SettingCard>
-        <ui:SettingCard Icon="&#xEB9F;" Header="Background image" Description="Shown behind the logo. The image is copied into Nexstrap's data folder.">
+        <ui:SettingCard Icon="&#xEB9F;" Header="{DynamicResource L.Appearance.BackgroundImage}" Description="{DynamicResource L.LaunchScreen.ShownBehindTheLogoTheImage}">
             <StackPanel Orientation="Horizontal">
-                <Button Content="Choose image…" ui:Ui.Icon="&#xE8E5;" Padding="10,6" Command="{Binding ChooseImageCommand}" />
-                <Button Style="{StaticResource Button.Ghost}" Content="Remove" Padding="10,6" Margin="6,0,0,0" Command="{Binding RemoveImageCommand}"
+                <Button Content="{DynamicResource L.Appearance.ChooseImage}" ui:Ui.Icon="&#xE8E5;" Padding="10,6" Command="{Binding ChooseImageCommand}" />
+                <Button Style="{StaticResource Button.Ghost}" Content="{DynamicResource L.Appearance.Remove}" Padding="10,6" Margin="6,0,0,0" Command="{Binding RemoveImageCommand}"
                         Visibility="{Binding HasImage, Converter={StaticResource BoolToVisibility}}" />
             </StackPanel>
         </ui:SettingCard>

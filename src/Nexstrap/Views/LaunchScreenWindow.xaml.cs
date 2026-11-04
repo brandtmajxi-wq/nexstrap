@@ -18,7 +18,7 @@ public partial class LaunchScreenWindow : Window
         var text = new SolidColorBrush(ColorUtil.ReadableForeground(background));
 
         Root.Background = new SolidColorBrush(background);
-        TitleText.Text = options.Title;
+        TitleText.Text = options.Title == "Starting Roblox" ? Loc.Get("LaunchScreen.DefaultTitle") : options.Title;
         TitleText.Foreground = text;
         Spinner.Stroke = accent;
         BarFill.Background = accent;

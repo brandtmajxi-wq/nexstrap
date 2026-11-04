@@ -1,3 +1,4 @@
+using Nexstrap.Core;
 using System.Runtime.InteropServices;
 using Nexstrap.Models;
 using Nexstrap.Services.FastFlags;
@@ -48,7 +49,12 @@ public enum StatusLevel { Good, Info, Warning }
 public sealed record StatusLine(StatusLevel Level, string Text);
 
 /// <summary>Null cap means "the highest standard cap your display can show".</summary>
-public sealed record PerformancePreset(string Name, string Description, int? Cap, int Quality);
+public sealed record PerformancePreset(string Key, int? Cap, int Quality)
+{
+    public string Name => Loc.Get(Key);
+
+    public string Description => Loc.Get(Key + ".Text");
+}
 
 /// <summary>
 /// Pure decisions for the Performance page. Frame rate and quality use Roblox's own settings;
@@ -72,10 +78,10 @@ public static class PerformancePlanner
 
     public static IReadOnlyList<PerformancePreset> Presets { get; } =
     [
-        new("Balanced", "Roblox picks the quality automatically, capped to your display.", null, 0),
-        new("Smoothest", "Low fixed quality, capped to your display. Best chance of steady frames on slower PCs.", null, 3),
-        new("Best looking", "Highest fixed quality, capped to your display. Needs a strong PC.", null, 10),
-        new("Power saver", "Medium quality at 60 FPS. Less heat, fan noise and battery use.", 60, 5)
+        new("Performance.Preset.Balanced", null, 0),
+        new("Performance.Preset.Smoothest", null, 3),
+        new("Performance.Preset.BestLooking", null, 10),
+        new("Performance.Preset.PowerSaver", 60, 5)
     ];
 
     /// <summary>Highest standard cap the display can actually show; 60 if unknown.</summary>
@@ -136,27 +142,27 @@ public static class PerformancePlanner
         var lines = new List<StatusLine>();
 
         if (!settingsFileExists)
-            lines.Add(new(StatusLevel.Warning, "Roblox hasn't created its settings file yet. Start Roblox once, then come back."));
+            lines.Add(new(StatusLevel.Warning, Loc.Get("Performance.RobloxHasntCreatedItsSettingsFile")));
         else if (cap is null)
-            lines.Add(new(StatusLevel.Info, "No frame-rate cap saved yet, so Roblox uses its default."));
+            lines.Add(new(StatusLevel.Info, Loc.Get("Performance.NoFrameRateCapSavedYet")));
         else if (refreshRate is { } hz && cap > hz + 1)
-            lines.Add(new(StatusLevel.Info, $"Cap is {cap} FPS but your display shows {hz} Hz. Frames above {hz} can't appear on screen."));
+            lines.Add(new(StatusLevel.Info, Loc.Format("Performance.CapIsFPSButYourDisplay", cap, hz)));
         else if (refreshRate is { } rate && cap < RecommendedCap(rate))
-            lines.Add(new(StatusLevel.Info, $"Cap is {cap} FPS. Your {rate} Hz display can show up to {RecommendedCap(rate)}."));
+            lines.Add(new(StatusLevel.Info, Loc.Format("Performance.CapIsFPSYourHzDisplay", cap, rate, RecommendedCap(rate))));
         else
-            lines.Add(new(StatusLevel.Good, $"Cap is {cap} FPS, a good match for your display."));
+            lines.Add(new(StatusLevel.Good, Loc.Format("Performance.CapIsFPSAGoodMatch", cap)));
 
         if (robloxRunning)
-            lines.Add(new(StatusLevel.Warning, "Roblox is open. Close it to change the frame-rate cap or graphics quality."));
+            lines.Add(new(StatusLevel.Warning, Loc.Get("Performance.RobloxIsOpenCloseItTo")));
 
         if (flags.Any(f => f.Name == OldFpsFlag && f.Enabled))
-            lines.Add(new(StatusLevel.Warning, $"{OldFpsFlag} is in your FastFlags, but Roblox ignores it. Use the cap above instead."));
+            lines.Add(new(StatusLevel.Warning, Loc.Format("Performance.IsInYourFastFlagsButRoblox", OldFpsFlag)));
 
         var usesFlags = ReadApi(flags) != GraphicsApi.Automatic || ReadInt(flags, ForceMsaa) >= 0 || ReadInt(flags, TextureOverride) >= 0;
         if (usesFlags && !playUsesNexstrapBuild)
-            lines.Add(new(StatusLevel.Warning, "Your graphics preferences won't apply: Play isn't using a Nexstrap-installed build. Install one from Home."));
+            lines.Add(new(StatusLevel.Warning, Loc.Get("Performance.YourGraphicsPreferencesWontApplyPlay")));
         else if (usesFlags)
-            lines.Add(new(StatusLevel.Good, "Your graphics preferences are written to Roblox each time you press Play."));
+            lines.Add(new(StatusLevel.Good, Loc.Get("Performance.YourGraphicsPreferencesAreWrittenTo")));
 
         return lines;
     }

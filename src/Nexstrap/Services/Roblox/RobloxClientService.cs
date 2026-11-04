@@ -1,3 +1,4 @@
+using Nexstrap.Core;
 using System.IO;
 using Microsoft.Extensions.Logging;
 using Nexstrap.Models;
@@ -110,7 +111,7 @@ public sealed class RobloxClientService(
     public async Task<RobloxInstallation> InstallLatestAsync(IProgress<InstallProgress>? progress, CancellationToken ct = default)
     {
         if (!await _installGate.WaitAsync(0, ct))
-            throw new InstallException("An installation is already running.");
+            throw new InstallException(Loc.Get("Launch.AnInstallationIsAlreadyRunning"));
         try
         {
             var latest = await deployment.GetLatestVersionAsync(ct);
@@ -135,9 +136,9 @@ public sealed class RobloxClientService(
     public void Remove(RobloxInstallation installation)
     {
         if (installation.Source != InstallationSource.Nexstrap)
-            throw new InvalidOperationException("Only builds installed by Nexstrap can be removed here.");
+            throw new InvalidOperationException(Loc.Get("Launch.OnlyBuildsInstalledByNexstrapCan"));
         if (launcher.IsRobloxRunning())
-            throw new InvalidOperationException("Close Roblox before removing an installation.");
+            throw new InvalidOperationException(Loc.Get("Launch.CloseRobloxBeforeRemovingAnInstallation"));
 
         Directory.Delete(installation.Directory, recursive: true);
         logger.LogInformation("Removed {Dir}", installation.Directory);

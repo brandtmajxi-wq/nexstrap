@@ -9,19 +9,19 @@
     <StackPanel>
         <DockPanel Margin="2,0,0,10">
             <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                <Button Style="{StaticResource Button.Ghost}" Content="Show dismissed" Padding="10,4" Command="{Binding RestoreDismissedCommand}"
+                <Button Style="{StaticResource Button.Ghost}" Content="{DynamicResource L.Notifications.ShowDismissed}" Padding="10,4" Command="{Binding RestoreDismissedCommand}"
                         Visibility="{Binding HasDismissed, Converter={StaticResource BoolToVisibility}}" />
-                <Button Style="{StaticResource Button.Ghost}" Content="Dismiss all" Padding="10,4" Margin="6,0,0,0" Command="{Binding DismissAllCommand}"
+                <Button Style="{StaticResource Button.Ghost}" Content="{DynamicResource L.Notifications.DismissAll}" Padding="10,4" Margin="6,0,0,0" Command="{Binding DismissAllCommand}"
                         Visibility="{Binding HasItems, Converter={StaticResource BoolToVisibility}}" />
             </StackPanel>
-            <TextBlock Text="Inbox" Style="{StaticResource Text.Section}" VerticalAlignment="Center" />
+            <TextBlock Text="{DynamicResource L.Notifications.Inbox}" Style="{StaticResource Text.Section}" VerticalAlignment="Center" />
         </DockPanel>
 
         <Border Style="{StaticResource Card}" Padding="18,16"
                 Visibility="{Binding HasItems, Converter={StaticResource InverseBoolToVisibility}}">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="&#xE73E;" Style="{StaticResource Text.Icon}" Foreground="{DynamicResource Brush.Success}" Margin="0,0,10,0" />
-                <TextBlock Text="You're all caught up." Style="{StaticResource Text.Body}" VerticalAlignment="Center" />
+                <TextBlock Text="{DynamicResource L.Notifications.YoureAllCaughtUp}" Style="{StaticResource Text.Body}" VerticalAlignment="Center" />
             </StackPanel>
         </Border>
 
@@ -31,10 +31,10 @@
                     <Border Style="{StaticResource Card}" Padding="16,12" Margin="0,0,0,8">
                         <DockPanel>
                             <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
-                                <Button Content="Open" Padding="10,5" AutomationProperties.Name="{Binding Title, StringFormat='Open {0}'}"
+                                <Button Content="{DynamicResource L.About.Open}" Padding="10,5" AutomationProperties.Name="{Binding Title, StringFormat='Open {0}'}"
                                         Command="{Binding DataContext.OpenCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" />
                                 <Button Style="{StaticResource Button.Icon}" Content="&#xE711;" FontFamily="{StaticResource Font.Icons}" FontSize="11" Margin="6,0,0,0"
-                                        ToolTip="Dismiss" AutomationProperties.Name="{Binding Title, StringFormat='Dismiss {0}'}"
+                                        ToolTip="{DynamicResource L.Main.Dismiss}" AutomationProperties.Name="{Binding Title, StringFormat='Dismiss {0}'}"
                                         Command="{Binding DataContext.DismissCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" />
                             </StackPanel>
                             <TextBlock DockPanel.Dock="Left" Margin="0,2,12,0" VerticalAlignment="Top">
@@ -62,17 +62,17 @@
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <TextBlock Text="Preferences" Style="{StaticResource SectionHeader}" />
-        <ui:SettingCard Icon="&#xE895;" Header="Nexstrap updates" Description="When a newer Nexstrap is published on GitHub.">
+        <TextBlock Text="{DynamicResource L.Notifications.Preferences}" Style="{StaticResource SectionHeader}" />
+        <ui:SettingCard Icon="&#xE895;" Header="{DynamicResource L.Home.NexstrapUpdates}" Description="{DynamicResource L.Notifications.WhenANewerNexstrapIsPublished}">
             <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding NexstrapUpdates}" AutomationProperties.Name="Notify Nexstrap updates" />
         </ui:SettingCard>
-        <ui:SettingCard Icon="&#xE896;" Header="Roblox updates" Description="When Roblox releases a build newer than the one Play uses.">
+        <ui:SettingCard Icon="&#xE896;" Header="{DynamicResource L.Notifications.RobloxUpdates}" Description="{DynamicResource L.Notifications.WhenRobloxReleasesABuildNewer}">
             <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding RobloxUpdates}" AutomationProperties.Name="Notify Roblox updates" />
         </ui:SettingCard>
-        <ui:SettingCard Icon="&#xE7BA;" Header="Configuration warnings" Description="Ignored FastFlags, flags that can't apply, and a frame-rate cap above your display.">
+        <ui:SettingCard Icon="&#xE7BA;" Header="{DynamicResource L.Notifications.ConfigurationWarnings}" Description="{DynamicResource L.Notifications.IgnoredFastFlagsFlagsThatCantApply}">
             <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding ConfigurationWarnings}" AutomationProperties.Name="Notify configuration warnings" />
         </ui:SettingCard>
         <TextBlock Style="{StaticResource Text.Caption}" Margin="2,10,0,0"
-                   Text="Notifications appear inside Nexstrap while it's open, with a count in the sidebar. A dismissed notification comes back only if something changes, such as a newer version." />
+                   Text="{DynamicResource L.Notifications.NotificationsAppearInsideNexstrapWhileIts}" />
     </StackPanel>
 </UserControl>

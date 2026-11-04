@@ -7,6 +7,20 @@ using Nexstrap.Models;
 
 namespace Nexstrap.Controls;
 
+/// <summary>Formats a bound value with a language key. Parameter: "Key", or "Key|KeyWhenNull".</summary>
+public sealed class LocFormatConverter : IValueConverter
+{
+    public object Convert(object? value, Type targetType, object parameter, CultureInfo culture)
+    {
+        var keys = ((string)parameter).Split('|');
+        if (value is not null) return Loc.Format(keys[0], value);
+        return keys.Length > 1 ? Loc.Get(keys[1]) : string.Empty;
+    }
+
+    public object ConvertBack(object? value, Type targetType, object parameter, CultureInfo culture) =>
+        throw new NotSupportedException();
+}
+
 /// <summary>"#RRGGBB" → SolidColorBrush (transparent when invalid).</summary>
 public sealed class HexToBrushConverter : IValueConverter
 {

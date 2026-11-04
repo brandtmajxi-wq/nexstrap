@@ -21,7 +21,7 @@
 
             <Expander x:Name="DetailsExpander" Margin="0,12,0,0" Visibility="Collapsed" Foreground="{DynamicResource Brush.TextSecondary}">
                 <Expander.Header>
-                    <TextBlock Text="Technical details" Style="{StaticResource Text.Caption}" FontSize="12" />
+                    <TextBlock Text="{DynamicResource L.Dialog.TechnicalDetails}" Style="{StaticResource Text.Caption}" FontSize="12" />
                 </Expander.Header>
                 <TextBox x:Name="DetailsText" IsReadOnly="True" TextWrapping="Wrap" MaxHeight="180" Margin="0,8,0,0"
                          FontFamily="{StaticResource Font.Mono}" FontSize="11" VerticalScrollBarVisibility="Auto" />

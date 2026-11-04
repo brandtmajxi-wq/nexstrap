@@ -20,6 +20,7 @@ public partial class MainWindow : Window
         _settings = settings;
         _logger = logger;
         InitializeComponent();
+        Language = System.Windows.Markup.XmlLanguage.GetLanguage(System.Globalization.CultureInfo.CurrentCulture.IetfLanguageTag);
         DataContext = viewModel;
 
         RestoreWindowPlacement();
@@ -42,7 +43,7 @@ public partial class MainWindow : Window
         // A maximised chrome-less window overhangs the screen by the resize border; compensate.
         RootGrid.Margin = maximized ? new Thickness(7) : new Thickness(0);
         MaximizeButton.Content = maximized ? "" : "";
-        MaximizeButton.ToolTip = maximized ? "Restore" : "Maximize";
+        MaximizeButton.ToolTip = maximized ? Loc.Get("FastFlags.Restore") : Loc.Get("Main.Maximize");
     }
 
     private void PlayPageTransition()

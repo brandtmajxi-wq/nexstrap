@@ -109,7 +109,7 @@ public sealed class RobloxDeployment : IRobloxDeployment
         }
         catch (Exception ex) when (!ct.IsCancellationRequested && ex is HttpRequestException or System.Text.Json.JsonException or TaskCanceledException)
         {
-            throw new InstallException("Couldn't reach Roblox to check the latest version. Check your connection.", ex);
+            throw new InstallException(Loc.Get("Launch.CouldntReachRobloxToCheckThe"), ex);
         }
     }
 
@@ -149,7 +149,7 @@ public sealed class RobloxDeployment : IRobloxDeployment
             return target;
         }
 
-        progress?.Report(new InstallProgress("Reading package list…", 0, 0));
+        progress?.Report(new InstallProgress(Loc.Get("Launch.ReadingPackageList"), 0, 0));
         var manifestText = await GetStringAsync($"{CdnBase}{version.VersionHash}-rbxPkgManifest.txt", ct);
         var packages = ParseManifest(manifestText).Where(p => !IgnoredPackages.Contains(p.Name)).ToList();
 
@@ -181,7 +181,7 @@ public sealed class RobloxDeployment : IRobloxDeployment
                     zip = await DownloadVerifiedAsync(version.VersionHash, package, bytes =>
                     {
                         var now = Interlocked.Add(ref done, bytes);
-                        progress?.Report(new InstallProgress("Downloading Roblox…", now, total));
+                        progress?.Report(new InstallProgress(Loc.Get("Launch.DownloadingRoblox"), now, total));
                     }, ct);
                 }
                 finally
@@ -201,7 +201,7 @@ public sealed class RobloxDeployment : IRobloxDeployment
             });
             await Task.WhenAll(tasks);
 
-            progress?.Report(new InstallProgress("Finishing up…", total, total));
+            progress?.Report(new InstallProgress(Loc.Get("Launch.FinishingUp"), total, total));
             await File.WriteAllTextAsync(Path.Combine(staging, "AppSettings.xml"), AppSettingsXml, ct);
 
             if (!File.Exists(Path.Combine(staging, RobloxLocator.PlayerExecutable)))

@@ -52,26 +52,26 @@ public sealed class LaunchCoordinator(
         var state = client.State;
         if (state.Preferred is not { } installation)
         {
-            dialogs.Show("Roblox isn't installed", "Install Roblox from the Home page first.", DialogKind.Warning);
+            dialogs.Show(Loc.Get("App.RobloxIsntInstalled"), Loc.Get("Launch.InstallRobloxFromTheHomePage"), DialogKind.Warning);
             return null;
         }
 
         if (replacesGame && launcher.IsRobloxRunning() &&
-            !dialogs.Confirm("Roblox is already open",
-                "Roblox runs one game at a time, so joining will replace the session that's open now.", "Join anyway"))
+            !dialogs.Confirm(Loc.Get("Launch.RobloxIsAlreadyOpen"),
+                Loc.Get("Launch.RobloxRunsOneGameAtA"), Loc.Get("Launch.JoinAnyway")))
             return null;
 
         if (state.UpdateAvailable && state.Latest is { } latest &&
-            !dialogs.Confirm("Roblox is out of date",
-                $"This build is {installation.DisplayVersion}, but Roblox is now on {latest.Version}. Outdated clients may refuse to join games. Launch anyway?",
-                "Launch anyway", "Not now"))
+            !dialogs.Confirm(Loc.Get("Launch.RobloxIsOutOfDate"),
+                Loc.Format("Launch.ThisBuildIsButRobloxIs", installation.DisplayVersion, latest.Version),
+                Loc.Get("Launch.LaunchAnyway"), Loc.Get("Launch.NotNow")))
             return null;
 
         var launchedAt = DateTime.UtcNow;
         var result = await Task.Run(() => launch(installation));
         if (!result.Success)
         {
-            dialogs.Show("Roblox didn't start", result.Message, DialogKind.Error);
+            dialogs.Show(Loc.Get("App.RobloxDidntStart"), result.Message, DialogKind.Error);
             return result;
         }
 
@@ -101,7 +101,7 @@ public sealed class LaunchCoordinator(
         var list = settings.Current.Launcher.RecentExperiences;
         var previous = list.FirstOrDefault(r => r.PlaceId == placeId);
         list.RemoveAll(r => r.PlaceId == placeId);
-        list.Insert(0, new RecentExperience { PlaceId = placeId, Name = name ?? previous?.Name ?? $"Place {placeId}", LastLaunched = DateTime.Now });
+        list.Insert(0, new RecentExperience { PlaceId = placeId, Name = name ?? previous?.Name ?? Loc.Format("Launch.Place", placeId), LastLaunched = DateTime.Now });
         if (list.Count > MaxRecent) list.RemoveRange(MaxRecent, list.Count - MaxRecent);
         settings.Save();
         RecentsChanged?.Invoke(this, EventArgs.Empty);

@@ -82,12 +82,12 @@ public sealed partial class GamesViewModel : PageViewModel
     {
         RobloxLinks.TryParsePlaceId(Input, out var placeId);
         Input = "";
-        string name = $"Place {placeId}";
+        string name = Loc.Format("Launch.Place", placeId);
         try
         {
             if (await _experiences.LookupAsync(placeId) is not { } info)
             {
-                Status = "No experience found with that place ID.";
+                Status = Loc.Get("Games.NoExperienceFoundWithThatPlace");
                 return;
             }
             name = info.Name;
@@ -113,7 +113,7 @@ public sealed partial class GamesViewModel : PageViewModel
     [RelayCommand]
     private async Task PlayAsync(GameItem game)
     {
-        if (await _launch.JoinAsync(game.PlaceId, game.Name) is { Success: true }) Status = $"Starting {game.Name}…";
+        if (await _launch.JoinAsync(game.PlaceId, game.Name) is { Success: true }) Status = Loc.Format("Games.Starting", game.Name);
     }
 
     [RelayCommand]
@@ -129,11 +129,11 @@ public sealed partial class GamesViewModel : PageViewModel
     {
         try
         {
-            Status = $"Shortcut created: {Path.GetFileName(_shortcuts.CreateOnDesktop(game.PlaceId, game.Name))} on your desktop.";
+            Status = Loc.Format("Games.ShortcutCreatedOnYourDesktop", Path.GetFileName(_shortcuts.CreateOnDesktop(game.PlaceId, game.Name)));
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            _dialogs.Show("Couldn't create the shortcut", ex.Message, DialogKind.Warning);
+            _dialogs.Show(Loc.Get("Games.CouldntCreateTheShortcut"), ex.Message, DialogKind.Warning);
         }
     }
 

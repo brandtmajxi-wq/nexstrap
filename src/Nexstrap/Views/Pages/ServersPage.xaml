@@ -10,9 +10,9 @@
         <Border Style="{StaticResource Card}" Padding="18,16">
             <StackPanel>
                 <DockPanel>
-                    <Button DockPanel.Dock="Right" Style="{StaticResource Button.Primary}" Content="Find servers" ui:Ui.Icon="&#xE721;"
+                    <Button DockPanel.Dock="Right" Style="{StaticResource Button.Primary}" Content="{DynamicResource L.Servers.FindServers}" ui:Ui.Icon="&#xE721;"
                             Margin="10,0,0,0" Command="{Binding LoadCommand}" />
-                    <TextBox ui:Ui.Icon="&#xE71B;" ui:Ui.Placeholder="Place ID or roblox.com/games/… link" AutomationProperties.Name="Server place"
+                    <TextBox ui:Ui.Icon="&#xE71B;" ui:Ui.Placeholder="{DynamicResource L.Games.PlaceIDOrRobloxComGames}" AutomationProperties.Name="Server place"
                              Text="{Binding Input, UpdateSourceTrigger=PropertyChanged}">
                         <TextBox.InputBindings>
                             <KeyBinding Key="Enter" Command="{Binding LoadCommand}" />
@@ -26,30 +26,30 @@
             </StackPanel>
         </Border>
 
-        <TextBlock Text="Filters" Style="{StaticResource SectionHeader}" />
-        <ui:SettingCard Icon="&#xE8CB;" Header="Sort by" Description="Roblox provides the player order; ping sorts the servers loaded so far.">
-            <ComboBox Width="170" ItemsSource="{Binding SortChoices}" DisplayMemberPath="Label" SelectedValuePath="Value"
+        <TextBlock Text="{DynamicResource L.Servers.Filters}" Style="{StaticResource SectionHeader}" />
+        <ui:SettingCard Icon="&#xE8CB;" Header="{DynamicResource L.Servers.SortBy}" Description="{DynamicResource L.Servers.RobloxProvidesThePlayerOrderPing}">
+            <ComboBox Width="190" ItemsSource="{Binding SortChoices}" DisplayMemberPath="Label" SelectedValuePath="Value"
                       SelectedValue="{Binding Sort}" AutomationProperties.Name="Sort servers" />
         </ui:SettingCard>
-        <ui:SettingCard Icon="&#xE716;" Header="Hide full servers" Description="Only show servers with room to join.">
-            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding HideFull}" AutomationProperties.Name="Hide full servers" />
+        <ui:SettingCard Icon="&#xE716;" Header="{DynamicResource L.Servers.HideFullServers}" Description="{DynamicResource L.Servers.OnlyShowServersWithRoomTo}">
+            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding HideFull}" AutomationProperties.Name="{DynamicResource L.Servers.HideFullServers}" />
         </ui:SettingCard>
-        <ui:SettingCard Icon="&#xE8FA;" Header="Minimum free slots" Description="Useful for joining with friends.">
+        <ui:SettingCard Icon="&#xE8FA;" Header="{DynamicResource L.Servers.MinimumFreeSlots}" Description="{DynamicResource L.Servers.UsefulForJoiningWithFriends}">
             <StackPanel Orientation="Horizontal">
                 <Slider Width="180" Minimum="0" Maximum="20" SmallChange="1" LargeChange="1" IsSnapToTickEnabled="True" TickFrequency="1"
-                        Value="{Binding MinFreeSlots}" AutomationProperties.Name="Minimum free slots" VerticalAlignment="Center" />
+                        Value="{Binding MinFreeSlots}" AutomationProperties.Name="{DynamicResource L.Servers.MinimumFreeSlots}" VerticalAlignment="Center" />
                 <TextBlock Text="{Binding MinFreeSlots, StringFormat='{}{0:0}'}" Width="40" TextAlignment="Right" Style="{StaticResource Text.Base}" VerticalAlignment="Center" />
             </StackPanel>
         </ui:SettingCard>
-        <ui:SettingCard Icon="&#xEC05;" Header="Maximum ping" Description="0 means no limit. Roblox reports each server's average, not your own ping.">
+        <ui:SettingCard Icon="&#xEC05;" Header="{DynamicResource L.Servers.MaximumPing}" Description="{DynamicResource L.Servers.0MeansNoLimitRobloxReports}">
             <StackPanel Orientation="Horizontal">
                 <Slider Width="180" Minimum="0" Maximum="300" SmallChange="10" LargeChange="50" IsSnapToTickEnabled="True" TickFrequency="10"
-                        Value="{Binding MaxPing}" AutomationProperties.Name="Maximum ping" VerticalAlignment="Center" />
+                        Value="{Binding MaxPing}" AutomationProperties.Name="{DynamicResource L.Servers.MaximumPing}" VerticalAlignment="Center" />
                 <TextBlock Text="{Binding MaxPing, StringFormat='{}{0:0} ms'}" Width="56" TextAlignment="Right" Style="{StaticResource Text.Base}" VerticalAlignment="Center" />
             </StackPanel>
         </ui:SettingCard>
 
-        <TextBlock Text="Servers" Style="{StaticResource SectionHeader}" />
+        <TextBlock Text="{DynamicResource L.Nav.Servers}" Style="{StaticResource SectionHeader}" />
         <Border Style="{StaticResource Card}" Padding="18,6">
             <StackPanel>
                 <ItemsControl ItemsSource="{Binding ServersView}" Focusable="False">
@@ -57,7 +57,7 @@
                         <DataTemplate>
                             <Border BorderBrush="{DynamicResource Brush.Divider}" BorderThickness="0,0,0,1" Padding="0,10">
                                 <DockPanel>
-                                    <Button DockPanel.Dock="Right" Content="Join" ui:Ui.Icon="&#xE768;" Padding="12,5" Margin="14,0,0,0" VerticalAlignment="Center"
+                                    <Button DockPanel.Dock="Right" Content="{DynamicResource L.Home.Join}" ui:Ui.Icon="&#xE768;" Padding="12,5" Margin="14,0,0,0" VerticalAlignment="Center"
                                             IsEnabled="{Binding IsFull, Converter={StaticResource InverseBool}}"
                                             AutomationProperties.Name="{Binding Id, StringFormat='Join {0}'}"
                                             Command="{Binding DataContext.JoinCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
@@ -65,12 +65,12 @@
                                     <StackPanel>
                                         <DockPanel>
                                             <TextBlock DockPanel.Dock="Right" Style="{StaticResource Text.Caption}">
-                                                <Run Text="{Binding Ping, Mode=OneWay, StringFormat='{}{0} ms', TargetNullValue='no ping'}" />
+                                                <Run Text="{Binding Ping, Mode=OneWay, Converter={StaticResource LocFormat}, ConverterParameter='Format.Ms|Format.NoPing'}" />
                                                 <Run Text="·" />
                                                 <Run Text="{Binding Fps, Mode=OneWay, StringFormat='{}{0:0} FPS'}" />
                                             </TextBlock>
                                             <TextBlock Style="{StaticResource Text.Base}" FontWeight="Medium">
-                                                <Run Text="{Binding Playing, Mode=OneWay}" /><Run Text=" / " /><Run Text="{Binding MaxPlayers, Mode=OneWay}" /><Run Text=" players" />
+                                                <Run Text="{Binding Playing, Mode=OneWay}" /><Run Text=" / " /><Run Text="{Binding MaxPlayers, Mode=OneWay}" /><Run Text="{DynamicResource L.Servers.Players}" />
                                             </TextBlock>
                                         </DockPanel>
                                         <ProgressBar Height="4" Margin="0,7,0,0" Maximum="1" Value="{Binding Fill, Mode=OneWay}" />
@@ -80,11 +80,11 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-                <Button Content="Load more" HorizontalAlignment="Center" Padding="12,5" Margin="0,10"
+                <Button Content="{DynamicResource L.Servers.LoadMore}" HorizontalAlignment="Center" Padding="12,5" Margin="0,10"
                         Command="{Binding LoadMoreCommand}"
                         Visibility="{Binding HasMore, Converter={StaticResource BoolToVisibility}}" />
                 <TextBlock Style="{StaticResource Text.Caption}" Margin="0,8,0,6"
-                           Text="Server regions aren't shown: Roblox's public list doesn't include them. Roblox can still move you to another server if this one fills up." />
+                           Text="{DynamicResource L.Servers.ServerRegionsArentShownRobloxsPublic}" />
             </StackPanel>
         </Border>
     </StackPanel>

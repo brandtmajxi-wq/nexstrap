@@ -99,16 +99,16 @@ public sealed class ConfigTransferService(
         try
         {
             bundle = JsonSerializer.Deserialize<ConfigBundle>(File.ReadAllText(path), JsonFileStore<ConfigBundle>.SerializerOptions)
-                     ?? throw new InvalidDataException("The file is empty.");
+                     ?? throw new InvalidDataException(Loc.Get("Integrations.TheFileIsEmpty"));
         }
         catch (JsonException ex)
         {
-            throw new InvalidDataException("This isn't a Nexstrap configuration file.", ex);
+            throw new InvalidDataException(Loc.Get("Integrations.ThisIsntANexstrapConfigurationFile"), ex);
         }
         if (bundle.Format != ConfigBundle.FormatName)
-            throw new InvalidDataException("This isn't a Nexstrap configuration file.");
+            throw new InvalidDataException(Loc.Get("Integrations.ThisIsntANexstrapConfigurationFile"));
         if (bundle.Version > 1)
-            throw new InvalidDataException("This file was made by a newer Nexstrap. Update Nexstrap, then import it again.");
+            throw new InvalidDataException(Loc.Get("Integrations.ThisFileWasMadeByA"));
 
         // Safety net: snapshot the current setup in the same format.
         Directory.CreateDirectory(BackupDir);
@@ -141,7 +141,7 @@ public sealed class ConfigTransferService(
         {
             var usable = companions.Where(c => CompanionAppService.Validate(c.Path) is null).ToList();
             foreach (var missing in companions.Except(usable))
-                notes.Add($"Companion app \"{missing.Name}\" was skipped: {missing.Path} isn't on this PC.");
+                notes.Add(Loc.Format("Integrations.CompanionAppWasSkippedIsntOn", missing.Name, missing.Path));
             s.CompanionApps = usable;
             apps = usable.Count;
         }
@@ -159,7 +159,7 @@ public sealed class ConfigTransferService(
             }
             catch (InvalidDataException ex)
             {
-                notes.Add($"Theme \"{theme.Name}\" was skipped: {ex.Message}");
+                notes.Add(Loc.Format("Integrations.ThemeWasSkipped", theme.Name, ex.Message));
             }
             finally
             {

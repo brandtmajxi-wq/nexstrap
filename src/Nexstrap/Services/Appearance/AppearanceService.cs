@@ -129,9 +129,9 @@ public sealed class AppearanceService : IAppearanceService
     {
         var ext = Path.GetExtension(sourcePath).ToLowerInvariant();
         if (!SupportedImageExtensions.Contains(ext))
-            return $"\"{ext}\" files aren't supported. Use PNG, JPG, BMP or GIF.";
+            return Loc.Format("Appearance.FilesArentSupportedUsePNGJPG", ext);
         if (!File.Exists(sourcePath))
-            return "That file no longer exists.";
+            return Loc.Get("Appearance.ThatFileNoLongerExists");
 
         string target;
         try
@@ -146,7 +146,7 @@ public sealed class AppearanceService : IAppearanceService
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
             _logger.LogError(ex, "Failed to copy background {Path}", sourcePath);
-            return "Nexstrap couldn't copy that image: " + ex.Message;
+            return Loc.Get("Appearance.NexstrapCouldntCopyThatImage") + ex.Message;
         }
 
         var previous = Current.BackgroundImage;
@@ -156,7 +156,7 @@ public sealed class AppearanceService : IAppearanceService
             Current.BackgroundImage = previous;
             _theme.ApplyBackground(Current);
             TryDeleteUnused(target);
-            return "That file couldn't be read as an image.";
+            return Loc.Get("Appearance.ThatFileCouldntBeReadAs");
         }
 
         Commit();
@@ -245,7 +245,7 @@ public sealed class AppearanceService : IAppearanceService
     public ThemeProfile SaveProfile(string name)
     {
         name = name.Trim();
-        if (name.Length == 0) throw new ArgumentException("A theme needs a name.", nameof(name));
+        if (name.Length == 0) throw new ArgumentException(Loc.Get("Appearance.AThemeNeedsAName"), nameof(name));
 
         var profile = new ThemeProfile { Name = name, Appearance = Current.Clone(), FilePath = ProfilePath(name) };
         Directory.CreateDirectory(_themesDir);
@@ -267,7 +267,7 @@ public sealed class AppearanceService : IAppearanceService
         try { json = File.ReadAllText(path); }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            throw new InvalidDataException("The file couldn't be read: " + ex.Message, ex);
+            throw new InvalidDataException(Loc.Get("Appearance.TheFileCouldntBeRead") + ex.Message, ex);
         }
 
         var profile = Parse(json);
@@ -302,11 +302,11 @@ public sealed class AppearanceService : IAppearanceService
         }
         catch (JsonException ex)
         {
-            throw new InvalidDataException("This isn't a valid Nexstrap theme file.", ex);
+            throw new InvalidDataException(Loc.Get("Appearance.ThisIsntAValidNexstrapTheme"), ex);
         }
 
         if (profile is null || string.IsNullOrWhiteSpace(profile.Name))
-            throw new InvalidDataException("The theme file has no name.");
+            throw new InvalidDataException(Loc.Get("Appearance.TheThemeFileHasNoName"));
 
         profile.Name = profile.Name.Trim();
         profile.Appearance = Sanitise(profile.Appearance ?? new AppearanceSettings());

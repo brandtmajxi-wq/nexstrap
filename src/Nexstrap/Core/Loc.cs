@@ -13,7 +13,7 @@ public sealed record LanguageOption(string Code, string Name)
 
 /// <summary>
 /// Translated text from Resources\Languages\*.json. XAML uses {DynamicResource L.Some.Key} and code uses
-/// Loc.Get("Some.Key"). A key missing from a language falls back to English.
+/// Loc.Get with the same key. A key missing from a language falls back to English.
 /// </summary>
 public static class Loc
 {
@@ -43,6 +43,10 @@ public static class Loc
 
     public static string GetOr(string key, string fallback) =>
         _current.TryGetValue(key, out var text) || English.TryGetValue(key, out text) ? text : fallback;
+
+    /// <summary>Translated text with {0}-style values filled in.</summary>
+    public static string Format(string key, params object?[] values) =>
+        string.Format(CultureInfo.CurrentCulture, Get(key), values);
 
     /// <summary>The Windows display language if Nexstrap has it, otherwise English.</summary>
     public static string Detect(CultureInfo culture) =>

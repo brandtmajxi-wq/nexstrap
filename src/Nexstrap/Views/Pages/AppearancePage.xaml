@@ -9,7 +9,7 @@
     <StackPanel>
 
         <!-- ===== Theme ===== -->
-        <TextBlock Text="Theme" Style="{StaticResource SectionHeader}" Margin="2,0,0,10" />
+        <TextBlock Text="{DynamicResource L.Appearance.Theme}" Style="{StaticResource SectionHeader}" Margin="2,0,0,10" />
         <UniformGrid Columns="2" Margin="-5,0">
             <RadioButton Style="{StaticResource ChoiceCard}" GroupName="Theme" IsChecked="{Binding IsDark}" Margin="5"
                          AutomationProperties.Name="Dark theme">
@@ -27,12 +27,12 @@
                             </StackPanel>
                         </Grid>
                     </Border>
-                    <TextBlock Text="Dark" Style="{StaticResource Text.Base}" FontWeight="Medium" Margin="2,10,0,0" />
-                    <TextBlock Text="Charcoal surfaces, easy on the eyes." Style="{StaticResource Text.Caption}" Margin="2,2,0,0" />
+                    <TextBlock Text="{DynamicResource L.Appearance.Dark}" Style="{StaticResource Text.Base}" FontWeight="Medium" Margin="2,10,0,0" />
+                    <TextBlock Text="{DynamicResource L.Appearance.CharcoalSurfacesEasyOnTheEyes}" Style="{StaticResource Text.Caption}" Margin="2,2,0,0" />
                 </StackPanel>
             </RadioButton>
             <RadioButton Style="{StaticResource ChoiceCard}" GroupName="Theme" IsChecked="{Binding IsLight}" Margin="5"
-                         AutomationProperties.Name="Light theme">
+                         AutomationProperties.Name="{DynamicResource L.Home.LightTheme}">
                 <StackPanel>
                     <Border Height="74" CornerRadius="8" Background="#F4F5F8" BorderBrush="#E1E3EA" BorderThickness="1">
                         <Grid Margin="8">
@@ -47,15 +47,15 @@
                             </StackPanel>
                         </Grid>
                     </Border>
-                    <TextBlock Text="Light" Style="{StaticResource Text.Base}" FontWeight="Medium" Margin="2,10,0,0" />
-                    <TextBlock Text="Bright and crisp for daytime." Style="{StaticResource Text.Caption}" Margin="2,2,0,0" />
+                    <TextBlock Text="{DynamicResource L.Appearance.Light}" Style="{StaticResource Text.Base}" FontWeight="Medium" Margin="2,10,0,0" />
+                    <TextBlock Text="{DynamicResource L.Appearance.BrightAndCrispForDaytime}" Style="{StaticResource Text.Caption}" Margin="2,2,0,0" />
                 </StackPanel>
             </RadioButton>
         </UniformGrid>
 
         <!-- ===== Presets ===== -->
-        <TextBlock Text="Presets" Style="{StaticResource SectionHeader}" />
-        <TextBlock Text="A preset changes the theme and accent colour. Your font and background stay as they are."
+        <TextBlock Text="{DynamicResource L.Appearance.Presets}" Style="{StaticResource SectionHeader}" />
+        <TextBlock Text="{DynamicResource L.Appearance.APresetChangesTheThemeAnd}"
                    Style="{StaticResource Text.Caption}" Margin="2,-4,0,10" />
         <ItemsControl ItemsSource="{Binding Presets}" Focusable="False">
             <ItemsControl.ItemsPanel>
@@ -88,7 +88,7 @@
         </ItemsControl>
 
         <!-- ===== Accent ===== -->
-        <TextBlock Text="Accent colour" Style="{StaticResource SectionHeader}" Margin="2,8,0,10" />
+        <TextBlock Text="{DynamicResource L.Appearance.AccentColour}" Style="{StaticResource SectionHeader}" Margin="2,8,0,10" />
         <Border Style="{StaticResource Card}" Padding="18,16">
             <StackPanel>
                 <ItemsControl ItemsSource="{Binding AccentSwatches}" Focusable="False">
@@ -122,8 +122,8 @@
         <!-- ===== Font ===== -->
         <DockPanel Margin="2,18,0,10">
             <Button DockPanel.Dock="Right" Style="{StaticResource Button.Ghost}" Padding="10,4" ui:Ui.Icon="&#xE777;"
-                    Content="Default font" Command="{Binding ResetFontCommand}" />
-            <TextBlock Text="Font" Style="{StaticResource Text.Section}" VerticalAlignment="Center" />
+                    Content="{DynamicResource L.Appearance.DefaultFont}" Command="{Binding ResetFontCommand}" />
+            <TextBlock Text="{DynamicResource L.Appearance.Font}" Style="{StaticResource Text.Section}" VerticalAlignment="Center" />
         </DockPanel>
         <Border Style="{StaticResource Card}" Padding="18,16">
             <Grid>
@@ -133,7 +133,7 @@
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
                 <DockPanel>
-                    <TextBox DockPanel.Dock="Top" ui:Ui.Icon="&#xE721;" ui:Ui.Placeholder="Search installed fonts"
+                    <TextBox DockPanel.Dock="Top" ui:Ui.Icon="&#xE721;" ui:Ui.Placeholder="{DynamicResource L.Appearance.SearchInstalledFonts}"
                              AutomationProperties.Name="Search fonts"
                              Text="{Binding FontSearch, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8" />
                     <Grid>
@@ -146,7 +146,7 @@
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
-                        <TextBlock Text="Loading fonts…" Style="{StaticResource Text.Caption}" HorizontalAlignment="Center" VerticalAlignment="Center"
+                        <TextBlock Text="{DynamicResource L.Appearance.LoadingFonts}" Style="{StaticResource Text.Caption}" HorizontalAlignment="Center" VerticalAlignment="Center"
                                    Visibility="{Binding IsLoadingFonts, Converter={StaticResource BoolToVisibility}}" />
                     </Grid>
                 </DockPanel>
@@ -155,16 +155,16 @@
                 <Border Grid.Column="2" Background="{DynamicResource Brush.Input}" CornerRadius="{StaticResource Radius.Control}"
                         BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1" Padding="20,18">
                     <StackPanel>
-                        <TextBlock Text="PREVIEW" Style="{StaticResource Text.Overline}" />
+                        <TextBlock Text="{DynamicResource L.Appearance.PREVIEW}" Style="{StaticResource Text.Overline}" />
                         <TextBlock Text="{Binding CurrentFontName}" Style="{StaticResource Text.Section}" Margin="0,8,0,0" />
                         <TextBlock Text="Aa Bb Cc 123" FontSize="34" FontWeight="SemiBold" Margin="0,12,0,0"
                                    FontFamily="{DynamicResource Font.Primary}" Foreground="{DynamicResource Brush.Text}" />
                         <TextBlock Text="{Binding PreviewText}" FontSize="15" TextWrapping="Wrap" Margin="0,10,0,0"
                                    FontFamily="{DynamicResource Font.Primary}" Foreground="{DynamicResource Brush.TextSecondary}" />
-                        <TextBox Margin="0,16,0,0" ui:Ui.Placeholder="Type your own preview text" AutomationProperties.Name="Preview text"
+                        <TextBox Margin="0,16,0,0" ui:Ui.Placeholder="{DynamicResource L.Appearance.TypeYourOwnPreviewText}" AutomationProperties.Name="Preview text"
                                  Text="{Binding PreviewText, UpdateSourceTrigger=PropertyChanged}" />
                         <TextBlock Style="{StaticResource Text.Caption}" Margin="0,10,0,0"
-                                   Text="The whole app switches as soon as you pick a font. Symbol fonts are hidden because they can't display text." />
+                                   Text="{DynamicResource L.Appearance.TheWholeAppSwitchesAsSoon}" />
                     </StackPanel>
                 </Border>
             </Grid>
@@ -174,27 +174,27 @@
         <TextBlock Text="{DynamicResource L.Language.Header}" Style="{StaticResource SectionHeader}" />
         <ui:SettingCard Icon="&#xF2B7;" Header="{DynamicResource L.Language.Header}" Description="{DynamicResource L.Language.Description}">
             <ComboBox Width="190" ItemsSource="{Binding Languages}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedLanguage}"
-                      AutomationProperties.Name="Language" />
+                      AutomationProperties.Name="{DynamicResource L.Language.Header}" />
         </ui:SettingCard>
 
         <!-- ===== Roblox font ===== -->
-        <TextBlock Text="Roblox font" Style="{StaticResource SectionHeader}" />
-        <ui:SettingCard Icon="&#xE8D2;" Header="Use a custom font in Roblox" Description="{Binding RobloxFontStatus}">
-            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding RobloxFontEnabled}" AutomationProperties.Name="Use a custom font in Roblox" />
+        <TextBlock Text="{DynamicResource L.Appearance.RobloxFont}" Style="{StaticResource SectionHeader}" />
+        <ui:SettingCard Icon="&#xE8D2;" Header="{DynamicResource L.Appearance.UseACustomFontInRoblox}" Description="{Binding RobloxFontStatus}">
+            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding RobloxFontEnabled}" AutomationProperties.Name="{DynamicResource L.Appearance.UseACustomFontInRoblox}" />
         </ui:SettingCard>
-        <ui:SettingCard Icon="&#xE8E9;" Header="Font for Roblox" Description="{Binding RobloxFontName}">
+        <ui:SettingCard Icon="&#xE8E9;" Header="{DynamicResource L.Appearance.FontForRoblox}" Description="{Binding RobloxFontName}">
             <StackPanel Orientation="Horizontal">
-                <Button Content="Use my Nexstrap font" Padding="10,6" Command="{Binding UseNexstrapFontForRobloxCommand}" />
-                <Button Content="Choose file…" ui:Ui.Icon="&#xE8E5;" Padding="10,6" Margin="6,0,0,0" Command="{Binding ChooseRobloxFontFileCommand}" />
+                <Button Content="{DynamicResource L.Appearance.UseMyNexstrapFont}" Padding="10,6" Command="{Binding UseNexstrapFontForRobloxCommand}" />
+                <Button Content="{DynamicResource L.Appearance.ChooseFile}" ui:Ui.Icon="&#xE8E5;" Padding="10,6" Margin="6,0,0,0" Command="{Binding ChooseRobloxFontFileCommand}" />
             </StackPanel>
         </ui:SettingCard>
         <TextBlock Style="{StaticResource Text.Caption}" Margin="2,4,0,0"
-                   Text="Only works on Roblox builds Nexstrap installed. Not supported by Roblox, so it may stop working after an update. Takes effect the next time Roblox starts from Nexstrap." />
+                   Text="{DynamicResource L.Appearance.OnlyWorksOnRobloxBuildsNexstrap}" />
 
         <!-- ===== Background ===== -->
-        <TextBlock Text="Background" Style="{StaticResource SectionHeader}" />
-        <ui:SettingCard Icon="&#xEB9F;" Header="Background image"
-                        Description="Shown behind the launcher. The image is copied into Nexstrap's data folder.">
+        <TextBlock Text="{DynamicResource L.Appearance.Background}" Style="{StaticResource SectionHeader}" />
+        <ui:SettingCard Icon="&#xEB9F;" Header="{DynamicResource L.Appearance.BackgroundImage}"
+                        Description="{DynamicResource L.Appearance.ShownBehindTheLauncherTheImage}">
             <StackPanel Orientation="Horizontal">
                 <Border Width="64" Height="40" CornerRadius="6" Margin="0,0,12,0" ClipToBounds="True"
                         Visibility="{Binding HasBackground, Converter={StaticResource BoolToVisibility}}"
@@ -203,13 +203,13 @@
                         <ImageBrush ImageSource="{Binding BackgroundPreview}" Stretch="UniformToFill" />
                     </Border.Background>
                 </Border>
-                <Button Content="Choose image…" ui:Ui.Icon="&#xE8E5;" Padding="10,6" Command="{Binding ChooseBackgroundCommand}" />
-                <Button Style="{StaticResource Button.Ghost}" Content="Remove" Padding="10,6" Margin="6,0,0,0"
+                <Button Content="{DynamicResource L.Appearance.ChooseImage}" ui:Ui.Icon="&#xE8E5;" Padding="10,6" Command="{Binding ChooseBackgroundCommand}" />
+                <Button Style="{StaticResource Button.Ghost}" Content="{DynamicResource L.Appearance.Remove}" Padding="10,6" Margin="6,0,0,0"
                         Command="{Binding RemoveBackgroundCommand}"
                         Visibility="{Binding HasBackground, Converter={StaticResource BoolToVisibility}}" />
             </StackPanel>
         </ui:SettingCard>
-        <ui:SettingCard Icon="&#xE706;" Header="Opacity" Description="How strongly the image shows through."
+        <ui:SettingCard Icon="&#xE706;" Header="{DynamicResource L.Appearance.Opacity}" Description="{DynamicResource L.Appearance.HowStronglyTheImageShowsThrough}"
                         Visibility="{Binding HasBackground, Converter={StaticResource BoolToVisibility}}">
             <StackPanel Orientation="Horizontal">
                 <Slider Width="200" Minimum="0" Maximum="100" SmallChange="1" LargeChange="10" AutomationProperties.Name="Background opacity"
@@ -218,29 +218,29 @@
                            Style="{StaticResource Text.Base}" VerticalAlignment="Center" />
             </StackPanel>
         </ui:SettingCard>
-        <ui:SettingCard Icon="&#xE740;" Header="Sizing" Description="How the image fills the window." Visibility="{Binding HasBackground, Converter={StaticResource BoolToVisibility}}">
-            <ComboBox Width="210" ItemsSource="{Binding FitChoices}" DisplayMemberPath="Label" SelectedValuePath="Value"
+        <ui:SettingCard Icon="&#xE740;" Header="{DynamicResource L.Appearance.Sizing}" Description="{DynamicResource L.Appearance.HowTheImageFillsTheWindow}" Visibility="{Binding HasBackground, Converter={StaticResource BoolToVisibility}}">
+            <ComboBox Width="250" ItemsSource="{Binding FitChoices}" DisplayMemberPath="Label" SelectedValuePath="Value"
                       AutomationProperties.Name="Background sizing" SelectedValue="{Binding SelectedFit}" />
         </ui:SettingCard>
-        <ui:SettingCard Icon="&#xE7C8;" Header="Position" Description="Which part of the image stays in view." Visibility="{Binding HasBackground, Converter={StaticResource BoolToVisibility}}">
-            <ComboBox Width="210" ItemsSource="{Binding AnchorChoices}" DisplayMemberPath="Label" SelectedValuePath="Value"
+        <ui:SettingCard Icon="&#xE7C8;" Header="{DynamicResource L.Appearance.Position}" Description="{DynamicResource L.Appearance.WhichPartOfTheImageStays}" Visibility="{Binding HasBackground, Converter={StaticResource BoolToVisibility}}">
+            <ComboBox Width="250" ItemsSource="{Binding AnchorChoices}" DisplayMemberPath="Label" SelectedValuePath="Value"
                       AutomationProperties.Name="Background position" SelectedValue="{Binding SelectedAnchor}" />
         </ui:SettingCard>
 
         <!-- ===== Saved themes ===== -->
         <DockPanel Margin="2,18,0,10">
             <Button DockPanel.Dock="Right" Style="{StaticResource Button.Ghost}" Padding="10,4" ui:Ui.Icon="&#xE8B5;"
-                    Content="Import theme…" Command="{Binding ImportProfileCommand}" />
-            <TextBlock Text="Your themes" Style="{StaticResource Text.Section}" VerticalAlignment="Center" />
+                    Content="{DynamicResource L.Appearance.ImportTheme}" Command="{Binding ImportProfileCommand}" />
+            <TextBlock Text="{DynamicResource L.Appearance.YourThemes}" Style="{StaticResource Text.Section}" VerticalAlignment="Center" />
         </DockPanel>
         <Border Style="{StaticResource Card}" Padding="18,16">
             <StackPanel>
                 <TextBlock Style="{StaticResource Text.Caption}" Margin="0,0,0,10"
-                           Text="Saves the theme, accent, font and background together. Exported files don't include the image itself." />
+                           Text="{DynamicResource L.Appearance.SavesTheThemeAccentFontAnd}" />
                 <DockPanel>
-                    <Button DockPanel.Dock="Right" Style="{StaticResource Button.Primary}" Content="Save current look" ui:Ui.Icon="&#xE74E;"
+                    <Button DockPanel.Dock="Right" Style="{StaticResource Button.Primary}" Content="{DynamicResource L.Appearance.SaveCurrentLook}" ui:Ui.Icon="&#xE74E;"
                             Margin="10,0,0,0" Command="{Binding SaveProfileCommand}" />
-                    <TextBox ui:Ui.Placeholder="Theme name" AutomationProperties.Name="Theme name" MaxLength="48"
+                    <TextBox ui:Ui.Placeholder="{DynamicResource L.Appearance.ThemeName}" AutomationProperties.Name="{DynamicResource L.Appearance.ThemeName}" MaxLength="48"
                              Text="{Binding NewProfileName, UpdateSourceTrigger=PropertyChanged}">
                         <TextBox.InputBindings>
                             <KeyBinding Key="Enter" Command="{Binding SaveProfileCommand}" />
@@ -248,7 +248,7 @@
                     </TextBox>
                 </DockPanel>
 
-                <TextBlock Text="No saved themes yet." Style="{StaticResource Text.Caption}" Margin="0,14,0,0"
+                <TextBlock Text="{DynamicResource L.Appearance.NoSavedThemesYet}" Style="{StaticResource Text.Caption}" Margin="0,14,0,0"
                            Visibility="{Binding HasSavedProfiles, Converter={StaticResource InverseBoolToVisibility}}" />
                 <ItemsControl ItemsSource="{Binding SavedProfiles}" Margin="0,10,0,0" Focusable="False">
                     <ItemsControl.ItemTemplate>
@@ -256,15 +256,15 @@
                             <Border BorderBrush="{DynamicResource Brush.Divider}" BorderThickness="0,1,0,0" Padding="0,10,0,0" Margin="0,0,0,10">
                                 <DockPanel>
                                     <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                                        <Button Content="Apply" Padding="10,5"
+                                        <Button Content="{DynamicResource L.Appearance.Apply}" Padding="10,5"
                                                 Command="{Binding DataContext.ApplySavedCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 CommandParameter="{Binding}" />
                                         <Button Style="{StaticResource Button.Icon}" Content="&#xEDE1;" FontFamily="{StaticResource Font.Icons}" Margin="6,0,0,0"
-                                                ToolTip="Export…" AutomationProperties.Name="Export"
+                                                ToolTip="{DynamicResource L.FastFlags.Export}" AutomationProperties.Name="Export"
                                                 Command="{Binding DataContext.ExportSavedCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 CommandParameter="{Binding}" />
                                         <Button Style="{StaticResource Button.Icon}" Content="&#xE74D;" FontFamily="{StaticResource Font.Icons}"
-                                                ToolTip="Delete" AutomationProperties.Name="Delete"
+                                                ToolTip="{DynamicResource L.Appearance.Delete}" AutomationProperties.Name="Delete"
                                                 Command="{Binding DataContext.DeleteSavedCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 CommandParameter="{Binding}" />
                                     </StackPanel>
@@ -285,10 +285,10 @@
         </Border>
 
         <!-- ===== Reset ===== -->
-        <TextBlock Text="Reset" Style="{StaticResource SectionHeader}" />
-        <ui:SettingCard Icon="&#xE777;" Header="Reset appearance"
-                        Description="Restore the default theme, accent, font and background. Saved themes are kept.">
-            <Button Style="{StaticResource Button.Danger}" Content="Reset" Padding="12,6" Command="{Binding ResetAppearanceCommand}" />
+        <TextBlock Text="{DynamicResource L.Appearance.Reset}" Style="{StaticResource SectionHeader}" />
+        <ui:SettingCard Icon="&#xE777;" Header="{DynamicResource L.Appearance.ResetAppearance}"
+                        Description="{DynamicResource L.Appearance.RestoreTheDefaultThemeAccentFont}">
+            <Button Style="{StaticResource Button.Danger}" Content="{DynamicResource L.Appearance.Reset}" Padding="12,6" Command="{Binding ResetAppearanceCommand}" />
         </ui:SettingCard>
     </StackPanel>
 </UserControl>

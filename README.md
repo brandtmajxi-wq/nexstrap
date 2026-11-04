@@ -21,7 +21,8 @@ A modern Windows launcher for the official Roblox client, with themes, honest Fa
 - **Servers**: browse an experience's public servers, filter by free slots and ping, and join a specific one.
 - **Loading screen**: your own text, colours, background and animation while Roblox starts.
 - **Installs Roblox for you**: downloads the official, unmodified Roblox Player from Roblox's own servers, checks every file against Roblox's checksums, and keeps it up to date.
-- **Setup**: installs for your Windows account without admin rights, with a language choice, shortcuts, and a clean uninstall from Windows Settings. It can also run without installing.
+- **Setup**: installs for your Windows account without admin rights, with shortcuts and a clean uninstall from Windows Settings. It can also run without installing.
+- **Six languages**: the whole app in English, Deutsch, Español, Français, Português (Brasil) or Русский.
 - **Appearance**: dark and light themes, any accent colour, any installed font, background images, presets, and themes you can save, share and import. Changes apply instantly. An opt-in Roblox font setting can also change the font in Nexstrap-installed Roblox builds.
 - **FastFlags, honestly**: add, edit, toggle, import and export flags with type checking and automatic backups. Every flag is marked **Applied** or **Ignored**, based on Roblox's published allowlist (since September 2025 Roblox ignores everything else).
 - **Performance**: see how your frame-rate cap compares with your display, apply presets, and choose the graphics API, anti-aliasing and texture quality. It changes limits and quality; it can't make your PC faster.
@@ -39,13 +40,13 @@ More detail: [docs/FEATURES.md](docs/FEATURES.md).
 
 ## Install
 
-Nexstrap is a single portable program. There's no installer and no admin rights needed.
+Nexstrap is one file that installs itself. No admin rights are needed.
 
 1. Download **`Nexstrap.exe`** from the [latest release](https://github.com/brandtmajxi-wq/nexstrap/releases/latest).
-2. Move it to a permanent folder, for example `%LocalAppData%\Programs\Nexstrap\`. (Create the folder if needed.)
-3. Double-click it.
+2. Double-click it.
    - Windows SmartScreen may say *"Windows protected your PC"*, because the program isn't code-signed yet.
      Click **More info → Run anyway**.
+3. In setup, choose your language, install location and shortcuts, or pick **Run without installing**.
 4. On **Home**:
    - If you already have Roblox (from roblox.com, Bloxstrap, Voidstrap or Fishstrap) Nexstrap finds it automatically. Press **Play Roblox**.
    - Otherwise press **Install Roblox** (about 225 MB, downloaded from Roblox).
@@ -63,6 +64,9 @@ An update is installed only if it comes from this repository's releases **and** 
 
 ## Uninstall
 
+Open **Installed apps** in Windows Settings and uninstall Nexstrap. It gives Roblox links back to your previous launcher and asks whether to keep or delete your data.
+
+If you ran it without installing:
 1. If you turned on *Open website Play buttons with Nexstrap*, turn it off first (this restores your previous launcher).
 2. Delete `Nexstrap.exe`.
 3. Delete `%LocalAppData%\Nexstrap` (settings, logs, themes, backups and any Roblox builds Nexstrap installed).

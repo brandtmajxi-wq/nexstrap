@@ -81,7 +81,7 @@ public sealed class UpdateInstaller : IUpdateInstaller
             throw new UpdateException("The release has an unrecognised version tag.");
 
         var exeAsset = FindAsset(release, ExeAssetName)
-                       ?? throw new UpdateException($"This release has no {ExeAssetName} to install. Download it from the release page instead.");
+                       ?? throw new UpdateException(Loc.Format("Update.ThisReleaseHasNoToInstall", ExeAssetName));
         RequireOfficialUrl(exeAsset);
 
         // Expected hash(es): GitHub's digest and/or our checksum file. They must agree.
@@ -90,26 +90,26 @@ public sealed class UpdateInstaller : IUpdateInstaller
         if (FindAsset(release, ChecksumAssetName) is { } sumsAsset)
         {
             RequireOfficialUrl(sumsAsset);
-            progress?.Report(new UpdateProgress("Reading checksums…", 0, exeAsset.Size));
+            progress?.Report(new UpdateProgress(Loc.Get("Update.ReadingChecksums"), 0, exeAsset.Size));
             var sums = await GetStringAsync(sumsAsset.DownloadUrl, ct);
             if (ParseChecksumFile(sums, ExeAssetName) is { } fromFile) expected.Add(fromFile);
             else throw new UpdateException($"{ChecksumAssetName} doesn't list {ExeAssetName}.");
         }
         if (expected.Count == 0)
-            throw new UpdateException("This release has no checksum, so Nexstrap can't verify it and won't install it.");
+            throw new UpdateException(Loc.Get("Update.ThisReleaseHasNoChecksumSo"));
         if (expected.Distinct(StringComparer.OrdinalIgnoreCase).Count() > 1)
-            throw new UpdateException("The release's checksums disagree with each other. The update was not installed.");
+            throw new UpdateException(Loc.Get("Update.TheReleasesChecksumsDisagreeWithEach"));
 
         var dir = Path.Combine(_downloadRoot, "update-" + version);
         Directory.CreateDirectory(dir);
         var target = Path.Combine(dir, ExeAssetName);
         var actual = await DownloadAsync(exeAsset, target, progress, ct);
 
-        progress?.Report(new UpdateProgress("Verifying…", exeAsset.Size, exeAsset.Size));
+        progress?.Report(new UpdateProgress(Loc.Get("Update.Verifying"), exeAsset.Size, exeAsset.Size));
         try
         {
             if (!string.Equals(actual, expected[0], StringComparison.OrdinalIgnoreCase))
-                throw new UpdateException("The download doesn't match the release's checksum. It may be corrupted or tampered with, so it was deleted.");
+                throw new UpdateException(Loc.Get("Update.TheDownloadDoesntMatchTheReleases"));
             VerifyIdentity(target, version);
         }
         catch
@@ -126,11 +126,11 @@ public sealed class UpdateInstaller : IUpdateInstaller
     {
         var current = CurrentExePath ?? throw new UpdateException("Nexstrap couldn't find its own file.");
         if (!Path.GetFileName(current).Equals(ExeAssetName, StringComparison.OrdinalIgnoreCase))
-            throw new UpdateException("Self-update only works for the published Nexstrap.exe (not development builds).");
+            throw new UpdateException(Loc.Get("Update.SelfUpdateOnlyWorksForThe"));
 
         // Re-check right before swapping in case the file changed since verification.
         if (!string.Equals(Sha256Of(update.FilePath), update.Sha256, StringComparison.OrdinalIgnoreCase))
-            throw new UpdateException("The downloaded update changed after it was verified. It was not installed.");
+            throw new UpdateException(Loc.Get("Update.TheDownloadedUpdateChangedAfterIt"));
 
         var old = current + OldExeSuffix;
         TryDelete(old);
@@ -150,7 +150,7 @@ public sealed class UpdateInstaller : IUpdateInstaller
             _logger.LogError(ex, "Update swap failed; restoring the previous version");
             if (File.Exists(current)) TryDelete(current);
             File.Move(old, current);
-            throw new UpdateException("The update couldn't be put in place: " + ex.Message, ex);
+            throw new UpdateException(Loc.Get("Update.TheUpdateCouldntBePutIn") + ex.Message, ex);
         }
 
         _logger.LogInformation("Installed {Version}; restarting", update.Version);
@@ -212,10 +212,10 @@ public sealed class UpdateInstaller : IUpdateInstaller
         catch (Exception ex) { throw new UpdateException("The download isn't a valid program.", ex); }
 
         if (!string.Equals(info.ProductName, AppInfo.Name, StringComparison.Ordinal))
-            throw new UpdateException("The downloaded file isn't Nexstrap. It was deleted.");
+            throw new UpdateException(Loc.Get("Update.TheDownloadedFileIsntNexstrapIt"));
         var fileVersion = new Version(info.FileMajorPart, info.FileMinorPart, info.FileBuildPart);
         if (fileVersion != new Version(expected.Major, expected.Minor, Math.Max(expected.Build, 0)))
-            throw new UpdateException($"The downloaded file is version {fileVersion}, not {expected}. It was deleted.");
+            throw new UpdateException(Loc.Format("Update.TheDownloadedFileIsVersionNot", fileVersion, expected));
     }
 
     // ===== IO =====
@@ -229,21 +229,21 @@ public sealed class UpdateInstaller : IUpdateInstaller
                 maxBytes: asset.Size, read =>
                 {
                     done += read;
-                    progress?.Report(new UpdateProgress("Downloading update…", done, asset.Size));
+                    progress?.Report(new UpdateProgress(Loc.Get("Update.DownloadingUpdate"), done, asset.Size));
                 }, ct);
             if (bytes != asset.Size)
-                throw new UpdateException("The download is incomplete. Try again.");
+                throw new UpdateException(Loc.Get("Update.TheDownloadIsIncompleteTryAgain"));
             return hash;
         }
         catch (InvalidDataException)
         {
             TryDelete(target);
-            throw new UpdateException("The download is larger than the release says. It was stopped.");
+            throw new UpdateException(Loc.Get("Update.TheDownloadIsLargerThanThe"));
         }
         catch (HttpRequestException ex)
         {
             TryDelete(target);
-            throw new UpdateException("Couldn't download the update: " + ex.Message, ex);
+            throw new UpdateException(Loc.Get("Update.CouldntDownloadTheUpdate") + ex.Message, ex);
         }
         catch
         {
@@ -255,7 +255,7 @@ public sealed class UpdateInstaller : IUpdateInstaller
     private async Task<string> GetStringAsync(string url, CancellationToken ct)
     {
         try { return await _http.GetStringAsync(url, ct); }
-        catch (HttpRequestException ex) { throw new UpdateException("Couldn't download the release's checksums: " + ex.Message, ex); }
+        catch (HttpRequestException ex) { throw new UpdateException(Loc.Get("Update.CouldntDownloadTheReleasesChecksums") + ex.Message, ex); }
     }
 
     private static string Sha256Of(string path)

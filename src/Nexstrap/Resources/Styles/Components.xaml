@@ -7,6 +7,7 @@
     <ui:InverseBoolConverter x:Key="InverseBool" />
     <ui:NullToVisibilityConverter x:Key="NullToVisibility" />
     <ui:HexToBrushConverter x:Key="HexToBrush" />
+    <ui:LocFormatConverter x:Key="LocFormat" />
     <ui:ThemePreviewBrushConverter x:Key="ThemePreviewBrush" />
 
     <!-- Large selectable card (e.g. Dark / Light). Content is the card body. -->

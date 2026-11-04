@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
@@ -124,11 +124,11 @@ public sealed class FastFlagService : IFastFlagService
         try
         {
             root = JsonNode.Parse(json, documentOptions: new JsonDocumentOptions { AllowTrailingCommas = true, CommentHandling = JsonCommentHandling.Skip }) as JsonObject
-                   ?? throw new InvalidDataException("The file must contain a JSON object like { \"FlagName\": value }.");
+                   ?? throw new InvalidDataException(Loc.Get("FastFlags.TheFileMustContainAJSON"));
         }
         catch (JsonException ex)
         {
-            throw new InvalidDataException("That isn't valid JSON: " + ex.Message, ex);
+            throw new InvalidDataException(Loc.Get("FastFlags.ThatIsntValidJSON") + ex.Message, ex);
         }
 
         var accepted = new List<(string Name, string Value)>();
@@ -142,12 +142,12 @@ public sealed class FastFlagService : IFastFlagService
                 JsonValue v when v.TryGetValue<string>(out var s) => s,
                 _ => null
             };
-            var error = text is null ? "unsupported value type" : FastFlagCatalog.ValidateName(name) ?? FastFlagCatalog.ValidateValue(name, text);
+            var error = text is null ? Loc.Get("FastFlags.UnsupportedValueType") : FastFlagCatalog.ValidateName(name) ?? FastFlagCatalog.ValidateValue(name, text);
             if (error is null) accepted.Add((name.Trim(), FastFlagCatalog.Normalise(name, text!)));
             else skipped.Add($"{name}: {error}");
         }
 
-        CreateBackup(replaceExisting ? "Before import (replace)" : "Before import (merge)");
+        CreateBackup(replaceExisting ? Loc.Get("FastFlags.BeforeImportReplace") : Loc.Get("FastFlags.BeforeImportMerge"));
         if (replaceExisting) _doc.Flags.Clear();
 
         int added = 0, updated = 0;
@@ -175,7 +175,7 @@ public sealed class FastFlagService : IFastFlagService
 
     public void Reset()
     {
-        CreateBackup("Before reset");
+        CreateBackup(Loc.Get("FastFlags.BeforeReset"));
         _doc.Flags.Clear();
         Commit();
     }
@@ -188,7 +188,7 @@ public sealed class FastFlagService : IFastFlagService
             .Select(f => new FastFlagEntry { Name = f.Name.Trim(), Value = FastFlagCatalog.Normalise(f.Name, f.Value), Enabled = f.Enabled })
             .ToList();
 
-        CreateBackup("Before importing a Nexstrap configuration");
+        CreateBackup(Loc.Get("FastFlags.BeforeImportingANexstrapConfiguration"));
         _doc.Flags.Clear();
         _doc.Flags.AddRange(valid);
         Commit();
@@ -217,8 +217,8 @@ public sealed class FastFlagService : IFastFlagService
     public void Restore(FlagBackup backup)
     {
         var doc = JsonSerializer.Deserialize<BackupFile>(File.ReadAllText(backup.FilePath), JsonFileStore<FastFlagDocument>.SerializerOptions)
-                  ?? throw new InvalidDataException("That backup is empty.");
-        CreateBackup("Before restoring a backup");
+                  ?? throw new InvalidDataException(Loc.Get("FastFlags.ThatBackupIsEmpty"));
+        CreateBackup(Loc.Get("FastFlags.BeforeRestoringABackup"));
         _doc.Flags.Clear();
         _doc.Flags.AddRange(doc.Flags.Where(f => FastFlagCatalog.ValidateName(f.Name) is null
                                                  && FastFlagCatalog.ValidateValue(f.Name, f.Value) is null));
@@ -266,7 +266,7 @@ public sealed class FastFlagService : IFastFlagService
     {
         if (_backedUpThisSession) return;
         _backedUpThisSession = true;
-        if (_doc.Flags.Count > 0) CreateBackup("Before first edit this session");
+        if (_doc.Flags.Count > 0) CreateBackup(Loc.Get("FastFlags.BeforeFirstEditThisSession"));
     }
 
     private void CreateBackup(string reason)

@@ -49,12 +49,12 @@ public sealed partial class FlagRow : ObservableObject
 
     public bool IsBool => Kind == FastFlagKind.Bool;
 
-    public string KindLabel => Kind switch { FastFlagKind.Bool => "Bool", FastFlagKind.Int => "Number", _ => "Text" };
+    public string KindLabel => Kind switch { FastFlagKind.Bool => Loc.Get("FastFlags.Bool"), FastFlagKind.Int => Loc.Get("FastFlags.Number"), _ => Loc.Get("LaunchScreen.Text") };
 
-    public string StatusLabel => IsAllowlisted ? "Applied by Roblox" : "Ignored by Roblox";
+    public string StatusLabel => IsAllowlisted ? Loc.Get("FastFlags.AppliedByRoblox") : Loc.Get("FastFlags.IgnoredByRoblox");
 
-    public string? Description => Known?.Note ?? Known?.Description
-        ?? "Not on Roblox's allowlist, so the Roblox Player ignores it.";
+    public string? Description => Known?.LocalizedNote ?? Known?.LocalizedDescription
+        ?? Loc.Get("FastFlags.NotOnRobloxsAllowlistSoThe");
 
     [ObservableProperty]
     private bool _enabled;
@@ -136,9 +136,9 @@ public sealed partial class FastFlagsViewModel : PageViewModel
 
     public string TargetText => Target switch
     {
-        null => "No Roblox build found. Install one from Home first.",
-        { Source: InstallationSource.Nexstrap } t => $"Written into Nexstrap's Roblox {t.DisplayVersion} each time you press Play.",
-        { } t => $"Play currently uses {t.SourceLabel}'s build, and Nexstrap never changes another launcher's files. Install a Nexstrap copy of Roblox from Home and these flags will be applied."
+        null => Loc.Get("FastFlags.NoRobloxBuildFoundInstallOne"),
+        { Source: InstallationSource.Nexstrap } t => Loc.Format("FastFlags.WrittenIntoNexstrapsRobloxEachTime", t.DisplayVersion),
+        { } t => Loc.Format("FastFlags.PlayCurrentlyUsesSBuildAnd", t.SourceLabel)
     };
 
     [RelayCommand]
@@ -148,8 +148,7 @@ public sealed partial class FastFlagsViewModel : PageViewModel
     private void OpenAllowlist() => _shell.OpenUrl(FastFlagCatalog.AllowlistUrl);
 
     public string AllowlistText =>
-        $"Since September 2025 Roblox only applies flags on its official allowlist ({FastFlagCatalog.Known.Count(k => k.Allowlisted)} flags, checked {FastFlagCatalog.AllowlistCheckedOn}). " +
-        "Anything else is ignored. It's harmless, it just does nothing. Roblox can change the list at any time.";
+        Loc.Format("FastFlags.SinceSeptember2025RobloxOnlyApplies", FastFlagCatalog.Known.Count(k => k.Allowlisted), DateTime.Parse(FastFlagCatalog.AllowlistCheckedOn, System.Globalization.CultureInfo.InvariantCulture).ToString("d"));
 
     // ===== Flag list =====
 
@@ -165,7 +164,7 @@ public sealed partial class FastFlagsViewModel : PageViewModel
         {
             var enabled = Rows.Count(r => r.Enabled);
             var applied = Rows.Count(r => r.Enabled && r.IsAllowlisted);
-            return Rows.Count == 0 ? "No flags yet" : $"{Rows.Count} flags · {enabled} enabled · {applied} applied by Roblox";
+            return Rows.Count == 0 ? Loc.Get("FastFlags.NoFlagsYet") : Loc.Format("FastFlags.FlagsEnabledAppliedByRoblox", Rows.Count, enabled, applied);
         }
     }
 
@@ -176,11 +175,11 @@ public sealed partial class FastFlagsViewModel : PageViewModel
 
     public IReadOnlyList<Choice<FlagFilter>> FilterChoices { get; } =
     [
-        new(FlagFilter.All, "All flags"),
-        new(FlagFilter.Enabled, "Enabled"),
-        new(FlagFilter.Disabled, "Disabled"),
-        new(FlagFilter.AppliedByRoblox, "Applied by Roblox"),
-        new(FlagFilter.IgnoredByRoblox, "Ignored by Roblox")
+        new(FlagFilter.All, () => Loc.Get("FastFlags.AllFlags")),
+        new(FlagFilter.Enabled, () => Loc.Get("FastFlags.Enabled")),
+        new(FlagFilter.Disabled, () => Loc.Get("FastFlags.Disabled")),
+        new(FlagFilter.AppliedByRoblox, () => Loc.Get("FastFlags.AppliedByRoblox")),
+        new(FlagFilter.IgnoredByRoblox, () => Loc.Get("FastFlags.IgnoredByRoblox"))
     ];
 
     [ObservableProperty]
@@ -223,9 +222,9 @@ public sealed partial class FastFlagsViewModel : PageViewModel
         {
             if (string.IsNullOrWhiteSpace(NewName)) return null;
             if (FastFlagCatalog.Find(NewName) is { } known)
-                return (known.Allowlisted ? "Applied by Roblox. " : "Ignored by Roblox. ") + (known.Note ?? known.Description);
+                return (known.Allowlisted ? Loc.Get("FastFlags.AppliedByRoblox2") : Loc.Get("FastFlags.IgnoredByRoblox2")) + (known.LocalizedNote ?? known.LocalizedDescription);
             return FastFlagCatalog.KindOf(NewName) is { } kind
-                ? $"{kind} flag. Not on Roblox's allowlist, so it will be ignored."
+                ? Loc.Format("FastFlags.FlagNotOnRobloxsAllowlistSo", kind)
                 : null;
         }
     }
@@ -265,13 +264,13 @@ public sealed partial class FastFlagsViewModel : PageViewModel
     [RelayCommand]
     private void ImportFile()
     {
-        var path = _files.OpenFile("Import FastFlags", JsonFilter);
+        var path = _files.OpenFile(Loc.Get("FastFlags.ImportFastFlags"), JsonFilter);
         if (path is null) return;
         string json;
         try { json = File.ReadAllText(path); }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            _dialogs.Show("Couldn't read that file", ex.Message, DialogKind.Error);
+            _dialogs.Show(Loc.Get("FastFlags.CouldntReadThatFile"), ex.Message, DialogKind.Error);
             return;
         }
         RunImport(json, Path.GetFileName(path));
@@ -287,12 +286,12 @@ public sealed partial class FastFlagsViewModel : PageViewModel
         try { json = _flags.ReadFromInstallation(target); }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            _dialogs.Show("Couldn't read the flags", ex.Message, DialogKind.Error);
+            _dialogs.Show(Loc.Get("FastFlags.CouldntReadTheFlags"), ex.Message, DialogKind.Error);
             return;
         }
         if (string.IsNullOrWhiteSpace(json))
         {
-            StatusMessage = $"{target.SourceLabel}'s build has no FastFlags file, so there's nothing to import.";
+            StatusMessage = Loc.Format("FastFlags.SBuildHasNoFastFlagsFile", target.SourceLabel);
             return;
         }
         RunImport(json, $"{target.SourceLabel}'s build");
@@ -303,60 +302,59 @@ public sealed partial class FastFlagsViewModel : PageViewModel
         try
         {
             var result = _flags.Import(json, replaceExisting: false);
-            StatusMessage = $"Imported from {source}: {result.Added} added, {result.Updated} updated" +
-                            (result.Skipped.Count > 0 ? $", {result.Skipped.Count} skipped." : ".") + " A backup was made first.";
+            StatusMessage = result.Skipped.Count > 0 ? Loc.Format("FastFlags.ImportedFromSkipped", source, result.Added, result.Updated, result.Skipped.Count) : Loc.Format("FastFlags.ImportedFrom", source, result.Added, result.Updated);
             if (result.Skipped.Count > 0)
-                _dialogs.Show("Some flags were skipped", $"{result.Skipped.Count} entries weren't valid FastFlags and were left out.",
+                _dialogs.Show(Loc.Get("FastFlags.SomeFlagsWereSkipped"), Loc.Format("FastFlags.EntriesWerentValidFastFlagsAndWere", result.Skipped.Count),
                     DialogKind.Warning, string.Join(Environment.NewLine, result.Skipped));
         }
         catch (InvalidDataException ex)
         {
-            _dialogs.Show("Couldn't import", ex.Message, DialogKind.Warning);
+            _dialogs.Show(Loc.Get("FastFlags.CouldntImport"), ex.Message, DialogKind.Warning);
         }
     }
 
     [RelayCommand]
     private void Export()
     {
-        var path = _files.SaveFile("Export FastFlags", JsonFilter, "ClientAppSettings.json");
+        var path = _files.SaveFile(Loc.Get("FastFlags.ExportFastFlags"), JsonFilter, "ClientAppSettings.json");
         if (path is null) return;
         try
         {
             File.WriteAllText(path, _flags.Export());
-            StatusMessage = $"Exported {Rows.Count(r => r.Enabled)} enabled flags to {Path.GetFileName(path)}.";
+            StatusMessage = Loc.Format("FastFlags.ExportedEnabledFlagsTo", Rows.Count(r => r.Enabled), Path.GetFileName(path));
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            _dialogs.Show("Couldn't export", ex.Message, DialogKind.Error);
+            _dialogs.Show(Loc.Get("FastFlags.CouldntExport"), ex.Message, DialogKind.Error);
         }
     }
 
     [RelayCommand]
     private void Restore(FlagBackup backup)
     {
-        if (!_dialogs.Confirm("Restore this backup?",
-                $"Your flags will be replaced with the {backup.FlagCount} flags saved on {backup.CreatedLocal:g}. Your current flags are backed up first.",
-                "Restore"))
+        if (!_dialogs.Confirm(Loc.Get("FastFlags.RestoreThisBackup"),
+                Loc.Format("FastFlags.YourFlagsWillBeReplacedWith", backup.FlagCount, backup.CreatedLocal),
+                Loc.Get("FastFlags.Restore")))
             return;
         try
         {
             _flags.Restore(backup);
-            StatusMessage = $"Restored the backup from {backup.CreatedLocal:g}.";
+            StatusMessage = Loc.Format("FastFlags.RestoredTheBackupFrom", backup.CreatedLocal);
         }
         catch (Exception ex) when (ex is IOException or InvalidDataException or System.Text.Json.JsonException)
         {
-            _dialogs.Show("Couldn't restore", ex.Message, DialogKind.Error);
+            _dialogs.Show(Loc.Get("FastFlags.CouldntRestore"), ex.Message, DialogKind.Error);
         }
     }
 
     [RelayCommand]
     private void Reset()
     {
-        if (!_dialogs.Confirm("Remove all FastFlags?",
-                "Every flag will be removed and Roblox will use its defaults next launch. A backup is made first so you can restore them.", "Remove all"))
+        if (!_dialogs.Confirm(Loc.Get("FastFlags.RemoveAllFastFlags"),
+                Loc.Get("FastFlags.EveryFlagWillBeRemovedAnd"), Loc.Get("FastFlags.RemoveAll")))
             return;
         _flags.Reset();
-        StatusMessage = "All flags removed. A backup was made first.";
+        StatusMessage = Loc.Get("FastFlags.AllFlagsRemovedABackupWas");
     }
 
     // ===== Plumbing =====

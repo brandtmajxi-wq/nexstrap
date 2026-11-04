@@ -56,13 +56,13 @@ public sealed class RobloxFontService : IRobloxFontService
     public string? SetFontFile(string path)
     {
         var ext = Path.GetExtension(path).ToLowerInvariant();
-        if (!SupportedExtensions.Contains(ext)) return "Roblox needs a .ttf or .otf font file.";
-        if (!File.Exists(path)) return "That file no longer exists.";
+        if (!SupportedExtensions.Contains(ext)) return Loc.Get("Appearance.RobloxNeedsATtfOrOtf");
+        if (!File.Exists(path)) return Loc.Get("Appearance.ThatFileNoLongerExists");
 
         try
         {
             if (!new GlyphTypeface(new Uri(path)).CharacterToGlyphMap.ContainsKey('A'))
-                return "That font has no normal letters, so Roblox's text would be unreadable.";
+                return Loc.Get("Appearance.ThatFontHasNoNormalLetters");
 
             Directory.CreateDirectory(_fontsFolder);
             var target = Path.Combine(_fontsFolder, CustomFontName + ext);
@@ -77,7 +77,7 @@ public sealed class RobloxFontService : IRobloxFontService
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FileFormatException or ArgumentException or NotSupportedException)
         {
             _logger.LogWarning(ex, "Could not use font {Path}", path);
-            return "That file couldn't be read as a font.";
+            return Loc.Get("Appearance.ThatFileCouldntBeReadAs2");
         }
     }
 
@@ -87,14 +87,14 @@ public sealed class RobloxFontService : IRobloxFontService
         var family = Fonts.SystemFontFamilies.FirstOrDefault(f =>
             string.Equals(f.Source, familyName, StringComparison.OrdinalIgnoreCase)
             || (f.FamilyNames.TryGetValue(language, out var name) && string.Equals(name, familyName, StringComparison.OrdinalIgnoreCase)));
-        if (family is null) return $"\"{familyName}\" isn't installed as a separate font file. Choose a .ttf or .otf file instead.";
+        if (family is null) return Loc.Format("Appearance.IsntInstalledAsASeparateFont", familyName);
 
         var regular = family.GetTypefaces()
             .OrderBy(t => t.Weight == System.Windows.FontWeights.Normal ? 0 : 1)
             .ThenBy(t => t.Style == System.Windows.FontStyles.Normal ? 0 : 1)
             .FirstOrDefault();
         if (regular is null || !regular.TryGetGlyphTypeface(out var glyphs) || !glyphs.FontUri.IsFile)
-            return $"Windows didn't report a file for \"{familyName}\". Choose a .ttf or .otf file instead.";
+            return Loc.Format("Appearance.WindowsDidntReportAFileFor", familyName);
 
         var error = SetFontFile(glyphs.FontUri.LocalPath);
         if (error is not null) return error;

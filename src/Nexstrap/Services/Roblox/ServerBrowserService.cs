@@ -1,3 +1,4 @@
+using Nexstrap.Core;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -51,9 +52,9 @@ public sealed class ServerBrowserService(HttpClient http, ILogger<ServerBrowserS
         {
             using var response = await http.GetAsync(url, ct);
             if (response.StatusCode == HttpStatusCode.TooManyRequests)
-                throw new ServerBrowserException("Roblox is limiting server requests. Wait a moment and try again.");
+                throw new ServerBrowserException(Loc.Get("Servers.RobloxIsLimitingServerRequestsWait"));
             if (response.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.NotFound)
-                throw new ServerBrowserException("Roblox doesn't list servers for that place. Check the place ID.");
+                throw new ServerBrowserException(Loc.Get("Servers.RobloxDoesntListServersForThat"));
             response.EnsureSuccessStatusCode();
 
             var body = await response.Content.ReadFromJsonAsync<Response>(ct);
@@ -66,7 +67,7 @@ public sealed class ServerBrowserService(HttpClient http, ILogger<ServerBrowserS
         catch (Exception ex) when (ex is HttpRequestException or JsonException || (ex is TaskCanceledException && !ct.IsCancellationRequested))
         {
             logger.LogWarning(ex, "Server list failed for place {Place}", placeId);
-            throw new ServerBrowserException("Couldn't reach Roblox. Check your connection and try again.", ex);
+            throw new ServerBrowserException(Loc.Get("Servers.CouldntReachRobloxCheckYourConnection"), ex);
         }
     }
 }

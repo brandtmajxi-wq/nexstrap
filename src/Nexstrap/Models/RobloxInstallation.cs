@@ -1,3 +1,5 @@
+using Nexstrap.Core;
+
 namespace Nexstrap.Models;
 
 /// <summary>Who placed a Roblox Player build on disk.</summary>
@@ -21,7 +23,7 @@ public sealed record RobloxInstallation(
 {
     public string SourceLabel => Source switch
     {
-        InstallationSource.Official => "Official installer",
+        InstallationSource.Official => Loc.Get("Launchers.OfficialInstaller"),
         _ => Source.ToString()
     };
 
@@ -38,10 +40,10 @@ public sealed record ProtocolHandlerInfo(string? Command)
     {
         get
         {
-            if (!IsRegistered) return "Nobody";
+            if (!IsRegistered) return Loc.Get("Launchers.Nobody");
             foreach (var name in new[] { "Nexstrap", "Bloxstrap", "Voidstrap", "Fishstrap" })
                 if (Command!.Contains(name, StringComparison.OrdinalIgnoreCase)) return name;
-            return Command!.Contains("Roblox", StringComparison.OrdinalIgnoreCase) ? "Roblox" : "Another app";
+            return Command!.Contains("Roblox", StringComparison.OrdinalIgnoreCase) ? "Roblox" : Loc.Get("Launchers.AnotherApp");
         }
     }
 }

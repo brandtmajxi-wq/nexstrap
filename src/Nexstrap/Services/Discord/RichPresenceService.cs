@@ -76,7 +76,7 @@ public sealed class RichPresenceService : IRichPresenceService, IDisposable
 
     public PresenceStatus Status { get; private set; } = PresenceStatus.Waiting;
 
-    public string StatusText { get; private set; } = "Waiting for Roblox";
+    public string StatusText { get; private set; } = Loc.Get("Discord.WaitingForRoblox");
 
     public bool IsPreviewing { get; private set; }
 
@@ -114,7 +114,7 @@ public sealed class RichPresenceService : IRichPresenceService, IDisposable
         catch (Exception ex)
         {
             _logger.LogError(ex, "Rich Presence update failed");
-            Report(PresenceStatus.Error, "Something went wrong: " + ex.Message);
+            Report(PresenceStatus.Error, Loc.Get("Discord.SomethingWentWrong") + ex.Message);
         }
         finally
         {
@@ -129,7 +129,7 @@ public sealed class RichPresenceService : IRichPresenceService, IDisposable
         if (!Options.RichPresence && !IsPreviewing)
         {
             await ClearAsync();
-            Report(PresenceStatus.Off, "Rich Presence is off");
+            Report(PresenceStatus.Off, Loc.Get("Discord.RichPresenceIsOff"));
             return;
         }
 
@@ -137,13 +137,13 @@ public sealed class RichPresenceService : IRichPresenceService, IDisposable
         if (activity is null)
         {
             await ClearAsync();
-            Report(PresenceStatus.Waiting, "Shows up on Discord while Roblox is running from Nexstrap");
+            Report(PresenceStatus.Waiting, Loc.Get("Discord.ShowsUpOnDiscordWhileRoblox"));
             return;
         }
 
         if (EffectiveApplicationId is not { } appId)
         {
-            Report(PresenceStatus.NeedsSetup, "Needs a Discord application ID");
+            Report(PresenceStatus.NeedsSetup, Loc.Get("Discord.NeedsADiscordApplicationID"));
             return;
         }
 
@@ -156,8 +156,8 @@ public sealed class RichPresenceService : IRichPresenceService, IDisposable
                 _retry.Change(RetryDelay, Timeout.InfiniteTimeSpan); // Discord may start later
                 Report(state == DiscordConnectionState.Rejected ? PresenceStatus.Rejected : PresenceStatus.DiscordNotRunning,
                     state == DiscordConnectionState.Rejected
-                        ? $"Discord rejected the application ID ({_discord.LastError})"
-                        : "Discord isn't running; retrying");
+                        ? Loc.Format("Discord.DiscordRejectedTheApplicationID", _discord.LastError)
+                        : Loc.Get("Discord.DiscordIsntRunningRetrying"));
                 return;
             }
         }
@@ -170,8 +170,8 @@ public sealed class RichPresenceService : IRichPresenceService, IDisposable
             await _discord.SetActivityAsync(activity);
             _lastActivityJson = json;
             Report(PresenceStatus.Showing, IsPreviewing && !_session.IsActive
-                ? "Previewing on Discord"
-                : "Showing on Discord: " + activity["details"]?.GetValue<string>());
+                ? Loc.Get("Discord.PreviewingOnDiscord")
+                : Loc.Get("Discord.ShowingOnDiscord") + activity["details"]?.GetValue<string>());
         }
         catch (DiscordException ex)
         {

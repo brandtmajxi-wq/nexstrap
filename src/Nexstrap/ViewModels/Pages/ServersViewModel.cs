@@ -63,9 +63,9 @@ public sealed partial class ServersViewModel : PageViewModel
 
     public IReadOnlyList<Choice<ServerSort>> SortChoices { get; } =
     [
-        new(ServerSort.MostPlayers, "Most players"),
-        new(ServerSort.FewestPlayers, "Fewest players"),
-        new(ServerSort.LowestPing, "Lowest ping")
+        new(ServerSort.MostPlayers, () => Loc.Get("Servers.MostPlayers")),
+        new(ServerSort.FewestPlayers, () => Loc.Get("Servers.FewestPlayers")),
+        new(ServerSort.LowestPing, () => Loc.Get("Servers.LowestPing"))
     ];
 
     [ObservableProperty]
@@ -138,7 +138,7 @@ public sealed partial class ServersViewModel : PageViewModel
     private async Task FetchAsync()
     {
         IsLoading = true;
-        Status = "Loading servers…";
+        Status = Loc.Get("Servers.LoadingServers");
         try
         {
             // Full servers are filtered locally so the toggle works without reloading.
@@ -147,7 +147,7 @@ public sealed partial class ServersViewModel : PageViewModel
             foreach (var server in page.Servers.Where(s => known.Add(s.Id))) Servers.Add(server);
             _nextCursor = page.NextCursor;
             HasMore = page.NextCursor is not null;
-            Status = Servers.Count == 0 ? "No public servers are running right now." : $"{Servers.Count} servers loaded.";
+            Status = Servers.Count == 0 ? Loc.Get("Servers.NoPublicServersAreRunningRight") : Loc.Format("Servers.ServersLoaded", Servers.Count);
         }
         catch (ServerBrowserException ex)
         {
@@ -176,6 +176,6 @@ public sealed partial class ServersViewModel : PageViewModel
     private async Task JoinAsync(GameServer server)
     {
         var result = await _launch.JoinAsync(_placeId, ExperienceName, server.Id);
-        if (result is { Success: true }) Status = "Joining that server…";
+        if (result is { Success: true }) Status = Loc.Get("Servers.JoiningThatServer");
     }
 }

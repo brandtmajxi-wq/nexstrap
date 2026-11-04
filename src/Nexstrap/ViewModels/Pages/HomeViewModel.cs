@@ -102,11 +102,11 @@ public sealed partial class HomeViewModel : PageViewModel
     [ObservableProperty]
     private string? _launchMessage;
 
-    public string StatusTitle => IsScanning ? "Checking…" : IsInstalled ? "Roblox is installed" : "Roblox not found";
+    public string StatusTitle => IsScanning ? Loc.Get("Home.Checking") : IsInstalled ? Loc.Get("Home.RobloxIsInstalled") : Loc.Get("Home.RobloxNotFound");
 
     public string StatusDetail => IsInstalled
         ? Installation!.Directory
-        : "No Roblox Player build was found. Install it with Nexstrap or from roblox.com.";
+        : Loc.Get("Home.NoRobloxPlayerBuildWasFound");
 
     public string VersionText => Installation?.DisplayVersion ?? "—";
 
@@ -120,11 +120,11 @@ public sealed partial class HomeViewModel : PageViewModel
     public bool LatestKnown => State.Latest is not null;
 
     public string LatestText => State.Latest is { } l
-        ? State.IsUpToDate ? "Up to date with Roblox" : $"Roblox {l.Version} is available"
-        : State.LatestError ?? "Latest version not checked";
+        ? State.IsUpToDate ? Loc.Get("Home.UpToDateWithRoblox") : Loc.Format("Notifications.RobloxIsAvailable", l.Version)
+        : State.LatestError ?? Loc.Get("Home.LatestVersionNotChecked");
 
     /// <summary>Hero button: Install when nothing is there, Update when outdated.</summary>
-    public string InstallButtonText => IsInstalled ? "Update Roblox" : "Install Roblox";
+    public string InstallButtonText => IsInstalled ? Loc.Get("Home.UpdateRoblox") : Loc.Get("Home.InstallRoblox");
 
     public bool ShowInstallButton => !IsInstalled || UpdateAvailable;
 
@@ -164,7 +164,7 @@ public sealed partial class HomeViewModel : PageViewModel
     public string? ExperienceInputError =>
         string.IsNullOrWhiteSpace(ExperienceInput) || RobloxLinks.TryParsePlaceId(ExperienceInput, out _)
             ? null
-            : "Enter a place ID or a roblox.com/games/… link.";
+            : Loc.Get("Home.EnterAPlaceIDOrA");
 
     public ObservableCollection<RecentExperience> RecentExperiences { get; } = [];
 
@@ -215,7 +215,7 @@ public sealed partial class HomeViewModel : PageViewModel
     private bool _isCheckingUpdates;
 
     [ObservableProperty]
-    private string _updateMessage = "Not checked yet.";
+    private string _updateMessage = Loc.Get("Home.NotCheckedYet");
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(OpenReleaseCommand), nameof(InstallUpdateCommand))]
@@ -239,7 +239,7 @@ public sealed partial class HomeViewModel : PageViewModel
     private string _updateStage = "";
 
     /// <summary>Set when this instance was started by the updater.</summary>
-    public string? JustUpdatedMessage { get; } = App.Options.JustUpdated ? $"Nexstrap was updated to v{AppInfo.VersionString}." : null;
+    public string? JustUpdatedMessage { get; } = App.Options.JustUpdated ? Loc.Format("Home.NexstrapWasUpdatedToV", AppInfo.VersionString) : null;
 
     // ===== Lifecycle =====
 
@@ -308,7 +308,7 @@ public sealed partial class HomeViewModel : PageViewModel
     {
         IsInstalling = true;
         InstallFraction = 0;
-        InstallStage = "Preparing…";
+        InstallStage = Loc.Get("Home.Preparing");
         InstallDetail = "";
         _installCts = new CancellationTokenSource();
 
@@ -322,20 +322,20 @@ public sealed partial class HomeViewModel : PageViewModel
         try
         {
             var installed = await _client.InstallLatestAsync(progress, _installCts.Token);
-            LaunchMessage = $"Roblox {installed.DisplayVersion} is ready.";
+            LaunchMessage = Loc.Format("Home.RobloxIsReady", installed.DisplayVersion);
         }
         catch (OperationCanceledException)
         {
-            LaunchMessage = "Installation cancelled. Nothing was changed.";
+            LaunchMessage = Loc.Get("Home.InstallationCancelledNothingWasChanged");
         }
         catch (InstallException ex)
         {
-            _dialogs.Show("Roblox couldn't be installed", ex.Message, DialogKind.Error, ex.InnerException?.ToString());
+            _dialogs.Show(Loc.Get("Home.RobloxCouldntBeInstalled"), ex.Message, DialogKind.Error, ex.InnerException?.ToString());
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or HttpRequestException)
         {
             _logger.LogError(ex, "Install failed");
-            _dialogs.Show("Roblox couldn't be installed", "A file or network error stopped the installation: " + ex.Message, DialogKind.Error, ex.ToString());
+            _dialogs.Show(Loc.Get("Home.RobloxCouldntBeInstalled"), Loc.Get("Home.AFileOrNetworkErrorStopped") + ex.Message, DialogKind.Error, ex.ToString());
         }
         finally
         {
@@ -356,8 +356,8 @@ public sealed partial class HomeViewModel : PageViewModel
     [RelayCommand(CanExecute = nameof(CanRemoveInstallation))]
     private void RemoveInstallation(InstallationItem item)
     {
-        if (!_dialogs.Confirm("Remove this Roblox build?",
-                $"Roblox {item.Installation.DisplayVersion} will be deleted from Nexstrap's folder. You can install it again at any time.", "Remove"))
+        if (!_dialogs.Confirm(Loc.Get("Home.RemoveThisRobloxBuild"),
+                Loc.Format("Home.RobloxWillBeDeletedFromNexstraps", item.Installation.DisplayVersion), Loc.Get("Appearance.Remove")))
             return;
         try
         {
@@ -365,7 +365,7 @@ public sealed partial class HomeViewModel : PageViewModel
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidOperationException)
         {
-            _dialogs.Show("Couldn't remove Roblox", ex.Message, DialogKind.Warning);
+            _dialogs.Show(Loc.Get("Home.CouldntRemoveRoblox"), ex.Message, DialogKind.Warning);
         }
     }
 
@@ -410,7 +410,7 @@ public sealed partial class HomeViewModel : PageViewModel
     private async Task LaunchAsync(Func<Task<LaunchResult?>> launch)
     {
         IsLaunching = true;
-        LaunchMessage = "Starting Roblox…";
+        LaunchMessage = Loc.Get("Home.StartingRoblox");
         try
         {
             if (await launch() is { Success: true } result)
@@ -437,17 +437,17 @@ public sealed partial class HomeViewModel : PageViewModel
         try
         {
             await Task.Delay(350, cts.Token); // debounce typing
-            ExperienceStatus = "Looking up…";
+            ExperienceStatus = Loc.Get("Home.LookingUp");
             var info = await _experiences.LookupAsync(placeId, cts.Token);
             if (cts.IsCancellationRequested) return;
             Experience = info;
-            ExperienceStatus = info is null ? "No experience found with that place ID." : null;
+            ExperienceStatus = info is null ? Loc.Get("Games.NoExperienceFoundWithThatPlace") : null;
         }
         catch (OperationCanceledException) { }
         catch (Exception ex) when (ex is HttpRequestException or System.Text.Json.JsonException)
         {
             _logger.LogDebug(ex, "Experience lookup failed");
-            if (!cts.IsCancellationRequested) ExperienceStatus = "Couldn't look up the name, but you can still join.";
+            if (!cts.IsCancellationRequested) ExperienceStatus = Loc.Get("Home.CouldntLookUpTheNameBut");
         }
     }
 
@@ -465,9 +465,9 @@ public sealed partial class HomeViewModel : PageViewModel
     [RelayCommand(CanExecute = nameof(CanInstallUpdate))]
     private async Task InstallUpdateAsync()
     {
-        if (_session.IsActive && !_dialogs.Confirm("Roblox is running",
-                "Roblox keeps running, but Discord Rich Presence and companion-app closing pause until you start Roblox from Nexstrap again. Update now?",
-                "Update now", "Later"))
+        if (_session.IsActive && !_dialogs.Confirm(Loc.Get("Home.RobloxIsRunning"),
+                Loc.Get("Home.RobloxKeepsRunningButDiscordRich"),
+                Loc.Get("Home.UpdateNow"), Loc.Get("Appearance.Later")))
             return;
 
         IsUpdating = true;
@@ -481,7 +481,7 @@ public sealed partial class HomeViewModel : PageViewModel
         try
         {
             var verified = await _installer.DownloadAndVerifyAsync(UpdateResult!.Release!, progress, _updateCts.Token);
-            UpdateStage = "Verified. Restarting Nexstrap…";
+            UpdateStage = Loc.Get("Home.VerifiedRestartingNexstrap");
             _settings.Save();
             _installer.InstallAndRestart(verified);
 
@@ -491,17 +491,17 @@ public sealed partial class HomeViewModel : PageViewModel
         }
         catch (OperationCanceledException)
         {
-            UpdateMessage = "Update cancelled. Nothing was changed.";
+            UpdateMessage = Loc.Get("Home.UpdateCancelledNothingWasChanged");
         }
         catch (UpdateException ex)
         {
-            UpdateMessage = "The update wasn't installed.";
-            _dialogs.Show("Update not installed", ex.Message, DialogKind.Warning, ex.InnerException?.ToString());
+            UpdateMessage = Loc.Get("Home.TheUpdateWasntInstalled");
+            _dialogs.Show(Loc.Get("Home.UpdateNotInstalled"), ex.Message, DialogKind.Warning, ex.InnerException?.ToString());
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            UpdateMessage = "The update wasn't installed.";
-            _dialogs.Show("Update not installed", "A file error stopped the update: " + ex.Message, DialogKind.Error, ex.ToString());
+            UpdateMessage = Loc.Get("Home.TheUpdateWasntInstalled");
+            _dialogs.Show(Loc.Get("Home.UpdateNotInstalled"), Loc.Get("Home.AFileErrorStoppedTheUpdate") + ex.Message, DialogKind.Error, ex.ToString());
         }
         finally
         {
@@ -520,7 +520,7 @@ public sealed partial class HomeViewModel : PageViewModel
     private async Task CheckForUpdatesAsync()
     {
         IsCheckingUpdates = true;
-        UpdateMessage = "Checking GitHub…";
+        UpdateMessage = Loc.Get("Home.CheckingGitHub");
         try
         {
             ApplyUpdateResult(await _updates.CheckAsync());

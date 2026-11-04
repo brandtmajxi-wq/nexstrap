@@ -1,3 +1,4 @@
+using Nexstrap.Core;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -58,7 +59,7 @@ public sealed class CompanionAppService : ICompanionAppService
         var error = Validate(exePath);
         if (error is not null) return error;
         if (Apps.Any(a => string.Equals(a.Path, exePath, StringComparison.OrdinalIgnoreCase)))
-            return "That program is already in the list.";
+            return Loc.Get("Integrations.ThatProgramIsAlreadyInThe");
 
         _settings.Current.CompanionApps.Add(new CompanionApp
         {
@@ -77,13 +78,13 @@ public sealed class CompanionAppService : ICompanionAppService
         Commit();
     }
 
-    public string? TestLaunch(CompanionApp app) => Start(app) is null ? $"{app.Name} couldn't be started." : null;
+    public string? TestLaunch(CompanionApp app) => Start(app) is null ? Loc.Format("Integrations.CouldntBeStarted", app.Name) : null;
 
     internal static string? Validate(string path)
     {
-        if (string.IsNullOrWhiteSpace(path) || !Path.IsPathRooted(path)) return "Choose a program file.";
-        if (!path.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)) return "Only programs (.exe files) can be added.";
-        if (!File.Exists(path)) return "That program no longer exists.";
+        if (string.IsNullOrWhiteSpace(path) || !Path.IsPathRooted(path)) return Loc.Get("Integrations.ChooseAProgramFile");
+        if (!path.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)) return Loc.Get("Integrations.OnlyProgramsExeFilesCanBe");
+        if (!File.Exists(path)) return Loc.Get("Integrations.ThatProgramNoLongerExists");
         return null;
     }
 

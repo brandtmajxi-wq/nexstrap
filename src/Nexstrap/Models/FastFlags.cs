@@ -1,3 +1,5 @@
+using Nexstrap.Core;
+
 namespace Nexstrap.Models;
 
 /// <summary>Value type implied by a FastFlag's name prefix.</summary>
@@ -35,4 +37,11 @@ public sealed record KnownFlag(
     string Description,
     bool Allowlisted,
     string? SuggestedValue = null,
-    string? Note = null);
+    string? Note = null)
+{
+    public string LocalizedCategory => Loc.GetOr("Flag.Cat." + Category.Replace(" ", ""), Category);
+
+    public string LocalizedDescription => Loc.GetOr("Flag.Desc." + Name, Description);
+
+    public string? LocalizedNote => Note is null ? null : Loc.GetOr("Flag.Note." + Name, Note);
+}
