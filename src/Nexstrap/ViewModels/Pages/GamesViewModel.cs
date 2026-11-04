@@ -29,7 +29,13 @@ public sealed partial class GameItem(long placeId, string name, bool isFavorite)
 
     [ObservableProperty]
     private bool _isFavorite = isFavorite;
+
+    [ObservableProperty]
+    private string? _playedText;
 }
+
+/// <summary>One line of the play history list.</summary>
+public sealed record HistoryRow(string Name, string TimeText, string LastPlayedText);
 
 public sealed partial class GamesViewModel : PageViewModel
 {
@@ -40,9 +46,10 @@ public sealed partial class GamesViewModel : PageViewModel
     private readonly IDialogService _dialogs;
     private readonly INavigationService _navigation;
     private readonly ServersViewModel _servers;
+    private readonly IPlayHistoryService _history;
 
     public GamesViewModel(ISettingsService settings, ILaunchCoordinator launch, IExperienceInfoService experiences,
-        IGameShortcutService shortcuts, IDialogService dialogs, INavigationService navigation, ServersViewModel servers)
+        IGameShortcutService shortcuts, IDialogService dialogs, INavigationService navigation, ServersViewModel servers, IPlayHistoryService history)
     {
         _settings = settings;
         _launch = launch;
@@ -51,7 +58,9 @@ public sealed partial class GamesViewModel : PageViewModel
         _dialogs = dialogs;
         _navigation = navigation;
         _servers = servers;
+        _history = history;
         launch.RecentsChanged += (_, _) => Application.Current?.Dispatcher.BeginInvoke(Rebuild);
+        history.Changed += (_, _) => Application.Current?.Dispatcher.BeginInvoke(Rebuild);
     }
 
     public override string Title => Loc.Get("Nav.Games");
@@ -65,6 +74,56 @@ public sealed partial class GamesViewModel : PageViewModel
     public bool HasFavorites => Favorites.Count > 0;
 
     public bool HasRecent => Recent.Count > 0;
+
+    // ===== Play history =====
+
+    private const int HistoryRows = 8;
+
+    public ObservableCollection<HistoryRow> History { get; } = [];
+
+    public bool HasHistory => History.Count > 0;
+
+    public string HistorySummary => Loc.Format("Games.HistorySummary", PlayHistoryService.FormatDuration(_history.TotalSeconds), _history.TotalSessions);
+
+    public string HistoryThisWeek => Loc.Format("Games.ThisWeek", PlayHistoryService.FormatDuration(_history.SecondsSince(DateTime.UtcNow.AddDays(-7))));
+
+    public bool RecordHistory
+    {
+        get => _settings.Current.Launcher.RecordPlayHistory;
+        set
+        {
+            _settings.Current.Launcher.RecordPlayHistory = value;
+            _settings.Save();
+            OnPropertyChanged();
+        }
+    }
+
+    [RelayCommand]
+    private void ClearHistory()
+    {
+        if (_dialogs.Confirm(Loc.Get("Games.ClearHistory.Title"), Loc.Get("Games.ClearHistory.Text"), Loc.Get("Games.ClearHistory")))
+            _history.Clear();
+    }
+
+    private void RebuildHistory()
+    {
+        History.Clear();
+        foreach (var game in _history.Games.Take(HistoryRows))
+        {
+            var name = game.Name.Length > 0 ? game.Name : Loc.Format("Launch.Place", game.PlaceId);
+            History.Add(new HistoryRow(name, PlayHistoryService.FormatDuration(game.Seconds),
+                Loc.Format("Games.LastPlayed", game.LastPlayedUtc.ToLocalTime())));
+        }
+        OnPropertyChanged(nameof(HasHistory));
+        OnPropertyChanged(nameof(HistorySummary));
+        OnPropertyChanged(nameof(HistoryThisWeek));
+    }
+
+    private void ShowPlayTime(GameItem game)
+    {
+        var seconds = _history.SecondsFor(game.PlaceId);
+        game.PlayedText = seconds > 0 ? Loc.Format("Games.PlayedFor", PlayHistoryService.FormatDuration(seconds)) : null;
+    }
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(AddFavoriteCommand))]
@@ -157,6 +216,9 @@ public sealed partial class GamesViewModel : PageViewModel
         Recent.Clear();
         foreach (var r in _settings.Current.Launcher.RecentExperiences)
             Recent.Add(new GameItem(r.PlaceId, r.Name, favorites.Contains(r.PlaceId)));
+
+        foreach (var game in Favorites.Concat(Recent)) ShowPlayTime(game);
+        RebuildHistory();
 
         OnPropertyChanged(nameof(HasFavorites));
         OnPropertyChanged(nameof(HasRecent));

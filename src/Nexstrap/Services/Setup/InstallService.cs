@@ -103,7 +103,7 @@ public sealed class InstallService : IInstallService
     public bool HasStartMenuShortcut => File.Exists(Path.Combine(_startMenu, ShortcutName));
 
     public bool ShouldOfferSetup(StartupOptions options) =>
-        options is { CapturePath: null, StartPage: null, JustUpdated: false, Positional.Count: 0 }
+        options is { CapturePath: null, StartPage: null, JustUpdated: false, Tray: false, Positional.Count: 0 }
         && !_settings.Current.SkippedSetup
         && !IsRunningInstalledCopy;
 

@@ -33,7 +33,8 @@ public sealed class LaunchCoordinator(
     ICompanionAppService companions,
     ISettingsService settings,
     IDialogService dialogs,
-    ILaunchScreen screen) : ILaunchCoordinator
+    ILaunchScreen screen,
+    IPlayHistoryService history) : ILaunchCoordinator
 {
     internal const int MaxRecent = 20;
 
@@ -85,7 +86,7 @@ public sealed class LaunchCoordinator(
         if (settings.Current.Launcher.CloseAfterLaunch)
         {
             await Task.Delay(1500); // let Roblox take focus first
-            if (presence.KeepsRunningDuringSession || companions.NeedsToWatchSession)
+            if (presence.KeepsRunningDuringSession || companions.NeedsToWatchSession || history.IsRecording)
             {
                 // Presence and companion cleanup live as long as Nexstrap does: hide instead of exiting.
                 Application.Current.MainWindow?.Hide();

@@ -8,7 +8,7 @@ public interface IWindowsStartup
     /// <summary>True when Windows opens this copy of Nexstrap at sign-in.</summary>
     bool IsEnabled { get; }
 
-    void Enable();
+    void Enable(bool hidden = false);
 
     void Disable();
 }
@@ -17,6 +17,7 @@ public interface IWindowsStartup
 public sealed class WindowsStartup : IWindowsStartup
 {
     internal const string RunKey = @"Software\Microsoft\Windows\CurrentVersion\Run";
+    private const string HiddenFlag = "--tray";
 
     private readonly string _key;
     private readonly string _exe;
@@ -29,17 +30,17 @@ public sealed class WindowsStartup : IWindowsStartup
         _exe = exe;
     }
 
-    public bool IsEnabled => Read(_key) == Command(_exe);
+    public bool IsEnabled => Read(_key)?.StartsWith(Command(_exe), StringComparison.OrdinalIgnoreCase) == true;
 
-    public void Enable()
+    public void Enable(bool hidden = false)
     {
         using var key = Registry.CurrentUser.CreateSubKey(_key);
-        key.SetValue(AppInfo.Name, Command(_exe));
+        key.SetValue(AppInfo.Name, Command(_exe, hidden));
     }
 
     public void Disable() => Remove(_key);
 
-    internal static string Command(string exe) => $"\"{exe}\"";
+    internal static string Command(string exe, bool hidden = false) => hidden ? $"\"{exe}\" {HiddenFlag}" : $"\"{exe}\"";
 
     internal static string? Read(string keyPath)
     {
@@ -56,8 +57,8 @@ public sealed class WindowsStartup : IWindowsStartup
     /// <summary>Keeps an existing entry working when Nexstrap moves to a new folder.</summary>
     internal static void Retarget(string keyPath, string exe)
     {
-        if (Read(keyPath) is null) return;
+        if (Read(keyPath) is not { } current) return;
         using var key = Registry.CurrentUser.OpenSubKey(keyPath, writable: true);
-        key?.SetValue(AppInfo.Name, Command(exe));
+        key?.SetValue(AppInfo.Name, Command(exe, current.EndsWith(HiddenFlag, StringComparison.Ordinal)));
     }
 }

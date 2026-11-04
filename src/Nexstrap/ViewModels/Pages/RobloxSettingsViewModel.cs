@@ -215,13 +215,36 @@ public sealed partial class RobloxSettingsViewModel : PageViewModel
         {
             try
             {
-                if (value) _startup.Enable();
+                if (value) _startup.Enable(StartHidden);
                 else _startup.Disable();
             }
             catch (Exception ex) when (ex is UnauthorizedAccessException or IOException or System.Security.SecurityException)
             {
                 _dialogs.Show(Loc.Get("RobloxSettings.CouldntChangeStartup"), ex.Message, DialogKind.Error);
             }
+            OnPropertyChanged();
+        }
+    }
+
+    public bool StartHidden
+    {
+        get => _settings.Current.Launcher.StartHidden;
+        set
+        {
+            _settings.Current.Launcher.StartHidden = value;
+            _settings.Save();
+            if (StartWithWindows) StartWithWindows = true; // rewrites the entry with the new choice
+            OnPropertyChanged();
+        }
+    }
+
+    public bool CloseToTray
+    {
+        get => _settings.Current.Launcher.CloseToTray;
+        set
+        {
+            _settings.Current.Launcher.CloseToTray = value;
+            _settings.Save();
             OnPropertyChanged();
         }
     }

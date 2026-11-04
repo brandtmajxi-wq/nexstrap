@@ -165,6 +165,15 @@ public sealed class LauncherSettings
     /// <summary>Title for Roblox's window; empty keeps Roblox's own.</summary>
     public string? RobloxWindowTitle { get; set; }
 
+    /// <summary>Count time spent in games (stored in History.json).</summary>
+    public bool RecordPlayHistory { get; set; } = true;
+
+    /// <summary>The window's X hides Nexstrap to the tray instead of closing it.</summary>
+    public bool CloseToTray { get; set; }
+
+    /// <summary>When opened by Windows at sign-in, stay in the tray.</summary>
+    public bool StartHidden { get; set; }
+
     /// <summary>Delete old logs and temp files each time Nexstrap opens.</summary>
     public bool CleanOldFilesOnStart { get; set; }
 

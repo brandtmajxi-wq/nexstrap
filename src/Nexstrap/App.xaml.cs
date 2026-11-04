@@ -29,6 +29,9 @@ public partial class App : Application
 {
     private ServiceProvider? _services;
     private ILogger<App>? _logger;
+    private EventWaitHandle? _showRequests;
+
+    private const string ShowRequestName = @"Local\Nexstrap.ShowWindow";
 
     public static IServiceProvider Services => ((App)Current)._services
         ?? throw new InvalidOperationException("Services are not initialised yet.");
@@ -68,6 +71,7 @@ public partial class App : Application
         // Created eagerly so they're listening for Roblox sessions from the start.
         _services.GetRequiredService<IRichPresenceService>();
         _services.GetRequiredService<ICompanionAppService>();
+        _services.GetRequiredService<IPlayHistoryService>();
         // Old exe and downloaded update files from a previous self-update.
         _services.GetRequiredService<IUpdateInstaller>().CleanUpAfterUpdate();
 
@@ -79,14 +83,22 @@ public partial class App : Application
             return;
         }
 
-        if (install.ShouldOfferSetup(Options) && !RunSetup())
+        var offerSetup = install.ShouldOfferSetup(Options);
+        if (offerSetup && !RunSetup())
             return;
+
+        if (Options.CapturePath is null && !TakeOverFromRunningCopy(canHandOver: !offerSetup && Options is { StartPage: null, JustUpdated: false }))
+        {
+            Shutdown();
+            return;
+        }
 
         var window = _services.GetRequiredService<MainWindow>();
         MainWindow = window;
         var shell = _services.GetRequiredService<MainWindowViewModel>();
         shell.NavigateToStartPage(Options.StartPage);
-        window.Show();
+        if (Options.CapturePath is null) _services.GetRequiredService<ITrayService>().Show();
+        if (!Options.Tray) window.Show();
         _ = shell.CheckForUpdatesOnLaunchAsync();
         // Roblox update notifications shouldn't depend on Home being the first page opened.
         _ = _services.GetRequiredService<IRobloxClientService>().RefreshAsync();
@@ -96,6 +108,35 @@ public partial class App : Application
             var cleanup = _services.GetRequiredService<Nexstrap.Services.Maintenance.ICleanupService>();
             _ = Task.Run(cleanup.CleanOldFiles);
         }
+    }
+
+    /// <summary>
+    /// A copy waiting in the tray has no window to click, so starting Nexstrap again brings it forward
+    /// instead of opening a second copy. Returns false if this copy handed over and should exit.
+    /// </summary>
+    private bool TakeOverFromRunningCopy(bool canHandOver)
+    {
+        _showRequests = new EventWaitHandle(false, EventResetMode.AutoReset, ShowRequestName, out var first);
+        if (!first && canHandOver)
+        {
+            _showRequests.Set();
+            return false;
+        }
+
+        ThreadPool.RegisterWaitForSingleObject(_showRequests,
+            (_, _) => Dispatcher.BeginInvoke(ShowMainWindow), null, Timeout.Infinite, executeOnlyOnce: false);
+        return true;
+    }
+
+    public void ShowMainWindow()
+    {
+        if (MainWindow is not { } window) return;
+        window.Show();
+        if (window.WindowState == WindowState.Minimized) window.WindowState = WindowState.Normal;
+        window.Activate();
+        // Windows won't always let a background app take focus; this brings it above other windows.
+        window.Topmost = true;
+        window.Topmost = false;
     }
 
     /// <summary>Shows setup. Returns true if this copy should carry on and open normally.</summary>
@@ -180,7 +221,8 @@ public partial class App : Application
                 var session = services.GetRequiredService<IRobloxSessionService>();
                 session.Track(pid, launchedAt);
                 if (services.GetRequiredService<IRichPresenceService>().KeepsRunningDuringSession
-                    || services.GetRequiredService<ICompanionAppService>().NeedsToWatchSession)
+                    || services.GetRequiredService<ICompanionAppService>().NeedsToWatchSession
+                    || services.GetRequiredService<IPlayHistoryService>().IsRecording)
                     await session.WaitForEndAsync();
             }
         }
@@ -221,6 +263,8 @@ public partial class App : Application
         services.AddSingleton<IFastFlagService, FastFlagService>();
         services.AddSingleton<IRobloxFontService, RobloxFontService>();
         services.AddSingleton<IRobloxModService, RobloxModService>();
+        services.AddSingleton<IPlayHistoryService, PlayHistoryService>();
+        services.AddSingleton<ITrayService, TrayService>();
         services.AddSingleton<IRobloxProcessTuner, RobloxProcessTuner>();
         services.AddSingleton<Nexstrap.Services.Maintenance.ICleanupService, Nexstrap.Services.Maintenance.CleanupService>();
         services.AddSingleton<IWindowsStartup, WindowsStartup>();
@@ -312,7 +356,9 @@ public partial class App : Application
     {
         _logger?.LogInformation("Exiting with code {Code}", e.ApplicationExitCode);
         _services?.GetService<ISettingsService>()?.Save();
+        _services?.GetService<IPlayHistoryService>()?.Flush();
         _services?.Dispose();
+        _showRequests?.Dispose();
         base.OnExit(e);
     }
 }

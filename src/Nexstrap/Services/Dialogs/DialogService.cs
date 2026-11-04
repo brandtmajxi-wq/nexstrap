@@ -30,8 +30,8 @@ public sealed class DialogService : IDialogService
             Loc.GetOr("Common." + confirmText, confirmText), Loc.GetOr("Common." + cancelText, cancelText)));
 
     private static Window? Owner() =>
-        Application.Current?.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive)
-        ?? Application.Current?.MainWindow;
+        Application.Current?.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive && w.IsVisible)
+        ?? (Application.Current?.MainWindow is { IsVisible: true } main ? main : null);
 
     private static bool Run(Func<bool> show)
     {

@@ -28,6 +28,12 @@ A page-by-page guide. Everything Nexstrap stores lives in `%LocalAppData%\Nexstr
 
 Favorites and recently played experiences (newest 20) with thumbnails from Roblox's public API. Each game has **Play**, a servers button, a desktop-shortcut button (a `.url` file that opens `roblox://placeId=<id>` through whichever program handles Roblox links; existing files are never overwritten) and a favorite star.
 
+**Play history** counts time in games while Nexstrap follows Roblox, which means Roblox was started from Nexstrap or through a link it handles. Time in the Roblox menu isn't counted, and visits under 15 seconds are ignored. Each place or server counts as a separate session. Totals, session counts, the last 7 days and last played dates are stored in `History.json` on this PC. It can be turned off or cleared on the Games page.
+
+## Tray icon
+
+While Nexstrap runs it has an icon in the notification area. Left-click opens the window; right-click offers Open, Play Roblox, the five most recent games and Quit. *Keep running in the tray when closed* makes the X hide the window, and *Start hidden in the tray* keeps it there when Windows opens Nexstrap. Starting Nexstrap again brings the running copy forward.
+
 ## Servers
 
 Enter a place ID or link to list its public servers (100 at a time) with player counts, ping and FPS. Sort by most or fewest players or lowest ping; filter by full servers, free slots and maximum ping. **Join** opens that server with Roblox's `gameInstanceId` link.
@@ -108,6 +114,8 @@ Version and runtime details, *Copy diagnostics*, data and log folders, open-sour
 |---|---|
 | `Settings.json` | All app settings |
 | `FastFlags.json` | Your flag list |
+| `History.json` | Play time per game |
+| `Mods\` | Copies of your death sound and cursor |
 | `Themes\*.json` | Saved themes |
 | `Backgrounds\` | Copies of background images |
 | `Backups\` | FastFlags, Roblox settings and configuration backups |

@@ -6,6 +6,7 @@ namespace Nexstrap.Core;
 ///   --page &lt;Name&gt;          open a specific page on startup (e.g. Appearance)
 ///   --updated              set by the self-updater when it restarts Nexstrap
 ///   --uninstall            run by Windows' Installed apps list
+///   --tray                 start hidden, with only the tray icon
 /// </summary>
 public sealed class StartupOptions
 {
@@ -17,6 +18,8 @@ public sealed class StartupOptions
 
     public bool Uninstall { get; init; }
 
+    public bool Tray { get; init; }
+
     /// <summary>Remaining arguments (e.g. a roblox-player: URI handed over by Windows).</summary>
     public IReadOnlyList<string> Positional { get; init; } = [];
 
@@ -25,6 +28,7 @@ public sealed class StartupOptions
         string? capture = null, page = null;
         var updated = false;
         var uninstall = false;
+        var tray = false;
         var rest = new List<string>();
 
         for (var i = 0; i < args.Count; i++)
@@ -43,12 +47,15 @@ public sealed class StartupOptions
                 case "--uninstall":
                     uninstall = true;
                     break;
+                case "--tray":
+                    tray = true;
+                    break;
                 default:
                     rest.Add(args[i]);
                     break;
             }
         }
 
-        return new StartupOptions { CapturePath = capture, StartPage = page, JustUpdated = updated, Uninstall = uninstall, Positional = rest };
+        return new StartupOptions { CapturePath = capture, StartPage = page, JustUpdated = updated, Uninstall = uninstall, Tray = tray, Positional = rest };
     }
 }

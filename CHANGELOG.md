@@ -2,6 +2,17 @@
 
 All notable changes to Nexstrap are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.9.0] - 2026-11-04
+
+### Added
+- **Play history** (Games): time played per game, session counts, the last 7 days and last played dates, saved only on this PC. You can turn it off or clear it.
+- **Tray icon**: open Nexstrap, play Roblox, jump into a recent game or quit from the notification area.
+- **Keep running in the tray when closed** and **Start hidden in the tray** (Roblox Settings).
+
+### Changed
+- Starting Nexstrap while it's already open now brings that copy forward instead of opening a second one.
+- With play history on, "Close Nexstrap after launch" hides Nexstrap until Roblox closes, so the time can be counted.
+
 ## [1.8.0] - 2026-11-04
 
 ### Added
@@ -110,6 +121,7 @@ First public release.
 - Quick update check on every launch with an in-app banner; release notes, progress and cancel.
 - Updates are installed only after verifying source, size, SHA-256, product name and version; failed swaps roll back.
 
+[1.9.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.9.0
 [1.8.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.8.0
 [1.7.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.7.0
 [1.6.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.6.0

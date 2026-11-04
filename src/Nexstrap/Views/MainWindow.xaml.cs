@@ -83,6 +83,13 @@ public partial class MainWindow : Window
             w.Height = ActualHeight;
         }
         _settings.Save();
+
+        // Application.Shutdown ignores this, so Quit and updates still close the window.
+        if (_settings.Current.Launcher.CloseToTray)
+        {
+            e.Cancel = true;
+            Hide();
+        }
         base.OnClosing(e);
     }
 
