@@ -52,6 +52,12 @@ public sealed partial class NotificationsViewModel : PageViewModel
     [RelayCommand]
     private void Open(AppNotification item)
     {
+        if (item.Category == NotificationCategory.NexstrapUpdate)
+        {
+            _navigation.ShowUpdates();
+            return;
+        }
+
         switch (item.Target)
         {
             case NotificationTarget.FastFlags: _navigation.NavigateTo<FastFlagsViewModel>(); break;

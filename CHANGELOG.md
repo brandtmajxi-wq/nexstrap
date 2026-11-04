@@ -2,6 +2,11 @@
 
 All notable changes to Nexstrap are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.4.1] - 2026-11-04
+
+### Fixed
+- **View update** (and **Open** on an update notification) now jumps to the Nexstrap updates card. Before, it seemed to do nothing when Home was already open, because the card was further down the page.
+
 ## [1.4.0] - 2026-11-04
 
 ### Added
@@ -60,6 +65,7 @@ First public release.
 - Quick update check on every launch with an in-app banner; release notes, progress and cancel.
 - Updates are installed only after verifying source, size, SHA-256, product name and version; failed swaps roll back.
 
+[1.4.1]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.4.1
 [1.4.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.4.0
 [1.3.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.3.0
 [1.1.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.1.0

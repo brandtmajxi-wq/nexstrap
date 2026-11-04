@@ -12,9 +12,9 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
 
     <!-- Version information (single source of truth for the updater) -->
-    <Version>1.4.0</Version>
-    <AssemblyVersion>1.4.0.0</AssemblyVersion>
-    <FileVersion>1.4.0.0</FileVersion>
+    <Version>1.4.1</Version>
+    <AssemblyVersion>1.4.1.0</AssemblyVersion>
+    <FileVersion>1.4.1.0</FileVersion>
     <Product>Nexstrap</Product>
     <Description>The Roblox launcher, reimagined.</Description>
     <Company>Nexstrap</Company>

@@ -97,7 +97,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void ViewUpdate() => Navigation.NavigateTo<HomeViewModel>();
+    private void ViewUpdate() => Navigation.ShowUpdates();
 
     [RelayCommand]
     private void DismissUpdate()

@@ -314,7 +314,7 @@
                 </ui:SettingCard>
             </StackPanel>
 
-            <StackPanel Grid.Column="2">
+            <StackPanel x:Name="UpdatesCard" Grid.Column="2">
                 <TextBlock Text="Nexstrap updates" Style="{StaticResource SectionHeader}" />
                 <Border Style="{StaticResource Card}" Padding="18,16">
                     <StackPanel>

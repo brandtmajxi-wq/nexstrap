@@ -30,6 +30,8 @@ public class NavigationTests
 
         public void NavigateTo<TPage>() where TPage : PageViewModel => NavigateTo(typeof(TPage));
 
+        public void ShowUpdates() => NavigateTo<HomeViewModel>();
+
         public void NavigateTo(Type pageType)
         {
             if (CurrentPage?.GetType() == pageType) return;
