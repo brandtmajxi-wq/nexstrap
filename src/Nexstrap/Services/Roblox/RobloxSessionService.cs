@@ -75,6 +75,9 @@ public interface IRobloxSessionService
 
     RobloxActivity? Current { get; }
 
+    /// <summary>When Roblox was opened. Unlike Current.SinceUtc, this doesn't change when joining or leaving a game.</summary>
+    DateTime? StartedUtc { get; }
+
     /// <summary>Raised on activity changes and when the session ends (Current becomes null). Background thread.</summary>
     event EventHandler? Changed;
 
@@ -98,6 +101,8 @@ public sealed class RobloxSessionService(ILogger<RobloxSessionService> logger) :
 
     public RobloxActivity? Current { get; private set; }
 
+    public DateTime? StartedUtc { get; private set; }
+
     public event EventHandler? Changed;
 
     public void Track(int processId, DateTime launchedAtUtc)
@@ -105,6 +110,7 @@ public sealed class RobloxSessionService(ILogger<RobloxSessionService> logger) :
         _cts?.Cancel();
         _cts = new CancellationTokenSource();
         var token = _cts.Token;
+        StartedUtc = launchedAtUtc;
         Set(new RobloxActivity(RobloxActivityKind.Starting, launchedAtUtc));
         _run = Task.Run(() => RunAsync(processId, launchedAtUtc, token), token);
     }

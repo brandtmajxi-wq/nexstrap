@@ -13,6 +13,7 @@ internal sealed class ManualSession : IRobloxSessionService
 {
     public bool IsActive => Current is not null;
     public RobloxActivity? Current { get; private set; }
+    public DateTime? StartedUtc => Current?.SinceUtc;
     public event EventHandler? Changed;
     public void Track(int processId, DateTime launchedAtUtc) => Set(new RobloxActivity(RobloxActivityKind.Starting, launchedAtUtc));
     public Task WaitForEndAsync() => Task.CompletedTask;

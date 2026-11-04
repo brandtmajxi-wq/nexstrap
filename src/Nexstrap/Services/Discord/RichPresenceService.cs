@@ -186,7 +186,7 @@ public sealed class RichPresenceService : IRichPresenceService, IDisposable
         if (_session.Current is { } activity && Options.RichPresence)
         {
             if (activity.Kind != RobloxActivityKind.InGame || activity.PlaceId is not { } placeId)
-                return BuildMenu(activity.SinceUtc, Options);
+                return BuildMenu(_session.StartedUtc ?? activity.SinceUtc, Options); // keeps counting across games
 
             ExperienceInfo? info = null;
             string? icon = null;

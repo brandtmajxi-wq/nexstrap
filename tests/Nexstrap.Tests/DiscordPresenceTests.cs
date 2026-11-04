@@ -144,6 +144,7 @@ public class PresenceFlowTests
     {
         public bool IsActive => Current is not null;
         public RobloxActivity? Current { get; set; }
+        public DateTime? StartedUtc { get; set; }
         public event EventHandler? Changed;
         public void Track(int processId, DateTime launchedAtUtc) { }
         public Task WaitForEndAsync() => Task.CompletedTask;
@@ -168,6 +169,28 @@ public class PresenceFlowTests
         settings.Current.Discord.ApplicationIdOverride = appId;
         var service = new RichPresenceService(discord, session, new FakeExperiences(), settings, NullLogger<RichPresenceService>.Instance);
         return (service, discord, session, settings);
+    }
+
+    [Fact]
+    public async Task Browsing_time_keeps_counting_after_leaving_a_game()
+    {
+        var (service, discord, session, _) = Create();
+        var opened = new DateTime(2026, 11, 4, 8, 0, 0, DateTimeKind.Utc);
+        session.StartedUtc = opened;
+
+        session.Current = new RobloxActivity(RobloxActivityKind.Menu, opened.AddSeconds(2));
+        await service.RefreshAsync();
+        var browsing = (long?)discord.Activities[^1]!["timestamps"]!["start"];
+        Assert.Equal(new DateTimeOffset(opened).ToUnixTimeSeconds(), browsing);
+
+        var joined = opened.AddMinutes(1);
+        session.Current = new RobloxActivity(RobloxActivityKind.InGame, joined, 1818, 99);
+        await service.RefreshAsync();
+        Assert.Equal(new DateTimeOffset(joined).ToUnixTimeSeconds(), (long?)discord.Activities[^1]!["timestamps"]!["start"]);
+
+        session.Current = new RobloxActivity(RobloxActivityKind.Menu, opened.AddMinutes(10));
+        await service.RefreshAsync();
+        Assert.Equal(browsing, (long?)discord.Activities[^1]!["timestamps"]!["start"]);
     }
 
     [Fact]

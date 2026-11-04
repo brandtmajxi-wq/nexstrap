@@ -2,6 +2,11 @@
 
 All notable changes to Nexstrap are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.5.2] - 2026-11-04
+
+### Changed
+- The browsing time on your Discord card no longer resets when you leave a game. It counts from when Roblox was opened. The in-game time still starts fresh for each game.
+
 ## [1.5.1] - 2026-11-04
 
 ### Changed
@@ -75,6 +80,7 @@ First public release.
 - Quick update check on every launch with an in-app banner; release notes, progress and cancel.
 - Updates are installed only after verifying source, size, SHA-256, product name and version; failed swaps roll back.
 
+[1.5.2]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.5.2
 [1.5.1]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.5.1
 [1.5.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.5.0
 [1.4.1]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.4.1
