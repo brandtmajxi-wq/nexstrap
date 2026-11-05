@@ -17,12 +17,13 @@ public enum RobloxActivityKind
 }
 
 public sealed record RobloxActivity(RobloxActivityKind Kind, DateTime SinceUtc, long? PlaceId = null, long? UniverseId = null,
-    string? JobId = null, long? UserId = null);
+    string? JobId = null, long? UserId = null, string? ServerAddress = null);
 
 /// <summary>
 /// Reads the Roblox Player's own log lines (verified against 0.745 logs):
 ///   "[FLog::SingleSurfaceApp] setStage: (stage:LuaApp)"          → menu
 ///   "[FLog::Output] ! Joining game '{job}' place {placeId} at …"  → in game
+///   "[FLog::Network] UDMUX Address = 128.116.44.33, Port = …"     → the server's public address
 ///   "[FLog::GameJoinLoadTime] Report game_join_loadtime: placeid:…, universeid:…, …, userid:…"
 ///   "[FLog::SingleSurfaceApp] leaveUGCGameInternal"               → back to menu
 /// </summary>
@@ -38,6 +39,10 @@ public static partial class RobloxLogParser
         var join = JoiningGame().Match(line);
         if (join.Success && long.TryParse(join.Groups[2].Value, out var place))
             return new RobloxActivity(RobloxActivityKind.InGame, Timestamp(line), place, null, join.Groups[1].Value);
+
+        var server = ServerAddress().Match(line);
+        if (server.Success && current.Kind == RobloxActivityKind.InGame && current.ServerAddress != server.Groups[1].Value)
+            return current with { ServerAddress = server.Groups[1].Value };
 
         var load = JoinLoadTime().Match(line);
         if (load.Success && current.Kind == RobloxActivityKind.InGame
@@ -63,6 +68,9 @@ public static partial class RobloxLogParser
 
     [GeneratedRegex(@"! Joining game '([0-9a-fA-F-]+)' place (\d+)")]
     private static partial Regex JoiningGame();
+
+    [GeneratedRegex(@"\[FLog::Network\] UDMUX Address = (\d+\.\d+\.\d+\.\d+)")]
+    private static partial Regex ServerAddress();
 
     [GeneratedRegex(@"Report game_join_loadtime: placeid:(\d+),.*?universeid:(\d+)(?:.*?userid:(\d+))?")]
     private static partial Regex JoinLoadTime();

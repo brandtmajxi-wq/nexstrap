@@ -195,6 +195,7 @@ public sealed class PlayHistoryTests : IDisposable
     {
         public event EventHandler? RecentsChanged { add { } remove { } }
         public Task<LaunchResult?> LaunchAppAsync() => Task.FromResult<LaunchResult?>(null);
+        public Task<LaunchResult?> HopAsync(long placeId, string? name, string serverId) => Task.FromResult<LaunchResult?>(null);
         public Task<LaunchResult?> JoinAsync(long placeId, string? name, string? serverId = null) => Task.FromResult<LaunchResult?>(null);
     }
 

@@ -41,7 +41,11 @@ While Nexstrap runs it has an icon in the notification area. Left-click opens th
 
 Enter a place ID or link to list its public servers (100 at a time) with player counts, ping and FPS. Sort by most or fewest players or lowest ping; filter by full servers, free slots and maximum ping. **Join** opens that server with Roblox's `gameInstanceId` link.
 
-Ping is the average Roblox reports for the server, not your own. Regions aren't shown: Roblox's public list doesn't include them, and finding them would need your account's sign-in, which Nexstrap never touches.
+Ping is the average Roblox reports for the server, not your own.
+
+**Server locations.** Roblox's public list has no locations, and asking for them before joining needs your account's sign-in, which Nexstrap never touches. Once you're on a server, Roblox writes its address to its own log, and Nexstrap matches that to a city using a community list of Roblox's addresses. The list isn't official, so locations can be wrong, out of date or unknown.
+
+**Find a server by region** (experimental) joins public servers one at a time until one is in the city you picked, up to 8 tries. It closes Roblox between tries, can take a few minutes, and may not find one. Companion programs set to close with Roblox close and restart with each try.
 
 ## Loading Screen
 

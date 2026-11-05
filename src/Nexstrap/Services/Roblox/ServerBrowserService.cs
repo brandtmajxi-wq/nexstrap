@@ -14,6 +14,11 @@ public sealed record GameServer(string Id, int Playing, int MaxPlayers, double F
     public int FreeSlots => Math.Max(0, MaxPlayers - Playing);
     public bool IsFull => FreeSlots == 0;
     public double Fill => MaxPlayers <= 0 ? 0 : Math.Clamp((double)Playing / MaxPlayers, 0, 1);
+
+    /// <summary>Set when you've been on this server, since the list itself has no locations.</summary>
+    public string? Region { get; set; }
+
+    public string RegionTag => Region is null ? "" : " · " + Region;
 }
 
 public sealed record ServerPage(IReadOnlyList<GameServer> Servers, string? NextCursor);
@@ -27,7 +32,7 @@ public interface IServerBrowserService
 
 /// <summary>
 /// Roblox's public server list. It needs no sign-in, so no account data is sent.
-/// It doesn't include regions: finding those needs an authenticated join request, which Nexstrap never makes.
+/// It doesn't include regions: asking for those needs an authenticated join request, which Nexstrap never makes.
 /// </summary>
 public sealed class ServerBrowserService(HttpClient http, ILogger<ServerBrowserService> logger) : IServerBrowserService
 {

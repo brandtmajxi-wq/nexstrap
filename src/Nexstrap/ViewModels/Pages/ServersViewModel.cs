@@ -5,6 +5,7 @@ using System.Windows.Data;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Nexstrap.Core;
+using Nexstrap.Services.Dialogs;
 using Nexstrap.Services.Roblox;
 
 namespace Nexstrap.ViewModels.Pages;
@@ -21,11 +22,18 @@ public sealed partial class ServersViewModel : PageViewModel
     private readonly IServerBrowserService _servers;
     private readonly IExperienceInfoService _experiences;
     private readonly ILaunchCoordinator _launch;
+    private readonly IServerRegionService _regions;
+    private readonly IDialogService _dialogs;
+    private CancellationTokenSource? _regionSearch;
     private long _placeId;
     private string? _nextCursor;
 
-    public ServersViewModel(IServerBrowserService servers, IExperienceInfoService experiences, ILaunchCoordinator launch)
+    public ServersViewModel(IServerBrowserService servers, IExperienceInfoService experiences, ILaunchCoordinator launch,
+        IServerRegionService regions, IDialogService dialogs)
     {
+        _regions = regions;
+        _dialogs = dialogs;
+        regions.Changed += (_, _) => System.Windows.Application.Current?.Dispatcher.BeginInvoke(() => OnPropertyChanged(nameof(CurrentRegionText)));
         _servers = servers;
         _experiences = experiences;
         _launch = launch;
@@ -42,7 +50,7 @@ public sealed partial class ServersViewModel : PageViewModel
     public ICollectionView ServersView { get; }
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(LoadCommand))]
+    [NotifyCanExecuteChangedFor(nameof(LoadCommand), nameof(FindRegionCommand))]
     private string _input = "";
 
     [ObservableProperty]
@@ -58,6 +66,72 @@ public sealed partial class ServersViewModel : PageViewModel
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(LoadMoreCommand))]
     private bool _hasMore;
+
+    // ===== Region =====
+
+    public IReadOnlyList<string> Regions => RobloxRegions.All;
+
+    [ObservableProperty]
+    private string _selectedRegion = RobloxRegions.Frankfurt;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(FindRegionCommand), nameof(StopRegionSearchCommand))]
+    private bool _isFindingRegion;
+
+    [ObservableProperty]
+    private string? _regionStatus;
+
+    public string? CurrentRegionText => _regions.CurrentRegion is { } region ? Loc.Format("Servers.CurrentRegion", region) : null;
+
+    private bool CanFindRegion() => !IsFindingRegion && RobloxLinks.TryParsePlaceId(Input, out _);
+
+    [RelayCommand(CanExecute = nameof(CanFindRegion))]
+    private async Task FindRegionAsync()
+    {
+        RobloxLinks.TryParsePlaceId(Input, out var placeId);
+        var region = SelectedRegion;
+        if (!_dialogs.Confirm(Loc.Format("Servers.ConfirmRegion.Title", region), Loc.Get("Servers.ConfirmRegion.Text"), Loc.Get("Servers.ConfirmRegion.Go")))
+            return;
+
+        IsFindingRegion = true;
+        using var search = _regionSearch = new CancellationTokenSource();
+        var tries = 0;
+        var progress = new Progress<RegionSearchProgress>(p =>
+        {
+            tries = p.Total;
+            RegionStatus = p.Joined
+                ? Loc.Format("Servers.RegionLanded", p.Attempt, p.Total, p.Landed ?? Loc.Get("Servers.UnknownRegion"))
+                : Loc.Format("Servers.RegionTry", p.Attempt, p.Total);
+        });
+
+        try
+        {
+            var name = placeId == _placeId ? ExperienceName : null;
+            var outcome = await _regions.FindAsync(placeId, name, region, progress, search.Token);
+            RegionStatus = outcome switch
+            {
+                RegionSearchOutcome.Found => Loc.Format("Servers.RegionFound", region),
+                RegionSearchOutcome.NotFound => Loc.Format("Servers.RegionNotFound", region, tries),
+                _ => Loc.Get("Servers.RegionFailed")
+            };
+        }
+        catch (OperationCanceledException)
+        {
+            RegionStatus = Loc.Get("Servers.RegionStopped");
+        }
+        catch (ServerBrowserException ex)
+        {
+            RegionStatus = ex.Message;
+        }
+        finally
+        {
+            _regionSearch = null;
+            IsFindingRegion = false;
+        }
+    }
+
+    [RelayCommand(CanExecute = nameof(IsFindingRegion))]
+    private void StopRegionSearch() => _regionSearch?.Cancel();
 
     // ===== Filters =====
 
@@ -144,7 +218,11 @@ public sealed partial class ServersViewModel : PageViewModel
             // Full servers are filtered locally so the toggle works without reloading.
             var page = await _servers.GetServersAsync(_placeId, Sort != ServerSort.FewestPlayers, excludeFull: false, _nextCursor);
             var known = Servers.Select(s => s.Id).ToHashSet();
-            foreach (var server in page.Servers.Where(s => known.Add(s.Id))) Servers.Add(server);
+            foreach (var server in page.Servers.Where(s => known.Add(s.Id)))
+            {
+                server.Region = _regions.KnownRegion(server.Id);
+                Servers.Add(server);
+            }
             _nextCursor = page.NextCursor;
             HasMore = page.NextCursor is not null;
             Status = Servers.Count == 0 ? Loc.Get("Servers.NoPublicServersAreRunningRight") : Loc.Format("Servers.ServersLoaded", Servers.Count);

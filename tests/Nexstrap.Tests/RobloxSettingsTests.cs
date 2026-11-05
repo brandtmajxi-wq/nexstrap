@@ -13,6 +13,7 @@ internal sealed class FakeLauncher : IRobloxLauncher
     public LaunchResult LaunchApp(RobloxInstallation installation) => new(true, "ok");
     public LaunchResult LaunchUri(RobloxInstallation installation, string uri) => new(true, "ok");
     public bool IsRobloxRunning() => Running;
+    public bool CloseRoblox(TimeSpan timeout) => true;
 }
 
 public class RobloxUserSettingsTests : IDisposable

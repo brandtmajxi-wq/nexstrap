@@ -26,6 +26,25 @@
             </StackPanel>
         </Border>
 
+        <!-- ===== Region ===== -->
+        <TextBlock Text="{DynamicResource L.Servers.FindByRegion}" Style="{StaticResource SectionHeader}" />
+        <Border Style="{StaticResource Card}" Padding="18,14">
+            <StackPanel>
+                <TextBlock Text="{DynamicResource L.Servers.FindByRegion.Text}" Style="{StaticResource Text.Caption}" Margin="0,0,0,10" />
+                <DockPanel>
+                    <Button DockPanel.Dock="Right" Content="{DynamicResource L.Servers.Stop}" Padding="12,6" Margin="8,0,0,0" Command="{Binding StopRegionSearchCommand}"
+                            Visibility="{Binding IsFindingRegion, Converter={StaticResource BoolToVisibility}}" />
+                    <Button DockPanel.Dock="Right" Style="{StaticResource Button.Primary}" Content="{DynamicResource L.Servers.FindRegionButton}" ui:Ui.Icon="&#xE774;"
+                            Margin="10,0,0,0" Command="{Binding FindRegionCommand}" />
+                    <ComboBox ItemsSource="{Binding Regions}" SelectedItem="{Binding SelectedRegion}" AutomationProperties.Name="{DynamicResource L.Servers.FindByRegion}" />
+                </DockPanel>
+                <TextBlock Text="{Binding RegionStatus}" Style="{StaticResource Text.Caption}" Margin="2,8,0,0"
+                           Visibility="{Binding RegionStatus, Converter={StaticResource NullToVisibility}}" />
+                <TextBlock Text="{Binding CurrentRegionText}" Style="{StaticResource Text.Caption}" Margin="2,8,0,0"
+                           Visibility="{Binding CurrentRegionText, Converter={StaticResource NullToVisibility}}" />
+            </StackPanel>
+        </Border>
+
         <TextBlock Text="{DynamicResource L.Servers.Filters}" Style="{StaticResource SectionHeader}" />
         <ui:SettingCard Icon="&#xE8CB;" Header="{DynamicResource L.Servers.SortBy}" Description="{DynamicResource L.Servers.RobloxProvidesThePlayerOrderPing}">
             <ComboBox Width="190" ItemsSource="{Binding SortChoices}" DisplayMemberPath="Label" SelectedValuePath="Value"
@@ -70,7 +89,7 @@
                                                 <Run Text="{Binding Fps, Mode=OneWay, StringFormat='{}{0:0} FPS'}" />
                                             </TextBlock>
                                             <TextBlock Style="{StaticResource Text.Base}" FontWeight="Medium">
-                                                <Run Text="{Binding Playing, Mode=OneWay}" /><Run Text=" / " /><Run Text="{Binding MaxPlayers, Mode=OneWay}" /><Run Text="{DynamicResource L.Servers.Players}" />
+                                                <Run Text="{Binding Playing, Mode=OneWay}" /><Run Text=" / " /><Run Text="{Binding MaxPlayers, Mode=OneWay}" /><Run Text="{DynamicResource L.Servers.Players}" /><Run Text="{Binding RegionTag, Mode=OneWay}" />
                                             </TextBlock>
                                         </DockPanel>
                                         <ProgressBar Height="4" Margin="0,7,0,0" Maximum="1" Value="{Binding Fill, Mode=OneWay}" />

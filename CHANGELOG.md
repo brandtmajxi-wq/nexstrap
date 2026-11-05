@@ -2,6 +2,12 @@
 
 All notable changes to Nexstrap are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.11.0] - 2026-11-05
+
+### Added
+- **Find a server by region** (Servers, experimental): pick a city such as Frankfurt, and Nexstrap joins public servers one at a time, closing Roblox between tries, until it lands there. It stops after 8 tries and may not find one. Roblox only reveals a server's location after you join, unless you hand over your sign-in, which Nexstrap never touches.
+- **Server locations**: the Servers page shows where your current server is, and marks servers you've been on since opening Nexstrap. Locations come from a community list of Roblox's addresses and can be wrong or out of date.
+
 ## [1.10.0] - 2026-11-05
 
 ### Added
@@ -127,6 +133,7 @@ First public release.
 - Quick update check on every launch with an in-app banner; release notes, progress and cancel.
 - Updates are installed only after verifying source, size, SHA-256, product name and version; failed swaps roll back.
 
+[1.11.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.11.0
 [1.10.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.10.0
 [1.9.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.9.0
 [1.8.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.8.0

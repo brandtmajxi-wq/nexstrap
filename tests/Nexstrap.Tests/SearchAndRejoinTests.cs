@@ -60,6 +60,7 @@ public class LastServerTests
         public (long Place, string? Name, string? Server)? Joined { get; private set; }
         public event EventHandler? RecentsChanged { add { } remove { } }
         public Task<LaunchResult?> LaunchAppAsync() => Task.FromResult<LaunchResult?>(null);
+        public Task<LaunchResult?> HopAsync(long placeId, string? name, string serverId) => Task.FromResult<LaunchResult?>(null);
         public Task<LaunchResult?> JoinAsync(long placeId, string? name, string? serverId = null)
         {
             Joined = (placeId, name, serverId);

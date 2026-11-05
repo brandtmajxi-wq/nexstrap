@@ -17,6 +17,9 @@ public interface ILaunchCoordinator
     /// <summary>Joins an experience, or one specific server when <paramref name="serverId"/> is given.</summary>
     Task<LaunchResult?> JoinAsync(long placeId, string? name, string? serverId = null);
 
+    /// <summary>Joins one server as a step of a longer search: no questions asked, and Nexstrap stays open.</summary>
+    Task<LaunchResult?> HopAsync(long placeId, string? name, string serverId);
+
     /// <summary>Raised when the recent-experiences list changed.</summary>
     event EventHandler? RecentsChanged;
 }
@@ -48,7 +51,13 @@ public sealed class LaunchCoordinator(
         return RunAsync(i => launcher.LaunchUri(i, uri), replacesGame: true, () => RememberRecent(placeId, name));
     }
 
-    private async Task<LaunchResult?> RunAsync(Func<RobloxInstallation, LaunchResult> launch, bool replacesGame, Action? onStarted)
+    public Task<LaunchResult?> HopAsync(long placeId, string? name, string serverId)
+    {
+        var uri = RobloxLinks.ServerLaunchUri(placeId, serverId);
+        return RunAsync(i => launcher.LaunchUri(i, uri), replacesGame: false, () => RememberRecent(placeId, name), quiet: true);
+    }
+
+    private async Task<LaunchResult?> RunAsync(Func<RobloxInstallation, LaunchResult> launch, bool replacesGame, Action? onStarted, bool quiet = false)
     {
         var state = client.State;
         if (state.Preferred is not { } installation)
@@ -62,7 +71,7 @@ public sealed class LaunchCoordinator(
                 Loc.Get("Launch.RobloxRunsOneGameAtA"), Loc.Get("Launch.JoinAnyway")))
             return null;
 
-        if (state.UpdateAvailable && state.Latest is { } latest &&
+        if (!quiet && state.UpdateAvailable && state.Latest is { } latest &&
             !dialogs.Confirm(Loc.Get("Launch.RobloxIsOutOfDate"),
                 Loc.Format("Launch.ThisBuildIsButRobloxIs", installation.DisplayVersion, latest.Version),
                 Loc.Get("Launch.LaunchAnyway"), Loc.Get("Launch.NotNow")))
@@ -83,7 +92,7 @@ public sealed class LaunchCoordinator(
         }
         onStarted?.Invoke();
 
-        if (settings.Current.Launcher.CloseAfterLaunch)
+        if (!quiet && settings.Current.Launcher.CloseAfterLaunch)
         {
             await Task.Delay(1500); // let Roblox take focus first
             if (presence.KeepsRunningDuringSession || companions.NeedsToWatchSession || history.IsRecording)

@@ -20,6 +20,9 @@ public interface IRobloxLauncher
 
     /// <summary>True while any Roblox Player process is running.</summary>
     bool IsRobloxRunning();
+
+    /// <summary>Asks Roblox to close, like clicking its X. Returns false if it's still open after the timeout.</summary>
+    bool CloseRoblox(TimeSpan timeout);
 }
 
 /// <summary>
@@ -51,6 +54,27 @@ public sealed class RobloxLauncher(
         var processes = Process.GetProcessesByName(ProcessName);
         foreach (var p in processes) p.Dispose();
         return processes.Length > 0;
+    }
+
+    public bool CloseRoblox(TimeSpan timeout)
+    {
+        var processes = Process.GetProcessesByName(ProcessName);
+        try
+        {
+            foreach (var process in processes) process.CloseMainWindow();
+            var deadline = DateTime.UtcNow + timeout;
+            foreach (var process in processes)
+            {
+                var left = deadline - DateTime.UtcNow;
+                if (!process.WaitForExit(left > TimeSpan.Zero ? left : TimeSpan.Zero)) return false;
+            }
+            return true;
+        }
+        catch (InvalidOperationException) { return true; } // already gone
+        finally
+        {
+            foreach (var process in processes) process.Dispose();
+        }
     }
 
     private LaunchResult Start(RobloxInstallation installation, string argument, string description)
