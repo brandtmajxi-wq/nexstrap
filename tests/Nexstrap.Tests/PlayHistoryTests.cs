@@ -184,6 +184,13 @@ public sealed class PlayHistoryTests : IDisposable
     public void Durations_read_naturally(double seconds, string expected) =>
         Assert.Equal(expected, PlayHistoryService.FormatDuration(seconds));
 
+    private sealed class NoServer : ILastServerService
+    {
+        public LastServerInfo? Available => null;
+        public Task<LaunchResult?> RejoinAsync() => Task.FromResult<LaunchResult?>(null);
+        public event EventHandler? Changed { add { } remove { } }
+    }
+
     private sealed class NoLaunches : ILaunchCoordinator
     {
         public event EventHandler? RecentsChanged { add { } remove { } }
@@ -196,7 +203,7 @@ public sealed class PlayHistoryTests : IDisposable
     {
         for (var i = 0; i < 7; i++) _settings.Current.Launcher.RecentExperiences.Add(new RecentExperience { PlaceId = i + 1, Name = $"Game & {i}" });
         using var menu = new System.Windows.Forms.ContextMenuStrip();
-        using var tray = new Nexstrap.Services.Shell.TrayService(_settings, new NoLaunches());
+        using var tray = new Nexstrap.Services.Shell.TrayService(_settings, new NoLaunches(), new NoServer());
 
         tray.Fill(menu);
         tray.Fill(menu); // reopening must not add everything twice
@@ -211,7 +218,7 @@ public sealed class PlayHistoryTests : IDisposable
     public void Tray_menu_leaves_out_recent_games_when_there_are_none()
     {
         using var menu = new System.Windows.Forms.ContextMenuStrip();
-        using var tray = new Nexstrap.Services.Shell.TrayService(_settings, new NoLaunches());
+        using var tray = new Nexstrap.Services.Shell.TrayService(_settings, new NoLaunches(), new NoServer());
 
         tray.Fill(menu);
 

@@ -174,6 +174,8 @@ public sealed class LauncherSettings
     /// <summary>When opened by Windows at sign-in, stay in the tray.</summary>
     public bool StartHidden { get; set; }
 
+    public LastServerInfo? LastServer { get; set; }
+
     /// <summary>Delete old logs and temp files each time Nexstrap opens.</summary>
     public bool CleanOldFilesOnStart { get; set; }
 
@@ -185,6 +187,17 @@ public sealed class LauncherSettings
 
     /// <summary>URL handler commands that were registered before Nexstrap took over (scheme → command).</summary>
     public Dictionary<string, string> PreviousProtocolHandlers { get; set; } = [];
+}
+
+/// <summary>The server most recently played on, for rejoining it.</summary>
+public sealed class LastServerInfo
+{
+    public long PlaceId { get; set; }
+    public string JobId { get; set; } = "";
+    public string Name { get; set; } = "";
+
+    /// <summary>When you joined, or left if you've left since.</summary>
+    public DateTime SeenUtc { get; set; }
 }
 
 public sealed class RecentExperience

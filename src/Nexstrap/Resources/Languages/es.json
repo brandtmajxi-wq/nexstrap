@@ -739,5 +739,15 @@
   "RobloxSettings.CloseToTray": "Seguir en la bandeja al cerrar",
   "RobloxSettings.CloseToTray.Text": "El botón X oculta Nexstrap en vez de cerrarlo. Sal desde el icono de la bandeja.",
   "RobloxSettings.StartHidden": "Iniciar oculto en la bandeja",
-  "RobloxSettings.StartHidden.Text": "Cuando Nexstrap se abre con Windows, espera en la bandeja hasta que lo abras."
+  "RobloxSettings.StartHidden.Text": "Cuando Nexstrap se abre con Windows, espera en la bandeja hasta que lo abras.",
+  "Games.FindAGame": "Buscar un juego",
+  "Games.SearchPlaceholder": "Busca juegos de Roblox por nombre",
+  "Games.Search": "Buscar",
+  "Games.Searching": "Buscando…",
+  "Games.NoResults": "No se encontraron juegos para \"{0}\".",
+  "Games.SearchFailed": "No se pudo buscar en Roblox ahora. Inténtalo más tarde o usa un ID de lugar o un enlace.",
+  "Home.RejoinLastServer": "Volver al último servidor",
+  "Home.Rejoin": "Volver",
+  "Home.RejoinHint": "Vuelve a ese mismo servidor si sigue activo y tiene sitio. Puede no funcionar con servidores privados.",
+  "Tray.Rejoin": "Volver a {0}"
 }

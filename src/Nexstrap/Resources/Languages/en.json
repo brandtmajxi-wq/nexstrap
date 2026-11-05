@@ -739,5 +739,15 @@
   "RobloxSettings.CloseToTray": "Keep running in the tray when closed",
   "RobloxSettings.CloseToTray.Text": "The X button hides Nexstrap instead of closing it. Quit from the tray icon.",
   "RobloxSettings.StartHidden": "Start hidden in the tray",
-  "RobloxSettings.StartHidden.Text": "When Nexstrap opens with Windows, it waits in the tray until you open it."
+  "RobloxSettings.StartHidden.Text": "When Nexstrap opens with Windows, it waits in the tray until you open it.",
+  "Games.FindAGame": "Find a game",
+  "Games.SearchPlaceholder": "Search Roblox games by name",
+  "Games.Search": "Search",
+  "Games.Searching": "Searching…",
+  "Games.NoResults": "No games found for \"{0}\".",
+  "Games.SearchFailed": "Couldn't search Roblox right now. Try again later, or use a place ID or link.",
+  "Home.RejoinLastServer": "Rejoin last server",
+  "Home.Rejoin": "Rejoin",
+  "Home.RejoinHint": "Goes back to the exact server if it's still running and has room. Private servers may not work.",
+  "Tray.Rejoin": "Rejoin {0}"
 }

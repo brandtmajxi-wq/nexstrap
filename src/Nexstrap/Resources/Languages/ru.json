@@ -739,5 +739,15 @@
   "RobloxSettings.CloseToTray": "Оставаться в трее при закрытии",
   "RobloxSettings.CloseToTray.Text": "Кнопка X скрывает Nexstrap, а не закрывает его. Выйти можно через значок в трее.",
   "RobloxSettings.StartHidden": "Запускаться скрытым в трее",
-  "RobloxSettings.StartHidden.Text": "Когда Nexstrap запускается с Windows, он ждёт в трее, пока ты его не откроешь."
+  "RobloxSettings.StartHidden.Text": "Когда Nexstrap запускается с Windows, он ждёт в трее, пока ты его не откроешь.",
+  "Games.FindAGame": "Найти игру",
+  "Games.SearchPlaceholder": "Поиск игр Roblox по названию",
+  "Games.Search": "Найти",
+  "Games.Searching": "Поиск…",
+  "Games.NoResults": "По запросу \"{0}\" игры не найдены.",
+  "Games.SearchFailed": "Сейчас не удалось выполнить поиск в Roblox. Попробуй позже или используй ID места либо ссылку.",
+  "Home.RejoinLastServer": "Вернуться на последний сервер",
+  "Home.Rejoin": "Вернуться",
+  "Home.RejoinHint": "Возвращает именно на этот сервер, если он ещё работает и там есть место. С приватными серверами может не сработать.",
+  "Tray.Rejoin": "Вернуться в {0}"
 }

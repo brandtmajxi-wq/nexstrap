@@ -17,6 +17,7 @@ A modern Windows launcher for the official Roblox client, with themes, honest Fa
 ## What it does
 
 - **Play and join**: start Roblox, or join any experience by place ID or roblox.com link (with name, creator and player count shown first).
+- **Find and rejoin**: search games by name, and go back to the server you just left.
 - **Games**: favorites and recently played with thumbnails, quick Play, desktop shortcuts, and play time per game saved on your PC.
 - **Tray icon**: open Nexstrap, play or jump into a recent game from the notification area, and keep it running there if you like.
 - **Servers**: browse an experience's public servers, filter by free slots and ping, and join a specific one.

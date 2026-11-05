@@ -12,7 +12,7 @@ public interface ITrayService : IDisposable
 }
 
 /// <summary>The notification-area icon: open Nexstrap, start Roblox or a recent game, or quit.</summary>
-public sealed class TrayService(ISettingsService settings, ILaunchCoordinator launch) : ITrayService
+public sealed class TrayService(ISettingsService settings, ILaunchCoordinator launch, ILastServerService lastServer) : ITrayService
 {
     internal const int MaxRecentGames = 5;
 
@@ -44,6 +44,12 @@ public sealed class TrayService(ISettingsService settings, ILaunchCoordinator la
         menu.Items.Clear();
         menu.Items.Add(Loc.Get("Tray.Open"), null, (_, _) => Open());
         menu.Items.Add(Loc.Get("Home.PlayRoblox"), null, (_, _) => _ = launch.LaunchAppAsync());
+
+        if (lastServer.Available is { } server)
+        {
+            var name = server.Name.Length > 0 ? server.Name : Loc.Format("Launch.Place", server.PlaceId);
+            menu.Items.Add(Loc.Format("Tray.Rejoin", name).Replace("&", "&&"), null, (_, _) => _ = lastServer.RejoinAsync());
+        }
 
         var recent = settings.Current.Launcher.RecentExperiences.Take(MaxRecentGames).ToList();
         if (recent.Count > 0)

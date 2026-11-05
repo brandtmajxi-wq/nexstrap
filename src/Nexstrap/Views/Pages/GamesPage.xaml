@@ -53,7 +53,27 @@
     </UserControl.Resources>
 
     <StackPanel>
-        <Border Style="{StaticResource Card}" Padding="18,14">
+        <!-- ===== Search ===== -->
+        <TextBlock Text="{DynamicResource L.Games.FindAGame}" Style="{StaticResource SectionHeader}" Margin="2,0,0,10" />
+        <Border Style="{StaticResource Card}" Padding="18,14" Margin="0,0,0,8">
+            <StackPanel>
+                <DockPanel>
+                    <Button DockPanel.Dock="Right" Style="{StaticResource Button.Primary}" Content="{DynamicResource L.Games.Search}" ui:Ui.Icon="&#xE721;"
+                            Margin="10,0,0,0" Command="{Binding SearchCommand}" />
+                    <TextBox ui:Ui.Icon="&#xE721;" ui:Ui.Placeholder="{DynamicResource L.Games.SearchPlaceholder}" AutomationProperties.Name="{DynamicResource L.Games.FindAGame}"
+                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Enter" Command="{Binding SearchCommand}" />
+                        </TextBox.InputBindings>
+                    </TextBox>
+                </DockPanel>
+                <TextBlock Text="{Binding SearchStatus}" Style="{StaticResource Text.Caption}" Margin="2,8,0,0"
+                           Visibility="{Binding SearchStatus, Converter={StaticResource NullToVisibility}}" />
+            </StackPanel>
+        </Border>
+        <ItemsControl ItemsSource="{Binding SearchResults}" ItemTemplate="{StaticResource GameTile}" Focusable="False" />
+
+        <Border Style="{StaticResource Card}" Padding="18,14" Margin="0,8,0,0">
             <StackPanel>
                 <DockPanel>
                     <Button DockPanel.Dock="Right" Style="{StaticResource Button.Primary}" Content="{DynamicResource L.Games.AddFavorite}" ui:Ui.Icon="&#xE734;"

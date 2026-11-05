@@ -39,6 +39,7 @@ public sealed partial class HomeViewModel : PageViewModel
     private readonly IShellService _shell;
     private readonly IRobloxSessionService _session;
     private readonly IUpdateInstaller _installer;
+    private readonly ILastServerService _lastServer;
     private CancellationTokenSource? _updateCts;
     private readonly ILogger<HomeViewModel> _logger;
     private CancellationTokenSource? _installCts;
@@ -47,9 +48,10 @@ public sealed partial class HomeViewModel : PageViewModel
 
     public HomeViewModel(IRobloxClientService client, ILaunchCoordinator coordinator, IExperienceInfoService experiences,
         IUpdateService updates, ISettingsService settings, IAppearanceService appearance, IDialogService dialogs,
-        IShellService shell, IRobloxSessionService session, IUpdateInstaller installer, ILogger<HomeViewModel> logger)
+        IShellService shell, IRobloxSessionService session, IUpdateInstaller installer, ILastServerService lastServer, ILogger<HomeViewModel> logger)
     {
         _installer = installer;
+        _lastServer = lastServer;
         _session = session;
         _client = client;
         _coordinator = coordinator;
@@ -66,8 +68,22 @@ public sealed partial class HomeViewModel : PageViewModel
         appearance.Changed += (_, _) => OnPropertyChanged(nameof(IsLightTheme));
         client.StateChanged += (_, _) => Application.Current?.Dispatcher.Invoke(OnClientStateChanged);
         coordinator.RecentsChanged += (_, _) => Application.Current?.Dispatcher.BeginInvoke(LoadRecent);
+        lastServer.Changed += (_, _) => Application.Current?.Dispatcher.BeginInvoke(() =>
+        {
+            OnPropertyChanged(nameof(CanRejoin));
+            OnPropertyChanged(nameof(RejoinName));
+        });
         LoadRecent();
     }
+
+    public bool CanRejoin => _lastServer.Available is not null;
+
+    public string? RejoinName => _lastServer.Available is { } server
+        ? server.Name.Length > 0 ? server.Name : Loc.Format("Launch.Place", server.PlaceId)
+        : null;
+
+    [RelayCommand]
+    private Task RejoinAsync() => _lastServer.RejoinAsync();
 
     public override string Title => Greeting();
 

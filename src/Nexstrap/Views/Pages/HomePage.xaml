@@ -178,6 +178,17 @@
                     </DockPanel>
                 </Border>
 
+                <!-- Rejoin -->
+                <DockPanel Margin="0,14,0,0" Visibility="{Binding CanRejoin, Converter={StaticResource BoolToVisibility}}">
+                    <Button DockPanel.Dock="Right" Content="{DynamicResource L.Home.Rejoin}" ui:Ui.Icon="&#xE72C;" Padding="12,5" Margin="12,0,0,0"
+                            VerticalAlignment="Center" Command="{Binding RejoinCommand}" />
+                    <StackPanel>
+                        <TextBlock Text="{DynamicResource L.Home.RejoinLastServer}" Style="{StaticResource Text.Overline}" />
+                        <TextBlock Text="{Binding RejoinName}" Style="{StaticResource Text.Base}" FontWeight="SemiBold" Margin="0,3,0,0" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Text="{DynamicResource L.Home.RejoinHint}" Style="{StaticResource Text.Caption}" Margin="0,2,0,0" />
+                    </StackPanel>
+                </DockPanel>
+
                 <!-- Recent -->
                 <StackPanel Margin="0,14,0,0" Visibility="{Binding HasRecent, Converter={StaticResource BoolToVisibility}}">
                     <DockPanel>

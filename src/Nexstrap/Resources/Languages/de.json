@@ -739,5 +739,15 @@
   "RobloxSettings.CloseToTray": "Beim Schließen im Infobereich weiterlaufen",
   "RobloxSettings.CloseToTray.Text": "Die X-Schaltfläche blendet Nexstrap aus, statt es zu schließen. Beenden kannst du es über das Symbol im Infobereich.",
   "RobloxSettings.StartHidden": "Versteckt im Infobereich starten",
-  "RobloxSettings.StartHidden.Text": "Wenn Nexstrap mit Windows startet, wartet es im Infobereich, bis du es öffnest."
+  "RobloxSettings.StartHidden.Text": "Wenn Nexstrap mit Windows startet, wartet es im Infobereich, bis du es öffnest.",
+  "Games.FindAGame": "Spiel finden",
+  "Games.SearchPlaceholder": "Roblox-Spiele nach Namen suchen",
+  "Games.Search": "Suchen",
+  "Games.Searching": "Wird gesucht…",
+  "Games.NoResults": "Keine Spiele für \"{0}\" gefunden.",
+  "Games.SearchFailed": "Die Suche bei Roblox hat gerade nicht geklappt. Versuche es später noch einmal oder nutze eine Place-ID oder einen Link.",
+  "Home.RejoinLastServer": "Letztem Server wieder beitreten",
+  "Home.Rejoin": "Zurückkehren",
+  "Home.RejoinHint": "Bringt dich genau auf diesen Server zurück, wenn er noch läuft und Platz hat. Private Server klappen vielleicht nicht.",
+  "Tray.Rejoin": "{0} wieder beitreten"
 }

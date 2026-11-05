@@ -2,6 +2,12 @@
 
 All notable changes to Nexstrap are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.10.0] - 2026-11-05
+
+### Added
+- **Game search** (Games): find games by name, with icons and player counts, then play, favorite or browse their servers. It uses the search behind roblox.com, which Roblox doesn't document, so it could stop working if Roblox changes it.
+- **Rejoin last server** (Home and tray): go back to the exact server you were on, for 24 hours after leaving. It only works if the server is still running and has room, and may not work for private servers.
+
 ## [1.9.0] - 2026-11-04
 
 ### Added
@@ -121,6 +127,7 @@ First public release.
 - Quick update check on every launch with an in-app banner; release notes, progress and cancel.
 - Updates are installed only after verifying source, size, SHA-256, product name and version; failed swaps roll back.
 
+[1.10.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.10.0
 [1.9.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.9.0
 [1.8.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.8.0
 [1.7.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.7.0

@@ -20,6 +20,7 @@ A page-by-page guide. Everything Nexstrap stores lives in `%LocalAppData%\Nexstr
 | **Play Roblox** | Starts the Roblox app (`RobloxPlayerBeta.exe --app`) from the selected build. Your FastFlags are written first (Nexstrap builds only). |
 | **Install / Update Roblox** | Shown when no build is found or yours is older than Roblox's live version. Downloads the official build from `setup.rbxcdn.com`, verifies each package's MD5, and installs to `%LocalAppData%\Nexstrap\Versions`. Cancel leaves nothing behind. |
 | **Join an experience** | Paste a place ID, `roblox.com/games/<id>/…` link or `…/games/start?placeId=…` link. Nexstrap looks up the name via Roblox's public API, then launches `roblox://placeId=<id>`. If Roblox is already open you're asked first, since Roblox runs one game at a time. |
+| **Rejoin last server** | Shown for 24 hours after leaving a game Nexstrap followed. Uses Roblox's `gameInstanceId` link, so it only works if that server is still running and has room, and may not work for private servers. Also in the tray menu. |
 | **Installations** | Every build found on the PC. *Choose automatically* uses the one matching Roblox's live version (Nexstrap's own first). Builds from other launchers can be used but are never modified or deleted. |
 | **Quick settings** | Light theme, close Nexstrap after launch, check for updates on launch. |
 | **Nexstrap updates** | Current version, latest release, release notes, *Download & install*. |
@@ -27,6 +28,8 @@ A page-by-page guide. Everything Nexstrap stores lives in `%LocalAppData%\Nexstr
 ## Games
 
 Favorites and recently played experiences (newest 20) with thumbnails from Roblox's public API. Each game has **Play**, a servers button, a desktop-shortcut button (a `.url` file that opens `roblox://placeId=<id>` through whichever program handles Roblox links; existing files are never overwritten) and a favorite star.
+
+**Find a game** searches Roblox by name without signing in, using the search behind roblox.com, and shows up to 20 results with sponsored ones left out. Roblox doesn't document this search, so if it changes, Nexstrap says it couldn't search and place IDs and links still work.
 
 **Play history** counts time in games while Nexstrap follows Roblox, which means Roblox was started from Nexstrap or through a link it handles. Time in the Roblox menu isn't counted, and visits under 15 seconds are ignored. Each place or server counts as a separate session. Totals, session counts, the last 7 days and last played dates are stored in `History.json` on this PC. It can be turned off or cleared on the Games page.
 

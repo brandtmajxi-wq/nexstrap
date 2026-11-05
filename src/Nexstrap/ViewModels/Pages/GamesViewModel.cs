@@ -47,9 +47,10 @@ public sealed partial class GamesViewModel : PageViewModel
     private readonly INavigationService _navigation;
     private readonly ServersViewModel _servers;
     private readonly IPlayHistoryService _history;
+    private readonly IGameSearchService _search;
 
     public GamesViewModel(ISettingsService settings, ILaunchCoordinator launch, IExperienceInfoService experiences,
-        IGameShortcutService shortcuts, IDialogService dialogs, INavigationService navigation, ServersViewModel servers, IPlayHistoryService history)
+        IGameShortcutService shortcuts, IDialogService dialogs, INavigationService navigation, ServersViewModel servers, IPlayHistoryService history, IGameSearchService search)
     {
         _settings = settings;
         _launch = launch;
@@ -59,6 +60,7 @@ public sealed partial class GamesViewModel : PageViewModel
         _navigation = navigation;
         _servers = servers;
         _history = history;
+        _search = search;
         launch.RecentsChanged += (_, _) => Application.Current?.Dispatcher.BeginInvoke(Rebuild);
         history.Changed += (_, _) => Application.Current?.Dispatcher.BeginInvoke(Rebuild);
     }
@@ -74,6 +76,64 @@ public sealed partial class GamesViewModel : PageViewModel
     public bool HasFavorites => Favorites.Count > 0;
 
     public bool HasRecent => Recent.Count > 0;
+
+    // ===== Search =====
+
+    public ObservableCollection<GameItem> SearchResults { get; } = [];
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(SearchCommand))]
+    private string _searchText = "";
+
+    [ObservableProperty]
+    private string? _searchStatus;
+
+    private bool CanSearch() => !string.IsNullOrWhiteSpace(SearchText);
+
+    [RelayCommand(CanExecute = nameof(CanSearch))]
+    private async Task SearchAsync()
+    {
+        var query = SearchText.Trim();
+        SearchResults.Clear();
+        SearchStatus = Loc.Get("Games.Searching");
+
+        IReadOnlyList<GameSearchResult> results;
+        try
+        {
+            results = await _search.SearchAsync(query);
+        }
+        catch (Exception ex) when (ex is HttpRequestException or System.Text.Json.JsonException or TaskCanceledException)
+        {
+            SearchStatus = Loc.Get("Games.SearchFailed");
+            return;
+        }
+
+        var favorites = StoredFavorites.Select(f => f.PlaceId).ToHashSet();
+        foreach (var result in results)
+        {
+            var game = new GameItem(result.PlaceId, result.Name, favorites.Contains(result.PlaceId))
+            {
+                Creator = result.CreatorName.Length > 0 ? result.CreatorName : null
+            };
+            ShowPlayTime(game);
+            game.PlayedText ??= Loc.Format("Format.Playing", result.Playing);
+            SearchResults.Add(game);
+        }
+        SearchStatus = results.Count == 0 ? Loc.Format("Games.NoResults", query) : null;
+        _ = FillSearchIconsAsync(SearchResults.Zip(results).ToList());
+    }
+
+    private async Task FillSearchIconsAsync(IReadOnlyList<(GameItem Game, GameSearchResult Result)> items)
+    {
+        foreach (var (game, result) in items)
+        {
+            try { game.IconUrl = await _experiences.GetIconUrlAsync(result.UniverseId); }
+            catch (Exception ex) when (ex is HttpRequestException or System.Text.Json.JsonException or TaskCanceledException)
+            {
+                return; // the list still works without pictures
+            }
+        }
+    }
 
     // ===== Play history =====
 
@@ -218,6 +278,7 @@ public sealed partial class GamesViewModel : PageViewModel
             Recent.Add(new GameItem(r.PlaceId, r.Name, favorites.Contains(r.PlaceId)));
 
         foreach (var game in Favorites.Concat(Recent)) ShowPlayTime(game);
+        foreach (var game in SearchResults) game.IsFavorite = favorites.Contains(game.PlaceId);
         RebuildHistory();
 
         OnPropertyChanged(nameof(HasFavorites));

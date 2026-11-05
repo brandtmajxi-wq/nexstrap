@@ -739,5 +739,15 @@
   "RobloxSettings.CloseToTray": "Rester dans la zone de notification à la fermeture",
   "RobloxSettings.CloseToTray.Text": "Le bouton X masque Nexstrap au lieu de le fermer. Quitte-le depuis l'icône de la zone de notification.",
   "RobloxSettings.StartHidden": "Démarrer masqué dans la zone de notification",
-  "RobloxSettings.StartHidden.Text": "Quand Nexstrap s'ouvre avec Windows, il attend dans la zone de notification jusqu'à ce que tu l'ouvres."
+  "RobloxSettings.StartHidden.Text": "Quand Nexstrap s'ouvre avec Windows, il attend dans la zone de notification jusqu'à ce que tu l'ouvres.",
+  "Games.FindAGame": "Trouver un jeu",
+  "Games.SearchPlaceholder": "Cherche des jeux Roblox par nom",
+  "Games.Search": "Chercher",
+  "Games.Searching": "Recherche…",
+  "Games.NoResults": "Aucun jeu trouvé pour \"{0}\".",
+  "Games.SearchFailed": "Impossible de chercher sur Roblox pour le moment. Réessaie plus tard, ou utilise un ID de place ou un lien.",
+  "Home.RejoinLastServer": "Rejoindre le dernier serveur",
+  "Home.Rejoin": "Rejoindre",
+  "Home.RejoinHint": "Retourne sur ce serveur précis s'il tourne encore et qu'il reste de la place. Les serveurs privés peuvent ne pas fonctionner.",
+  "Tray.Rejoin": "Rejoindre {0}"
 }
