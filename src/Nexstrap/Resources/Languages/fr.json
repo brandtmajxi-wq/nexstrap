@@ -813,5 +813,6 @@
   "Welcome.Name.Save": "Enregistrer",
   "Welcome.Name.Skip": "Passer",
   "Appearance.YourName": "Ton nom",
-  "Appearance.YourName.Text": "La page d'accueil t'accueille avec ce nom. Laisse vide si tu n'en veux pas. Il reste sur ce PC."
+  "Appearance.YourName.Text": "La page d'accueil t'accueille avec ce nom. Laisse vide si tu n'en veux pas. Il reste sur ce PC.",
+  "Welcome.Name.NotAllowed": "Ce nom ne peut pas être utilisé. Choisis-en un autre."
 }

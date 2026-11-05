@@ -176,6 +176,8 @@
             <TextBox Width="190" MaxLength="{Binding NameLimit}" ui:Ui.Placeholder="{DynamicResource L.Welcome.Name.Placeholder}" AutomationProperties.Name="{DynamicResource L.Appearance.YourName}"
                      Text="{Binding YourName, UpdateSourceTrigger=LostFocus}" />
         </ui:SettingCard>
+        <TextBlock Text="{Binding YourNameError}" Style="{StaticResource Text.Caption}" Foreground="{DynamicResource Brush.Danger}"
+                   Margin="2,0,0,6" Visibility="{Binding YourNameError, Converter={StaticResource NullToVisibility}}" />
 
         <!-- ===== Winter theme (dev only for now) ===== -->
         <StackPanel Visibility="{Binding WinterAvailable, Converter={StaticResource BoolToVisibility}}">

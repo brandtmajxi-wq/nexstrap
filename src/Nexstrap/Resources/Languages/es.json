@@ -813,5 +813,6 @@
   "Welcome.Name.Save": "Guardar",
   "Welcome.Name.Skip": "Omitir",
   "Appearance.YourName": "Tu nombre",
-  "Appearance.YourName.Text": "La página de bienvenida te saluda con este nombre. Déjalo vacío si no quieres ninguno. Se queda en este PC."
+  "Appearance.YourName.Text": "La página de bienvenida te saluda con este nombre. Déjalo vacío si no quieres ninguno. Se queda en este PC.",
+  "Welcome.Name.NotAllowed": "Ese nombre no se puede usar. Elige otro."
 }

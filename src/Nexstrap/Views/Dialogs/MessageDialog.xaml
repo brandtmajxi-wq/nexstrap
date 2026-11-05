@@ -22,6 +22,7 @@
 
             <TextBox x:Name="AnswerBox" Margin="0,14,0,0" Visibility="Collapsed" ui:Ui.Placeholder="{DynamicResource L.Welcome.Name.Placeholder}"
                      AutomationProperties.Name="{DynamicResource L.Welcome.Name.Placeholder}" />
+            <TextBlock x:Name="ErrorText" Style="{StaticResource Text.Caption}" Foreground="{DynamicResource Brush.Danger}" Margin="2,6,0,0" TextWrapping="Wrap" Visibility="Collapsed" />
 
             <Expander x:Name="DetailsExpander" Margin="0,12,0,0" Visibility="Collapsed" Foreground="{DynamicResource Brush.TextSecondary}">
                 <Expander.Header>

@@ -75,7 +75,7 @@
 
     <!-- Small rounded status pill, e.g. "Installed" -->
     <Style x:Key="Pill" TargetType="Border">
-        <Setter Property="CornerRadius" Value="999" />
+        <Setter Property="CornerRadius" Value="11" />
         <Setter Property="Padding" Value="9,3" />
         <Setter Property="Background" Value="{DynamicResource Brush.AccentSoft}" />
         <Setter Property="HorizontalAlignment" Value="Left" />

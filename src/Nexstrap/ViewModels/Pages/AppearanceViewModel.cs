@@ -226,11 +226,20 @@ public sealed partial class AppearanceViewModel : PageViewModel
         get => _settings.Current.Welcome.Name ?? "";
         set
         {
+            if (!NameFilter.IsAllowed(value))
+            {
+                YourNameError = Loc.Get("Welcome.Name.NotAllowed");
+                return;
+            }
+            YourNameError = null;
             _settings.Current.Welcome.Name = WelcomeName.Clean(value);
             _settings.Save();
             OnPropertyChanged();
         }
     }
+
+    [ObservableProperty]
+    private string? _yourNameError;
 
     // ===== Winter theme =====
 

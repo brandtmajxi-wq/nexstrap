@@ -28,5 +28,5 @@ public static class WelcomeName
     }
 
     public static string Greet(string greeting, string? name) =>
-        Clean(name) is { } known ? $"{greeting}, {known}" : greeting;
+        Clean(name) is { } known && NameFilter.IsAllowed(known) ? $"{greeting}, {known}" : greeting;
 }

@@ -18,8 +18,8 @@ public interface IDialogService
 
     bool Confirm(string title, string message, string confirmText = "Continue", string cancelText = "Cancel");
 
-    /// <summary>Asks for one line of text. Returns null if it was skipped.</summary>
-    string? Ask(string title, string message, string confirmText, string cancelText, int maxLength);
+    /// <summary>Asks for one line of text. Returns null if it was skipped. <paramref name="validate"/> returns a problem to show, or null.</summary>
+    string? Ask(string title, string message, string confirmText, string cancelText, int maxLength, Func<string, string?>? validate = null);
 }
 
 /// <summary>Shows Nexstrap-styled modal dialogs instead of the stock MessageBox.</summary>
@@ -32,10 +32,10 @@ public sealed class DialogService : IDialogService
         Run(() => MessageDialog.ShowModal(Owner(), title, message, DialogKind.Question, null,
             Loc.GetOr("Common." + confirmText, confirmText), Loc.GetOr("Common." + cancelText, cancelText)));
 
-    public string? Ask(string title, string message, string confirmText, string cancelText, int maxLength)
+    public string? Ask(string title, string message, string confirmText, string cancelText, int maxLength, Func<string, string?>? validate = null)
     {
         string? answer = null;
-        Run(() => answer = MessageDialog.AskText(Owner(), title, message, confirmText, cancelText, maxLength));
+        Run(() => answer = MessageDialog.AskText(Owner(), title, message, confirmText, cancelText, maxLength, validate));
         return answer;
     }
 

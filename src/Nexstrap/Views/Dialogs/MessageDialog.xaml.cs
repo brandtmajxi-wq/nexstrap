@@ -6,6 +6,8 @@ namespace Nexstrap.Views.Dialogs;
 
 public partial class MessageDialog : Window
 {
+    private Func<string, string?>? _validate;
+
     private MessageDialog()
     {
         InitializeComponent();
@@ -50,9 +52,10 @@ public partial class MessageDialog : Window
     }
 
     /// <summary>Asks for one line of text. Returns null if it was skipped.</summary>
-    public static string? AskText(Window? owner, string title, string message, string confirmText, string cancelText, int maxLength)
+    public static string? AskText(Window? owner, string title, string message, string confirmText, string cancelText, int maxLength,
+        Func<string, string?>? validate = null)
     {
-        var dialog = new MessageDialog();
+        var dialog = new MessageDialog { _validate = validate };
         if (owner is { IsLoaded: true })
             dialog.Owner = owner;
         else
@@ -70,7 +73,18 @@ public partial class MessageDialog : Window
         return dialog.ShowDialog() == true ? dialog.AnswerBox.Text : null;
     }
 
-    private void OnConfirm(object sender, RoutedEventArgs e) => DialogResult = true;
+    private void OnConfirm(object sender, RoutedEventArgs e)
+    {
+        if (_validate?.Invoke(AnswerBox.Text) is { } problem)
+        {
+            ErrorText.Text = problem;
+            ErrorText.Visibility = Visibility.Visible;
+            AnswerBox.Focus();
+            AnswerBox.SelectAll();
+            return;
+        }
+        DialogResult = true;
+    }
 
     private void OnCancel(object sender, RoutedEventArgs e) => DialogResult = false;
 

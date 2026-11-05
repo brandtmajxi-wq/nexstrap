@@ -2,6 +2,16 @@
 
 All notable changes to Nexstrap are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.17.2] - 2026-11-05
+
+### Added
+- **Name filter**: the Welcome page refuses hateful and obscene names, including spaced-out and number-swapped spellings. A blocked name that was already saved is left out of the greeting.
+
+## [1.17.1] - 2026-11-05
+
+### Fixed
+- Status badges such as "Update available" and "Ready to play" were squashed into ovals. They're neat rounded pills now.
+
 ## [1.17.0] - 2026-11-05
 
 ### Added
@@ -167,6 +177,8 @@ First public release.
 - Quick update check on every launch with an in-app banner; release notes, progress and cancel.
 - Updates are installed only after verifying source, size, SHA-256, product name and version; failed swaps roll back.
 
+[1.17.2]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.17.2
+[1.17.1]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.17.1
 [1.17.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.17.0
 [1.16.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.16.0
 [1.15.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.15.0

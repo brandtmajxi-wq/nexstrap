@@ -154,7 +154,8 @@ public partial class App : Application
         settings.Save();
 
         var answer = _services!.GetRequiredService<IDialogService>().Ask(Loc.Get("Welcome.Name.Title"), Loc.Get("Welcome.Name.Text"),
-            Loc.Get("Welcome.Name.Save"), Loc.Get("Welcome.Name.Skip"), WelcomeName.MaxLength);
+            Loc.Get("Welcome.Name.Save"), Loc.Get("Welcome.Name.Skip"), WelcomeName.MaxLength,
+            text => NameFilter.IsAllowed(text) ? null : Loc.Get("Welcome.Name.NotAllowed"));
         if (WelcomeName.Clean(answer) is not { } name) return;
 
         settings.Current.Welcome.Name = name;

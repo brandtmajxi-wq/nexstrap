@@ -813,5 +813,6 @@
   "Welcome.Name.Save": "Save",
   "Welcome.Name.Skip": "Skip",
   "Appearance.YourName": "Your name",
-  "Appearance.YourName.Text": "The Welcome page greets you with this name. Leave it empty for no name. It stays on this PC."
+  "Appearance.YourName.Text": "The Welcome page greets you with this name. Leave it empty for no name. It stays on this PC.",
+  "Welcome.Name.NotAllowed": "That name can't be used. Please choose a different one."
 }
