@@ -9,6 +9,9 @@ namespace Nexstrap.Services.Shell;
 public interface ITrayService : IDisposable
 {
     void Show();
+
+    /// <summary>A Windows pop-up from the tray icon. Does nothing while there's no icon.</summary>
+    void ShowAlert(string title, string text);
 }
 
 /// <summary>The notification-area icon: open Nexstrap, start Roblox or a recent game, or quit.</summary>
@@ -37,6 +40,9 @@ public sealed class TrayService(ISettingsService settings, ILaunchCoordinator la
         };
         _icon.MouseClick += (_, e) => { if (e.Button == Forms.MouseButtons.Left) Open(); };
     }
+
+    public void ShowAlert(string title, string text) =>
+        Application.Current?.Dispatcher.BeginInvoke(() => _icon?.ShowBalloonTip(5000, title, text, Forms.ToolTipIcon.None));
 
     /// <summary>Rebuilt each time, so it follows the language and the latest games.</summary>
     internal void Fill(Forms.ContextMenuStrip menu)

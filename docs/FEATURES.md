@@ -102,7 +102,7 @@ maximum frame rate (60/120/144/240), automatic or fixed graphics quality (1–10
 
 ## Integrations
 
-- **Discord Rich Presence** (needs the Discord desktop app). Menu: "Inside Nexstrap · Browsing Roblox" by default, and you can write your own text for both lines and choose the card icon (a direct https image link or an Art Asset name). In game: experience name, creator, icon, your avatar headshot and a *View game* button. Each part can be switched off. Nexstrap reads Roblox's own log lines to tell menu from game and stays running in the background until Roblox closes.
+- **Discord Rich Presence** (needs the Discord desktop app). Menu: "Inside Nexstrap · Browsing Roblox" by default, and you can write your own text for both lines and choose the card icon (a direct https image link or an Art Asset name). In game: experience name, creator, icon, your avatar headshot and a *View game* button. Each part can be switched off. *Show server location* (off by default) adds your server's city to the second line, and can be wrong. Nexstrap reads Roblox's own log lines to tell menu from game and stays running in the background until Roblox closes.
 - **Start with Roblox**: programs launched when a Nexstrap-started Roblox session begins; optionally asked to close (never force-killed) when it ends.
 - **Move your setup**: one JSON file with appearance, launch and Discord settings, FastFlags, saved themes and companion apps. Machine-specific items (window size, background files, chosen build, URL-handler backup) are not exported. Importing backs up the current setup first.
 - **Multiple Roblox windows**: not offered. Roblox allows one game at a time and Nexstrap doesn't get around that.
@@ -110,6 +110,8 @@ maximum frame rate (60/120/144/240), automatic or fixed graphics quality (1–10
 ## Notifications
 
 An inbox with a count in the sidebar. It covers new Nexstrap releases, Roblox builds newer than the one Play uses, and configuration warnings: FastFlags Roblox ignores, flags that can't apply because Play uses another launcher's build, and a frame-rate cap above your display's refresh rate. Each category can be turned off. **Open** goes to the page that fixes it. A dismissed notification comes back only if something changes, such as a newer version. Notifications appear inside Nexstrap while it's open, not as Windows pop-ups.
+
+**Game ready alerts** are the one exception: a Windows pop-up from the tray icon when a game finishes loading while another app is in front. They need the tray icon, so they don't appear for games started from a website link while Nexstrap isn't open. Windows' Do Not Disturb can hide them.
 
 ## About
 

@@ -79,6 +79,9 @@ public sealed class NotificationSettings
     public bool NexstrapUpdates { get; set; } = true;
     public bool ConfigurationWarnings { get; set; } = true;
 
+    /// <summary>Windows pop-up when a game finishes loading while another app is in front.</summary>
+    public bool GameJoinAlerts { get; set; } = true;
+
     /// <summary>Keys of dismissed notifications. Keys include the version or count, so new ones show again.</summary>
     public List<string> Dismissed { get; set; } = [];
 }
@@ -144,6 +147,9 @@ public sealed class DiscordSettings
 
     /// <summary>Show your avatar headshot and username in the corner of the game icon.</summary>
     public bool ShowAvatar { get; set; } = true;
+
+    /// <summary>Add the server's city to the in-game card. Off by default: it says roughly where you're playing.</summary>
+    public bool ShowServerLocation { get; set; }
 
     /// <summary>Overrides the built-in Discord application ID (advanced).</summary>
     public string? ApplicationIdOverride { get; set; }

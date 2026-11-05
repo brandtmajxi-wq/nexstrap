@@ -764,5 +764,11 @@
   "Servers.RegionFailed": "Detenido porque no se pudo cerrar o iniciar Roblox.",
   "Servers.RegionStopped": "Detenido. Sigues en el servidor actual.",
   "Servers.CurrentRegion": "Servidor actual: {0}",
-  "Servers.UnknownRegion": "una ubicación desconocida"
+  "Servers.UnknownRegion": "una ubicación desconocida",
+  "Integrations.ShowServerLocation": "Mostrar ubicación del servidor",
+  "Integrations.ShowServerLocation.Text": "Añade a tu tarjeta la ciudad de tu servidor, como Frankfurt, Germany. Cualquiera que vea tu estado lo verá, y puede ser incorrecta.",
+  "Notifications.GameJoinAlerts": "Avisos de juego listo",
+  "Notifications.GameJoinAlerts.Text": "Un aviso de Windows cuando un juego termina de cargar mientras estás en otra app.",
+  "Alerts.GameReady": "{0} está listo",
+  "Alerts.InGame": "Ya estás en el juego."
 }

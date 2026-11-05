@@ -10,6 +10,9 @@ public sealed record RegionSearchProgress(int Attempt, int Total, bool Joined, s
 
 public interface IServerRegionService
 {
+    /// <summary>True while a search is joining servers.</summary>
+    bool IsSearching { get; }
+
     /// <summary>Location of the server you're on, or null when not in a game or it isn't known.</summary>
     string? CurrentRegion { get; }
 
@@ -56,6 +59,8 @@ public sealed class ServerRegionService : IServerRegionService
 
     public event EventHandler? Changed;
 
+    public bool IsSearching { get; private set; }
+
     public string? CurrentRegion =>
         _session.Current is { Kind: RobloxActivityKind.InGame, ServerAddress: { } address } ? RobloxRegions.Find(address) : null;
 
@@ -72,6 +77,13 @@ public sealed class ServerRegionService : IServerRegionService
     }
 
     public async Task<RegionSearchOutcome> FindAsync(long placeId, string? name, string region, IProgress<RegionSearchProgress> progress, CancellationToken ct)
+    {
+        IsSearching = true;
+        try { return await SearchAsync(placeId, name, region, progress, ct); }
+        finally { IsSearching = false; }
+    }
+
+    private async Task<RegionSearchOutcome> SearchAsync(long placeId, string? name, string region, IProgress<RegionSearchProgress> progress, CancellationToken ct)
     {
         if (_session.Current?.PlaceId == placeId && CurrentRegion == region) return RegionSearchOutcome.Found;
 

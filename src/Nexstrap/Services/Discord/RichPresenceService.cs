@@ -206,7 +206,7 @@ public sealed class RichPresenceService : IRichPresenceService, IDisposable
                     _logger.LogDebug(ex, "Experience details unavailable for presence");
                 }
             }
-            return BuildGame(info, icon, placeId, activity.SinceUtc, Options, user);
+            return BuildGame(info, icon, placeId, activity.SinceUtc, Options, user, RobloxRegions.Find(activity.ServerAddress));
         }
 
         return IsPreviewing ? BuildMenu(_previewSince, Options) : null;
@@ -239,9 +239,11 @@ public sealed class RichPresenceService : IRichPresenceService, IDisposable
     }
 
     internal static JsonObject BuildGame(ExperienceInfo? info, string? iconUrl, long placeId, DateTime sinceUtc,
-        DiscordSettings options, RobloxUser? user = null)
+        DiscordSettings options, RobloxUser? user = null, string? location = null)
     {
         var showDetails = options.ShowExperienceDetails && info is not null;
+        var state = showDetails && info!.CreatorName.Length > 0 ? $"by {info.CreatorName}" : "Inside Nexstrap";
+        if (showDetails && options.ShowServerLocation && location is not null) state += $" · {location}";
 
         // Corner badge: the player's avatar when allowed and known, otherwise the logo.
         var avatar = showDetails && options.ShowAvatar ? user : null;
@@ -252,7 +254,7 @@ public sealed class RichPresenceService : IRichPresenceService, IDisposable
         var activity = new JsonObject
         {
             ["details"] = Fit(showDetails ? info!.Name : "In a Roblox experience"),
-            ["state"] = Fit(showDetails && info!.CreatorName.Length > 0 ? $"by {info.CreatorName}" : "Inside Nexstrap"),
+            ["state"] = Fit(state),
             ["timestamps"] = new JsonObject { ["start"] = new DateTimeOffset(sinceUtc, TimeSpan.Zero).ToUnixTimeSeconds() },
             ["assets"] = showDetails && iconUrl is not null
                 ? new JsonObject

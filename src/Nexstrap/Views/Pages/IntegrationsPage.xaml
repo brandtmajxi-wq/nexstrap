@@ -114,6 +114,10 @@
                         Description="{DynamicResource L.Integrations.YourRobloxHeadshotSitsInThe}">
             <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding ShowAvatar}" AutomationProperties.Name="Show avatar" />
         </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE774;" Header="{DynamicResource L.Integrations.ShowServerLocation}"
+                        Description="{DynamicResource L.Integrations.ShowServerLocation.Text}">
+            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding ShowServerLocation}" AutomationProperties.Name="{DynamicResource L.Integrations.ShowServerLocation}" />
+        </ui:SettingCard>
         <ui:SettingCard Icon="&#xE71B;" Header="{DynamicResource L.Integrations.ViewGameButton}"
                         Description="{DynamicResource L.Integrations.LetsFriendsOpenTheGamesPage}">
             <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding ShowExperienceButton}" AutomationProperties.Name="View game button" />

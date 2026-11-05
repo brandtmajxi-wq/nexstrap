@@ -2,6 +2,12 @@
 
 All notable changes to Nexstrap are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.12.0] - 2026-11-05
+
+### Added
+- **Show server location** (Integrations): adds your server's city to your Discord card, like "by Maker · Frankfurt, Germany". It's off by default, because anyone who can see your status will see it.
+- **Game ready alerts** (Notifications): a Windows pop-up with the game and server location when a game finishes loading while you're in another app. It stays quiet if Roblox is in front or during a region search.
+
 ## [1.11.0] - 2026-11-05
 
 ### Added
@@ -133,6 +139,7 @@ First public release.
 - Quick update check on every launch with an in-app banner; release notes, progress and cancel.
 - Updates are installed only after verifying source, size, SHA-256, product name and version; failed swaps roll back.
 
+[1.12.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.12.0
 [1.11.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.11.0
 [1.10.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.10.0
 [1.9.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.9.0

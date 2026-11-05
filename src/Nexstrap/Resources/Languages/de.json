@@ -764,5 +764,11 @@
   "Servers.RegionFailed": "Gestoppt, weil Roblox nicht geschlossen oder gestartet werden konnte.",
   "Servers.RegionStopped": "Gestoppt. Du bist noch auf dem aktuellen Server.",
   "Servers.CurrentRegion": "Aktueller Server: {0}",
-  "Servers.UnknownRegion": "ein unbekannter Standort"
+  "Servers.UnknownRegion": "ein unbekannter Standort",
+  "Integrations.ShowServerLocation": "Serverstandort anzeigen",
+  "Integrations.ShowServerLocation.Text": "Fügt deiner Karte die Stadt deines Servers hinzu, zum Beispiel Frankfurt, Germany. Alle, die deinen Status sehen, sehen das auch, und es kann falsch sein.",
+  "Notifications.GameJoinAlerts": "Spiel-bereit-Hinweise",
+  "Notifications.GameJoinAlerts.Text": "Ein Windows-Hinweis, wenn ein Spiel fertig geladen ist und du in einer anderen App bist.",
+  "Alerts.GameReady": "{0} ist bereit",
+  "Alerts.InGame": "Du bist im Spiel."
 }

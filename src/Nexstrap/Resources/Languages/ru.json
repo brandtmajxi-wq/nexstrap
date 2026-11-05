@@ -764,5 +764,11 @@
   "Servers.RegionFailed": "Остановлено: не удалось закрыть или запустить Roblox.",
   "Servers.RegionStopped": "Остановлено. Ты всё ещё на текущем сервере.",
   "Servers.CurrentRegion": "Текущий сервер: {0}",
-  "Servers.UnknownRegion": "неизвестное место"
+  "Servers.UnknownRegion": "неизвестное место",
+  "Integrations.ShowServerLocation": "Показывать расположение сервера",
+  "Integrations.ShowServerLocation.Text": "Добавляет на карточку город твоего сервера, например Frankfurt, Germany. Это увидят все, кто видит твой статус, и данные могут быть неточными.",
+  "Notifications.GameJoinAlerts": "Оповещения о готовности игры",
+  "Notifications.GameJoinAlerts.Text": "Всплывающее окно Windows, когда игра загрузилась, а ты в другом приложении.",
+  "Alerts.GameReady": "{0}: игра готова",
+  "Alerts.InGame": "Ты в игре."
 }

@@ -74,6 +74,7 @@ public partial class App : Application
         _services.GetRequiredService<IPlayHistoryService>();
         _services.GetRequiredService<ILastServerService>();
         _services.GetRequiredService<IServerRegionService>();
+        _services.GetRequiredService<IGameJoinAlerts>();
         // Old exe and downloaded update files from a previous self-update.
         _services.GetRequiredService<IUpdateInstaller>().CleanUpAfterUpdate();
 
@@ -269,6 +270,7 @@ public partial class App : Application
         services.AddSingleton<ITrayService, TrayService>();
         services.AddSingleton<ILastServerService, LastServerService>();
         services.AddSingleton<IServerRegionService, ServerRegionService>();
+        services.AddSingleton<IGameJoinAlerts, GameJoinAlerts>();
         services.AddSingleton<IGameSearchService, GameSearchService>();
         services.AddSingleton<IRobloxProcessTuner, RobloxProcessTuner>();
         services.AddSingleton<Nexstrap.Services.Maintenance.ICleanupService, Nexstrap.Services.Maintenance.CleanupService>();

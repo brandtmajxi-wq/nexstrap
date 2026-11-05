@@ -72,6 +72,9 @@
         <ui:SettingCard Icon="&#xE7BA;" Header="{DynamicResource L.Notifications.ConfigurationWarnings}" Description="{DynamicResource L.Notifications.IgnoredFastFlagsFlagsThatCantApply}">
             <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding ConfigurationWarnings}" AutomationProperties.Name="Notify configuration warnings" />
         </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE7FC;" Header="{DynamicResource L.Notifications.GameJoinAlerts}" Description="{DynamicResource L.Notifications.GameJoinAlerts.Text}">
+            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding GameJoinAlerts}" AutomationProperties.Name="{DynamicResource L.Notifications.GameJoinAlerts}" />
+        </ui:SettingCard>
         <TextBlock Style="{StaticResource Text.Caption}" Margin="2,10,0,0"
                    Text="{DynamicResource L.Notifications.NotificationsAppearInsideNexstrapWhileIts}" />
     </StackPanel>

@@ -44,6 +44,12 @@ public sealed partial class NotificationsViewModel : PageViewModel
         set => Change(() => _settings.Current.Notifications.RobloxUpdates = value);
     }
 
+    public bool GameJoinAlerts
+    {
+        get => _settings.Current.Notifications.GameJoinAlerts;
+        set => Change(() => _settings.Current.Notifications.GameJoinAlerts = value);
+    }
+
     public bool ConfigurationWarnings
     {
         get => _settings.Current.Notifications.ConfigurationWarnings;

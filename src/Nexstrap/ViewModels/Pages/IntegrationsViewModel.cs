@@ -214,6 +214,12 @@ public sealed partial class IntegrationsViewModel : PageViewModel
         set => Update(() => _settings.Current.Discord.ShowAvatar = value);
     }
 
+    public bool ShowServerLocation
+    {
+        get => _settings.Current.Discord.ShowServerLocation;
+        set => Update(() => _settings.Current.Discord.ShowServerLocation = value);
+    }
+
     public bool ShowExperienceButton
     {
         get => _settings.Current.Discord.ShowExperienceButton;
