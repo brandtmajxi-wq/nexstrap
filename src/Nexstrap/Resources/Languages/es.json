@@ -770,5 +770,10 @@
   "Notifications.GameJoinAlerts": "Avisos de juego listo",
   "Notifications.GameJoinAlerts.Text": "Un aviso de Windows cuando un juego termina de cargar mientras estás en otra app.",
   "Alerts.GameReady": "{0} está listo",
-  "Alerts.InGame": "Ya estás en el juego."
+  "Alerts.InGame": "Ya estás en el juego.",
+  "Appearance.Sidebar": "Barra lateral",
+  "Appearance.Sidebar.Text": "Oculta las páginas que no uses y cambia su orden. La primera página se abre al iniciar Nexstrap. Inicio y Apariencia no se pueden ocultar.",
+  "Appearance.Sidebar.Reset": "Restablecer barra lateral",
+  "Appearance.Sidebar.Up": "Subir",
+  "Appearance.Sidebar.Down": "Bajar"
 }

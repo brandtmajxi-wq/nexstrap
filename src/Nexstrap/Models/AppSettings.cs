@@ -31,11 +31,21 @@ public sealed class AppSettings
 
     public RobloxModSettings RobloxMods { get; set; } = new();
 
+    public SidebarSettings Sidebar { get; set; } = new();
+
     /// <summary>Language code; null follows Windows.</summary>
     public string? Language { get; set; }
 
     /// <summary>Set by "Run without installing" so setup doesn't appear on every start.</summary>
     public bool SkippedSetup { get; set; }
+}
+
+/// <summary>Page names in the chosen order, and the ones to hide. Empty means the default sidebar.</summary>
+public sealed class SidebarSettings
+{
+    public List<string> Order { get; set; } = [];
+
+    public List<string> Hidden { get; set; } = [];
 }
 
 /// <summary>Opt-in replacement of Roblox's interface fonts in Nexstrap-installed builds.</summary>

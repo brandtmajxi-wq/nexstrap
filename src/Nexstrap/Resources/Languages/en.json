@@ -770,5 +770,10 @@
   "Notifications.GameJoinAlerts": "Game ready alerts",
   "Notifications.GameJoinAlerts.Text": "A Windows pop-up when a game finishes loading while you're in another app.",
   "Alerts.GameReady": "{0} is ready",
-  "Alerts.InGame": "You're in the game."
+  "Alerts.InGame": "You're in the game.",
+  "Appearance.Sidebar": "Sidebar",
+  "Appearance.Sidebar.Text": "Hide pages you don't use and change their order. The top page opens when Nexstrap starts. Home and Appearance can't be hidden.",
+  "Appearance.Sidebar.Reset": "Reset sidebar",
+  "Appearance.Sidebar.Up": "Move up",
+  "Appearance.Sidebar.Down": "Move down"
 }

@@ -770,5 +770,10 @@
   "Notifications.GameJoinAlerts": "Spiel-bereit-Hinweise",
   "Notifications.GameJoinAlerts.Text": "Ein Windows-Hinweis, wenn ein Spiel fertig geladen ist und du in einer anderen App bist.",
   "Alerts.GameReady": "{0} ist bereit",
-  "Alerts.InGame": "Du bist im Spiel."
+  "Alerts.InGame": "Du bist im Spiel.",
+  "Appearance.Sidebar": "Seitenleiste",
+  "Appearance.Sidebar.Text": "Blende Seiten aus, die du nicht nutzt, und ändere ihre Reihenfolge. Die oberste Seite öffnet sich beim Start von Nexstrap. Start und Darstellung lassen sich nicht ausblenden.",
+  "Appearance.Sidebar.Reset": "Seitenleiste zurücksetzen",
+  "Appearance.Sidebar.Up": "Nach oben",
+  "Appearance.Sidebar.Down": "Nach unten"
 }

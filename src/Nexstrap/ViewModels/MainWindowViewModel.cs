@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -19,13 +20,16 @@ public sealed partial class MainWindowViewModel : ObservableObject
     private readonly ISettingsService _settings;
     private readonly INotificationCenter _notifications;
 
+    /// <summary>Every page, including hidden ones: links inside the app can still open them.</summary>
+    private readonly IReadOnlyList<NavItem> _pages;
+
     public MainWindowViewModel(INavigationService navigation, IUpdateService updates, ISettingsService settings, INotificationCenter notifications)
     {
         Navigation = navigation;
         _updates = updates;
         _settings = settings;
         _notifications = notifications;
-        NavItems =
+        _pages =
         [
             new("Home", "", typeof(HomeViewModel)),
             new("Games", "", typeof(GamesViewModel)),
@@ -48,7 +52,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
         };
 
         // Selection drives navigation, so mouse, keyboard (arrow keys) and UI Automation all work.
-        foreach (var item in NavItems.Concat(FooterItems))
+        foreach (var item in _pages.Concat(FooterItems))
         {
             item.PropertyChanged += (_, e) =>
             {
@@ -59,8 +63,15 @@ public sealed partial class MainWindowViewModel : ObservableObject
 
         navigation.Navigated += (_, page) =>
         {
-            foreach (var item in NavItems.Concat(FooterItems))
+            foreach (var item in _pages.Concat(FooterItems))
                 item.IsSelected = item.PageType == page.GetType();
+        };
+
+        ArrangeSidebar();
+        settings.Saved += (_, _) =>
+        {
+            if (Application.Current is { } app) app.Dispatcher.BeginInvoke(ArrangeSidebar);
+            else ArrangeSidebar();
         };
 
         updates.Checked += (_, result) => Application.Current?.Dispatcher.BeginInvoke(() =>
@@ -69,7 +80,17 @@ public sealed partial class MainWindowViewModel : ObservableObject
 
     public INavigationService Navigation { get; }
 
-    public IReadOnlyList<NavItem> NavItems { get; }
+    /// <summary>The pages the sidebar shows, in the chosen order.</summary>
+    public ObservableCollection<NavItem> NavItems { get; } = [];
+
+    private void ArrangeSidebar()
+    {
+        var wanted = SidebarLayout.Visible(_settings.Current.Sidebar);
+        if (NavItems.Select(i => i.Title).SequenceEqual(wanted)) return;
+
+        NavItems.Clear();
+        foreach (var title in wanted) NavItems.Add(_pages.Single(p => p.Title == title));
+    }
 
     /// <summary>Pinned to the bottom of the sidebar.</summary>
     public IReadOnlyList<NavItem> FooterItems { get; }
@@ -107,7 +128,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
     /// <summary>Opens the start page, honouring --page &lt;Title&gt; when given.</summary>
     public void NavigateToStartPage(string? requested)
     {
-        var target = NavItems.Concat(FooterItems).FirstOrDefault(i =>
+        var target = _pages.Concat(FooterItems).FirstOrDefault(i =>
                          string.Equals(i.Title.Replace(" ", ""), requested?.Replace(" ", ""), StringComparison.OrdinalIgnoreCase))
                      ?? NavItems[0];
         Navigation.NavigateTo(target.PageType);

@@ -177,6 +177,35 @@
                       SelectedValue="{Binding UiScale}" AutomationProperties.Name="{DynamicResource L.Appearance.AppSize}" />
         </ui:SettingCard>
 
+        <!-- ===== Sidebar ===== -->
+        <DockPanel Margin="2,18,0,10">
+            <Button DockPanel.Dock="Right" Style="{StaticResource Button.Ghost}" Content="{DynamicResource L.Appearance.Sidebar.Reset}" ui:Ui.Icon="&#xE72C;" Padding="10,4"
+                    Command="{Binding ResetSidebarCommand}" />
+            <StackPanel>
+                <TextBlock Text="{DynamicResource L.Appearance.Sidebar}" Style="{StaticResource Text.Section}" />
+                <TextBlock Text="{DynamicResource L.Appearance.Sidebar.Text}" Style="{StaticResource Text.Caption}" Margin="0,2,12,0" />
+            </StackPanel>
+        </DockPanel>
+        <Border Style="{StaticResource Card}" Padding="18,8">
+            <ItemsControl ItemsSource="{Binding SidebarRows}" Focusable="False">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <DockPanel Margin="0,4">
+                            <CheckBox DockPanel.Dock="Right" Style="{StaticResource Toggle}" IsChecked="{Binding Shown}" IsEnabled="{Binding CanHide}" Margin="12,0,0,0"
+                                      VerticalAlignment="Center" AutomationProperties.Name="{Binding Label}" />
+                            <Button DockPanel.Dock="Right" Style="{StaticResource Button.Icon}" Content="&#xE70D;" FontFamily="{StaticResource Font.Icons}" Margin="4,0,0,0"
+                                    ToolTip="{DynamicResource L.Appearance.Sidebar.Down}" AutomationProperties.Name="{DynamicResource L.Appearance.Sidebar.Down}"
+                                    Command="{Binding DataContext.MoveSidebarDownCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" />
+                            <Button DockPanel.Dock="Right" Style="{StaticResource Button.Icon}" Content="&#xE70E;" FontFamily="{StaticResource Font.Icons}"
+                                    ToolTip="{DynamicResource L.Appearance.Sidebar.Up}" AutomationProperties.Name="{DynamicResource L.Appearance.Sidebar.Up}"
+                                    Command="{Binding DataContext.MoveSidebarUpCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" />
+                            <TextBlock Text="{Binding Label}" Style="{StaticResource Text.Base}" VerticalAlignment="Center" />
+                        </DockPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Border>
+
         <!-- ===== Language ===== -->
         <TextBlock Text="{DynamicResource L.Language.Header}" Style="{StaticResource SectionHeader}" />
         <ui:SettingCard Icon="&#xF2B7;" Header="{DynamicResource L.Language.Header}" Description="{DynamicResource L.Language.Description}">

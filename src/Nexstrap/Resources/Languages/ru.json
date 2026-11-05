@@ -770,5 +770,10 @@
   "Notifications.GameJoinAlerts": "Оповещения о готовности игры",
   "Notifications.GameJoinAlerts.Text": "Всплывающее окно Windows, когда игра загрузилась, а ты в другом приложении.",
   "Alerts.GameReady": "{0}: игра готова",
-  "Alerts.InGame": "Ты в игре."
+  "Alerts.InGame": "Ты в игре.",
+  "Appearance.Sidebar": "Боковая панель",
+  "Appearance.Sidebar.Text": "Скрывай ненужные страницы и меняй их порядок. Верхняя страница открывается при запуске Nexstrap. Главную и оформление скрыть нельзя.",
+  "Appearance.Sidebar.Reset": "Сбросить панель",
+  "Appearance.Sidebar.Up": "Выше",
+  "Appearance.Sidebar.Down": "Ниже"
 }

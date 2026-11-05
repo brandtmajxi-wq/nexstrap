@@ -88,6 +88,32 @@ public class NavigationTests
     }
 
     [Fact]
+    public void Sidebar_follows_saved_changes_and_hidden_pages_still_open()
+    {
+        var settings = new MemorySettings();
+        var nav = new FakeNavigation();
+        var vm = Create(nav, settings: settings);
+        Assert.Contains(vm.NavItems, i => i.Title == "Servers");
+
+        settings.Current.Sidebar.Hidden.Add("Servers");
+        settings.Current.Sidebar.Order = ["Games", "Home"];
+        settings.Save();
+
+        Assert.DoesNotContain(vm.NavItems, i => i.Title == "Servers");
+        Assert.Equal("Games", vm.NavItems[0].Title);
+
+        vm.NavigateToStartPage("Servers");
+        Assert.IsType<ServersViewModel>(nav.CurrentPage);
+    }
+
+    [Fact]
+    public void Every_sidebar_page_has_a_nav_item()
+    {
+        var vm = Create(new FakeNavigation());
+        Assert.Equal(Nexstrap.Core.SidebarLayout.Pages, vm.NavItems.Select(i => i.Title));
+    }
+
+    [Fact]
     public void Unknown_start_page_falls_back_to_home()
     {
         var nav = new FakeNavigation();

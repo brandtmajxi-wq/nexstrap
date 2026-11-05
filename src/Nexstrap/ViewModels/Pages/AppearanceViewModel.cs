@@ -39,6 +39,26 @@ public sealed class Choice<T> : ObservableObject
     public string Label => _label();
 }
 
+/// <summary>One page in the sidebar editor.</summary>
+public sealed class SidebarRow(string title, bool shown, Action<SidebarRow, bool> onShownChanged)
+{
+    public string Title { get; } = title;
+
+    public string Label => Loc.GetOr("Nav." + Title.Replace(" ", ""), Title);
+
+    public bool CanHide => SidebarLayout.CanHide(Title);
+
+    public bool Shown
+    {
+        get => shown;
+        set
+        {
+            shown = value;
+            onShownChanged(this, value);
+        }
+    }
+}
+
 public sealed partial class AppearanceViewModel : PageViewModel
 {
     private const string ThemeFileFilter = "Nexstrap theme (*.json)|*.json";
@@ -83,6 +103,8 @@ public sealed partial class AppearanceViewModel : PageViewModel
         _accentHex = appearance.Current.AccentColor;
         appearance.Changed += (_, _) => SyncFromSettings();
         RefreshSavedProfiles();
+        LoadSidebarRows();
+        Loc.Changed += (_, _) => LoadSidebarRows();
     }
 
     public override string Title => Loc.Get("Nav.Appearance");
@@ -210,6 +232,52 @@ public sealed partial class AppearanceViewModel : PageViewModel
             if (System.Windows.Application.Current is { } app) app.Resources["App.Scale"] = value;
             OnPropertyChanged();
         }
+    }
+
+    // ===== Sidebar =====
+
+    public ObservableCollection<SidebarRow> SidebarRows { get; } = [];
+
+    private SidebarSettings Sidebar => _settings.Current.Sidebar;
+
+    private void LoadSidebarRows()
+    {
+        SidebarRows.Clear();
+        foreach (var page in SidebarLayout.Arrange(Sidebar))
+            SidebarRows.Add(new SidebarRow(page, !Sidebar.Hidden.Contains(page), OnSidebarRowShownChanged));
+    }
+
+    private void OnSidebarRowShownChanged(SidebarRow row, bool shown)
+    {
+        Sidebar.Hidden.Remove(row.Title);
+        if (!shown && row.CanHide) Sidebar.Hidden.Add(row.Title);
+        _settings.Save();
+    }
+
+    private void MoveSidebarRow(SidebarRow row, int offset)
+    {
+        var index = SidebarRows.IndexOf(row);
+        var target = index + offset;
+        if (index < 0 || target < 0 || target >= SidebarRows.Count) return;
+
+        SidebarRows.Move(index, target);
+        Sidebar.Order = SidebarRows.Select(r => r.Title).ToList();
+        _settings.Save();
+    }
+
+    [RelayCommand]
+    private void MoveSidebarUp(SidebarRow row) => MoveSidebarRow(row, -1);
+
+    [RelayCommand]
+    private void MoveSidebarDown(SidebarRow row) => MoveSidebarRow(row, 1);
+
+    [RelayCommand]
+    private void ResetSidebar()
+    {
+        Sidebar.Order.Clear();
+        Sidebar.Hidden.Clear();
+        _settings.Save();
+        LoadSidebarRows();
     }
 
     // ===== Language =====

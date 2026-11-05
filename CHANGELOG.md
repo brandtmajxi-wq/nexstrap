@@ -2,6 +2,11 @@
 
 All notable changes to Nexstrap are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.13.0] - 2026-11-05
+
+### Added
+- **Custom sidebar** (Appearance): hide pages you don't use and change their order. The top page opens when Nexstrap starts. Home and Appearance always stay.
+
 ## [1.12.0] - 2026-11-05
 
 ### Added
@@ -139,6 +144,7 @@ First public release.
 - Quick update check on every launch with an in-app banner; release notes, progress and cancel.
 - Updates are installed only after verifying source, size, SHA-256, product name and version; failed swaps roll back.
 
+[1.13.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.13.0
 [1.12.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.12.0
 [1.11.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.11.0
 [1.10.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.10.0
