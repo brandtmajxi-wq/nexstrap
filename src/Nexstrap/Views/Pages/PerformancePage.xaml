@@ -75,7 +75,11 @@
         <ui:SettingCard Icon="&#xEC4A;" Header="{DynamicResource L.Performance.MaximumFrameRate}"
                         Description="{DynamicResource L.Performance.RobloxsOwnInGameCapIts}">
             <ComboBox Width="170" ItemsSource="{Binding CapChoices}" DisplayMemberPath="Label" SelectedValuePath="Value"
-                      SelectedValue="{Binding Cap}" AutomationProperties.Name="Performance frame rate cap" />
+                      SelectedValue="{Binding Cap}" IsEnabled="{Binding NoLimit, Converter={StaticResource InverseBool}}"
+                      AutomationProperties.Name="Performance frame rate cap" />
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE945;" Header="{DynamicResource L.Performance.NoLimit}" Description="{DynamicResource L.Performance.NoLimit.Text}">
+            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding NoLimit}" AutomationProperties.Name="{DynamicResource L.Performance.NoLimit}" />
         </ui:SettingCard>
 
         <!-- ===== Graphics preferences ===== -->

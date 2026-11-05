@@ -62,7 +62,7 @@ public static class NotificationRules
                 Loc.Format("Notifications.PlayUsesSBuildAndNexstrap", other.SourceLabel),
                 NotificationTarget.Home));
 
-        if (input.FramerateCap is { } cap && input.RefreshRate is { } hz && cap > hz + 1)
+        if (input.FramerateCap is { } cap && !Nexstrap.Services.Performance.PerformancePlanner.IsNoLimit(cap) && input.RefreshRate is { } hz && cap > hz + 1)
             list.Add(new($"config-cap-above-display:{cap}-{hz}", NotificationCategory.Configuration, Loc.Format("Notifications.FrameRateCapIsAboveYour", hz),
                 Loc.Format("Notifications.YourCapIsFPSButFrames", cap, hz), NotificationTarget.Performance));
 

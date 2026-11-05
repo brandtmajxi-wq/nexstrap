@@ -100,9 +100,12 @@
                      Text="{Binding MenuBottomLine, UpdateSourceTrigger=LostFocus}" />
         </ui:SettingCard>
         <ui:SettingCard Icon="&#xEB9F;" Header="{DynamicResource L.Integrations.CardIcon}"
-                        Description="{DynamicResource L.Integrations.ADirectHttpsLinkToA}">
-            <TextBox Width="220" MaxLength="256" ui:Ui.Placeholder="{DynamicResource L.Integrations.BuiltInLogo}" AutomationProperties.Name="{DynamicResource L.Integrations.CardIcon}"
-                     Text="{Binding MenuImage, UpdateSourceTrigger=LostFocus}" />
+                        Description="{DynamicResource L.Integrations.CardIcon.Text}">
+            <StackPanel Orientation="Horizontal">
+                <Button Content="{Binding UploadImageText}" Padding="10,4" Margin="0,0,8,0" Command="{Binding UploadMenuImageCommand}" />
+                <TextBox Width="220" MaxLength="256" ui:Ui.Placeholder="{DynamicResource L.Integrations.BuiltInLogo}" AutomationProperties.Name="{DynamicResource L.Integrations.CardIcon}"
+                         Text="{Binding MenuImage, UpdateSourceTrigger=LostFocus}" />
+            </StackPanel>
         </ui:SettingCard>
         <TextBlock Text="{Binding MenuImageError}" Style="{StaticResource Text.Caption}" Foreground="{DynamicResource Brush.Danger}"
                    Margin="2,0,0,6" Visibility="{Binding MenuImageError, Converter={StaticResource NullToVisibility}}" />

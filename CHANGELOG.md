@@ -2,6 +2,19 @@
 
 All notable changes to Nexstrap are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.15.0] - 2026-11-05
+
+### Added
+- **Upload image** (Integrations → Card icon): pick a PNG, JPG or GIF for your Discord card instead of pasting a link. Discord needs a public link, so after you agree, the image goes to catbox.moe, where anyone with the link can see it and it can't be deleted later. JPG metadata and your file's name are removed first.
+
+## [1.14.0] - 2026-11-05
+
+### Added
+- **Remove frame-rate limit** (Performance, and *No limit* in Roblox Settings): asks Roblox not to limit its frame rate. Roblox only supports up to 240 FPS, so it may ignore this or reset it.
+
+### Fixed
+- Very high or unusual saved caps, such as 9999, now show as no limit instead of a strange FPS number.
+
 ## [1.13.0] - 2026-11-05
 
 ### Added
@@ -144,6 +157,8 @@ First public release.
 - Quick update check on every launch with an in-app banner; release notes, progress and cancel.
 - Updates are installed only after verifying source, size, SHA-256, product name and version; failed swaps roll back.
 
+[1.15.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.15.0
+[1.14.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.14.0
 [1.13.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.13.0
 [1.12.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.12.0
 [1.11.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.11.0

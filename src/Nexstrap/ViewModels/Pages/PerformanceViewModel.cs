@@ -52,6 +52,17 @@ public sealed partial class PerformanceViewModel(
         if (!_loading) SaveToRoblox(new RobloxUserSettings { FramerateCap = value }, Loc.Format("Performance.FrameRateCapSetToFPS", value));
     }
 
+    [ObservableProperty]
+    private bool _noLimit;
+
+    partial void OnNoLimitChanged(bool value)
+    {
+        if (_loading) return;
+        var cap = value ? PerformancePlanner.NoLimitCap : PerformancePlanner.RecommendedCap(display.RefreshRate);
+        SaveToRoblox(new RobloxUserSettings { FramerateCap = cap },
+            value ? Loc.Get("Performance.NoLimit.Set") : Loc.Format("Performance.FrameRateCapSetToFPS", cap));
+    }
+
     // ===== Presets =====
 
     public IReadOnlyList<PerformancePreset> Presets => PerformancePlanner.Presets;
@@ -150,7 +161,8 @@ public sealed partial class PerformanceViewModel(
             try { current = robloxSettings.Load(); }
             catch (Exception ex) when (ex is IOException or System.Xml.XmlException or InvalidDataException) { current = new RobloxUserSettings(); }
 
-            var cap = current.FramerateCap ?? PerformancePlanner.RecommendedCap(display.RefreshRate);
+            NoLimit = PerformancePlanner.IsNoLimit(current.FramerateCap);
+            var cap = NoLimit ? PerformancePlanner.RecommendedCap(display.RefreshRate) : current.FramerateCap ?? PerformancePlanner.RecommendedCap(display.RefreshRate);
             CapChoices.Clear();
             foreach (var fps in PerformancePlanner.StandardCaps) CapChoices.Add(new Choice<int>(fps, $"{fps} FPS"));
             if (!PerformancePlanner.StandardCaps.Contains(cap)) CapChoices.Add(new Choice<int>(cap, Loc.Format("Performance.FPSCurrent", cap)));

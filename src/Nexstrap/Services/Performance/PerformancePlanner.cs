@@ -64,6 +64,12 @@ public static class PerformancePlanner
 {
     public static readonly int[] StandardCaps = [60, 120, 144, 240];
 
+    /// <summary>What Nexstrap writes for "no limit". Roblox doesn't document this value.</summary>
+    public const int NoLimitCap = 0;
+
+    /// <summary>Zero, negative and huge values such as 9999 all mean there's no real limit.</summary>
+    public static bool IsNoLimit(int? cap) => cap is <= 0 or >= 1000;
+
     public const string ForceMsaa = "FIntDebugForceMSAASamples";
     public const string TextureOverrideEnabled = "DFFlagTextureQualityOverrideEnabled";
     public const string TextureOverride = "DFIntTextureQualityOverride";
@@ -145,6 +151,8 @@ public static class PerformancePlanner
             lines.Add(new(StatusLevel.Warning, Loc.Get("Performance.RobloxHasntCreatedItsSettingsFile")));
         else if (cap is null)
             lines.Add(new(StatusLevel.Info, Loc.Get("Performance.NoFrameRateCapSavedYet")));
+        else if (IsNoLimit(cap))
+            lines.Add(new(StatusLevel.Info, Loc.Get("Performance.NoLimit.Status")));
         else if (refreshRate is { } hz && cap > hz + 1)
             lines.Add(new(StatusLevel.Info, Loc.Format("Performance.CapIsFPSButYourDisplay", cap, hz)));
         else if (refreshRate is { } rate && cap < RecommendedCap(rate))

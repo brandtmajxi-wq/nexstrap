@@ -72,6 +72,7 @@ These settings change limits and quality; they can't make your PC faster.
 - **FPS status**: your primary display's refresh rate, whether your cap suits it, and warnings such as Roblox being open or the ignored `DFIntTaskSchedulerTargetFps` flag being present.
 - **Presets**: Balanced, Smoothest, Best looking and Power saver set Roblox's frame-rate cap and graphics quality together. All except Power saver use the highest standard cap your display can show. Roblox must be closed.
 - **Maximum frame rate**: 60, 120, 144 or 240, stored in Roblox's own settings.
+- **Remove frame-rate limit**: saves `FramerateCap` as 0, which community guides list as uncapped. Roblox only supports up to 240 FPS and doesn't document this, so it may ignore or reset it. Turning it off goes back to the cap that suits your display. Saved values of 0 or less, or 1000 and above, count as no limit.
 - **Graphics preferences**: graphics API, anti-aliasing and texture quality. These are allowlisted FastFlags, so they only apply to Nexstrap-installed builds; *Automatic* removes the flag.
 
 ## FastFlags
@@ -103,7 +104,7 @@ maximum frame rate (60/120/144/240), automatic or fixed graphics quality (1–10
 
 ## Integrations
 
-- **Discord Rich Presence** (needs the Discord desktop app). Menu: "Inside Nexstrap · Browsing Roblox" by default, and you can write your own text for both lines and choose the card icon (a direct https image link or an Art Asset name). In game: experience name, creator, icon, your avatar headshot and a *View game* button. Each part can be switched off. *Show server location* (off by default) adds your server's city to the second line, and can be wrong. Nexstrap reads Roblox's own log lines to tell menu from game and stays running in the background until Roblox closes.
+- **Discord Rich Presence** (needs the Discord desktop app). Menu: "Inside Nexstrap · Browsing Roblox" by default, and you can write your own text for both lines and choose the card icon (an uploaded image, a direct https image link or an Art Asset name). **Upload image** takes a PNG, JPG or GIF up to 10 MB. Discord only shows images from a public link, so after you agree the file goes to catbox.moe, a free host Nexstrap has no connection to. Anyone with the link can see it and it can't be deleted later. Nexstrap sends it as `image.png` (or similar) rather than your file's name, and saves JPGs again without their metadata. In game: experience name, creator, icon, your avatar headshot and a *View game* button. Each part can be switched off. *Show server location* (off by default) adds your server's city to the second line, and can be wrong. Nexstrap reads Roblox's own log lines to tell menu from game and stays running in the background until Roblox closes.
 - **Start with Roblox**: programs launched when a Nexstrap-started Roblox session begins; optionally asked to close (never force-killed) when it ends.
 - **Move your setup**: one JSON file with appearance, launch and Discord settings, FastFlags, saved themes and companion apps. Machine-specific items (window size, background files, chosen build, URL-handler backup) are not exported. Importing backs up the current setup first.
 - **Multiple Roblox windows**: not offered. Roblox allows one game at a time and Nexstrap doesn't get around that.

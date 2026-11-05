@@ -441,7 +441,9 @@ public sealed partial class RobloxSettingsViewModel : PageViewModel
             FramerateChoices.Clear();
             foreach (var fps in StandardFramerates) FramerateChoices.Add(new Choice<int>(fps, $"{fps} FPS"));
             var cap = _loaded.FramerateCap ?? 60;
-            if (!StandardFramerates.Contains(cap)) FramerateChoices.Add(new Choice<int>(cap, Loc.Format("Performance.FPSCurrent", cap)));
+            var noLimit = Nexstrap.Services.Performance.PerformancePlanner.IsNoLimit(cap);
+            if (!noLimit && !StandardFramerates.Contains(cap)) FramerateChoices.Add(new Choice<int>(cap, Loc.Format("Performance.FPSCurrent", cap)));
+            FramerateChoices.Add(new Choice<int>(noLimit ? cap : Nexstrap.Services.Performance.PerformancePlanner.NoLimitCap, () => Loc.Get("Performance.NoLimit.Choice")));
             FramerateCap = cap;
 
             QualityAutomatic = (_loaded.SavedQualityLevel ?? 0) == 0;

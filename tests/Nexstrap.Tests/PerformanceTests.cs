@@ -70,6 +70,30 @@ public class PerformancePlannerTests : IDisposable
         Assert.Single(flags.Flags);
     }
 
+    [Theory]
+    [InlineData(0, true)]
+    [InlineData(-1, true)]
+    [InlineData(9999, true)]
+    [InlineData(1000, true)]
+    [InlineData(60, false)]
+    [InlineData(240, false)]
+    [InlineData(360, false)]
+    [InlineData(null, false)]
+    public void Zero_negative_and_huge_caps_count_as_no_limit(int? cap, bool expected) =>
+        Assert.Equal(expected, PerformancePlanner.IsNoLimit(cap));
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    [InlineData(9999)]
+    public void Status_never_shows_a_no_limit_value_as_a_number(int cap)
+    {
+        var line = Status(cap, 144)[0];
+
+        Assert.Equal(StatusLevel.Info, line.Level);
+        Assert.Equal(Nexstrap.Core.Loc.Get("Performance.NoLimit.Status"), line.Text);
+    }
+
     private static IReadOnlyList<StatusLine> Status(int? cap, int? hz, bool exists = true, bool running = false, bool nexstrap = true,
         params FastFlagEntry[] flags) => PerformancePlanner.BuildStatus(cap, hz, exists, running, nexstrap, flags);
 

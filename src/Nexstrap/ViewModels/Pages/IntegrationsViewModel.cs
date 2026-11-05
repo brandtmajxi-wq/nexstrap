@@ -49,10 +49,12 @@ public sealed partial class IntegrationsViewModel : PageViewModel
     private readonly IConfigTransferService _transfer;
     private readonly IFileDialogService _files;
     private readonly IDialogService _dialogs;
+    private readonly ICardImageUploader _uploader;
 
     public IntegrationsViewModel(IRichPresenceService presence, ISettingsService settings, ICompanionAppService companions,
-        IConfigTransferService transfer, IFileDialogService files, IDialogService dialogs)
+        IConfigTransferService transfer, IFileDialogService files, IDialogService dialogs, ICardImageUploader uploader)
     {
+        _uploader = uploader;
         _presence = presence;
         _settings = settings;
         _companions = companions;
@@ -207,6 +209,40 @@ public sealed partial class IntegrationsViewModel : PageViewModel
 
     [ObservableProperty]
     private string? _menuImageError;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(UploadImageText))]
+    private bool _isUploadingImage;
+
+    public string UploadImageText => Loc.Get(IsUploadingImage ? "Integrations.CardIcon.Uploading" : "Integrations.CardIcon.Upload");
+
+    [RelayCommand]
+    private async Task UploadMenuImageAsync()
+    {
+        var path = _files.OpenFile(Loc.Get("Integrations.CardIcon.Choose"), "Images (*.png;*.jpg;*.jpeg;*.gif)|*.png;*.jpg;*.jpeg;*.gif");
+        if (path is null) return;
+        if (!_dialogs.Confirm(Loc.Get("Integrations.CardIcon.ConfirmTitle"), Loc.Get("Integrations.CardIcon.ConfirmText"), Loc.Get("Integrations.CardIcon.ConfirmButton")))
+            return;
+
+        IsUploadingImage = true;
+        try
+        {
+            MenuImage = await _uploader.UploadAsync(path);
+            OnPropertyChanged(nameof(MenuImage));
+        }
+        catch (System.IO.InvalidDataException ex)
+        {
+            _dialogs.Show(Loc.Get("Integrations.CardIcon.Failed"), ex.Message, DialogKind.Warning);
+        }
+        catch (Exception ex) when (ex is System.Net.Http.HttpRequestException or TaskCanceledException or System.IO.IOException or UnauthorizedAccessException)
+        {
+            _dialogs.Show(Loc.Get("Integrations.CardIcon.Failed"), Loc.Get("Integrations.CardIcon.NoConnection"), DialogKind.Warning, ex.Message);
+        }
+        finally
+        {
+            IsUploadingImage = false;
+        }
+    }
 
     public bool ShowAvatar
     {

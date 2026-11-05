@@ -1,3 +1,4 @@
+using Nexstrap.Services.Performance;
 using System.IO;
 using System.Xml;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -61,6 +62,14 @@ public class RobloxUserSettingsTests : IDisposable
         Assert.Equal(0.2, s.MasterVolume!.Value, 3);
         Assert.Equal(2.2, s.MouseSensitivity!.Value, 3);
         Assert.False(s.CameraYInverted);
+    }
+
+    [Fact]
+    public void No_limit_is_saved_as_a_real_value()
+    {
+        _service.Save(new RobloxUserSettings { FramerateCap = PerformancePlanner.NoLimitCap });
+
+        Assert.Equal(0, _service.Load().FramerateCap);
     }
 
     [Fact]

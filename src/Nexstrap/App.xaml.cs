@@ -272,6 +272,7 @@ public partial class App : Application
         services.AddSingleton<IServerRegionService, ServerRegionService>();
         services.AddSingleton<IGameJoinAlerts, GameJoinAlerts>();
         services.AddSingleton<IGameSearchService, GameSearchService>();
+        services.AddSingleton<ICardImageUploader>(_ => new CardImageUploader(CreateHttpClient(TimeSpan.FromMinutes(2))));
         services.AddSingleton<IRobloxProcessTuner, RobloxProcessTuner>();
         services.AddSingleton<Nexstrap.Services.Maintenance.ICleanupService, Nexstrap.Services.Maintenance.CleanupService>();
         services.AddSingleton<IWindowsStartup, WindowsStartup>();
