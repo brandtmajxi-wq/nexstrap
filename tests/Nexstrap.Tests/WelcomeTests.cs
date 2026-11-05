@@ -99,6 +99,24 @@ public class WelcomeTests
         Assert.InRange(moved.X, 0, 800);
     }
 
+    [Theory]
+    [InlineData("Liam", "Good afternoon, Liam")]
+    [InlineData("  Liam   Smith \n", "Good afternoon, Liam Smith")]
+    [InlineData("", "Good afternoon")]
+    [InlineData("   ", "Good afternoon")]
+    [InlineData(null, "Good afternoon")]
+    public void A_name_is_added_to_the_greeting_when_there_is_one(string? name, string expected) =>
+        Assert.Equal(expected, WelcomeName.Greet("Good afternoon", name));
+
+    [Fact]
+    public void Names_are_limited_without_splitting_an_emoji()
+    {
+        var name = WelcomeName.Clean(new string('a', 31) + "\U0001F384\U0001F384");
+
+        Assert.Equal(new string('a', 31), name);
+        Assert.True(WelcomeName.Clean(new string('b', 100))!.Length <= WelcomeName.MaxLength);
+    }
+
     [Fact]
     public void Every_image_is_built_into_the_app()
     {

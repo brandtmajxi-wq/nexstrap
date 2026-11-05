@@ -806,5 +806,12 @@
   "Welcome.Christmas": "Merry Christmas",
   "Welcome.NewYear": "Happy New Year",
   "Appearance.Winter.Christmas": "Christmas mode (dev only)",
-  "Appearance.Winter.Christmas.Text": "Turns on the winter theme and the Merry Christmas greeting, whatever the date."
+  "Appearance.Winter.Christmas.Text": "Turns on the winter theme and the Merry Christmas greeting, whatever the date.",
+  "Welcome.Name.Title": "How should we welcome you?",
+  "Welcome.Name.Text": "Type a name and the Welcome page will use it, like \"Good afternoon, Liam\". This is optional, it stays on this PC, and you can change it any time under Appearance.",
+  "Welcome.Name.Placeholder": "Your name (optional)",
+  "Welcome.Name.Save": "Save",
+  "Welcome.Name.Skip": "Skip",
+  "Appearance.YourName": "Your name",
+  "Appearance.YourName.Text": "The Welcome page greets you with this name. Leave it empty for no name. It stays on this PC."
 }

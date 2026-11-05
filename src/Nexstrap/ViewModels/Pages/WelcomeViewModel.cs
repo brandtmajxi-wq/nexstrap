@@ -26,6 +26,7 @@ public sealed partial class WelcomeViewModel : PageViewModel
         _launch = launch;
         _navigation = navigation;
         _clock.Tick += (_, _) => UpdateClock();
+        settings.Saved += (_, _) => System.Windows.Application.Current?.Dispatcher.BeginInvoke(() => OnPropertyChanged(nameof(Greeting)));
         UpdateClock();
     }
 
@@ -55,7 +56,7 @@ public sealed partial class WelcomeViewModel : PageViewModel
     [ObservableProperty]
     private string _date = "";
 
-    public string Greeting => GreetingFor(Part, Holiday);
+    public string Greeting => WelcomeName.Greet(GreetingFor(Part, Holiday), _settings.Current.Welcome.Name);
 
     internal static string GreetingFor(DayPart part, Holiday holiday = Holiday.None) => (holiday, part) switch
     {

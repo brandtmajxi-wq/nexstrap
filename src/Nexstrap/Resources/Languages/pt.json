@@ -806,5 +806,12 @@
   "Welcome.Christmas": "Feliz Natal",
   "Welcome.NewYear": "Feliz Ano Novo",
   "Appearance.Winter.Christmas": "Modo Natal (só dev)",
-  "Appearance.Winter.Christmas.Text": "Liga o tema de inverno e a saudação de Natal, seja qual for a data."
+  "Appearance.Winter.Christmas.Text": "Liga o tema de inverno e a saudação de Natal, seja qual for a data.",
+  "Welcome.Name.Title": "Como devemos chamar você?",
+  "Welcome.Name.Text": "Digite um nome e a página de boas-vindas vai usá-lo, como \"Boa tarde, Liam\". É opcional, fica neste PC e você pode mudar quando quiser em Aparência.",
+  "Welcome.Name.Placeholder": "Seu nome (opcional)",
+  "Welcome.Name.Save": "Salvar",
+  "Welcome.Name.Skip": "Pular",
+  "Appearance.YourName": "Seu nome",
+  "Appearance.YourName.Text": "A página de boas-vindas cumprimenta você com este nome. Deixe vazio se não quiser nenhum. Ele fica neste PC."
 }

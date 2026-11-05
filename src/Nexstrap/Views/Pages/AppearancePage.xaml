@@ -170,6 +170,13 @@
             </Grid>
         </Border>
 
+        <!-- ===== Welcome ===== -->
+        <TextBlock Text="{DynamicResource L.Nav.Welcome}" Style="{StaticResource SectionHeader}" />
+        <ui:SettingCard Icon="&#xE77B;" Header="{DynamicResource L.Appearance.YourName}" Description="{DynamicResource L.Appearance.YourName.Text}">
+            <TextBox Width="190" MaxLength="{Binding NameLimit}" ui:Ui.Placeholder="{DynamicResource L.Welcome.Name.Placeholder}" AutomationProperties.Name="{DynamicResource L.Appearance.YourName}"
+                     Text="{Binding YourName, UpdateSourceTrigger=LostFocus}" />
+        </ui:SettingCard>
+
         <!-- ===== Winter theme (dev only for now) ===== -->
         <StackPanel Visibility="{Binding WinterAvailable, Converter={StaticResource BoolToVisibility}}">
         <TextBlock Text="{DynamicResource L.Appearance.Winter}" Style="{StaticResource SectionHeader}" />

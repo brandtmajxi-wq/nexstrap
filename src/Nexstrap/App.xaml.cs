@@ -102,6 +102,7 @@ public partial class App : Application
         shell.NavigateToStartPage(Options.StartPage);
         if (Options.CapturePath is null) _services.GetRequiredService<ITrayService>().Show();
         if (!Options.Tray) window.Show();
+        if (Options.CapturePath is null) Dispatcher.BeginInvoke(AskForNameOnce, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
         _ = shell.CheckForUpdatesOnLaunchAsync();
         // Roblox update notifications shouldn't depend on Home being the first page opened.
         _ = _services.GetRequiredService<IRobloxClientService>().RefreshAsync();
@@ -140,6 +141,24 @@ public partial class App : Application
         // Windows won't always let a background app take focus; this brings it above other windows.
         window.Topmost = true;
         window.Topmost = false;
+        AskForNameOnce();
+    }
+
+    /// <summary>Shown one time after updating or installing, the first time the window is on screen.</summary>
+    private void AskForNameOnce()
+    {
+        var settings = _services!.GetRequiredService<ISettingsService>();
+        if (settings.Current.Welcome.NameAsked || MainWindow is not { IsVisible: true }) return;
+
+        settings.Current.Welcome.NameAsked = true;
+        settings.Save();
+
+        var answer = _services!.GetRequiredService<IDialogService>().Ask(Loc.Get("Welcome.Name.Title"), Loc.Get("Welcome.Name.Text"),
+            Loc.Get("Welcome.Name.Save"), Loc.Get("Welcome.Name.Skip"), WelcomeName.MaxLength);
+        if (WelcomeName.Clean(answer) is not { } name) return;
+
+        settings.Current.Welcome.Name = name;
+        settings.Save();
     }
 
     /// <summary>Shows setup. Returns true if this copy should carry on and open normally.</summary>

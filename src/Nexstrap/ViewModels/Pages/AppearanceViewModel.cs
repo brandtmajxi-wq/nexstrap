@@ -217,6 +217,21 @@ public sealed partial class AppearanceViewModel : PageViewModel
         _syncing = false;
     }
 
+    // ===== Your name =====
+
+    public int NameLimit => WelcomeName.MaxLength;
+
+    public string YourName
+    {
+        get => _settings.Current.Welcome.Name ?? "";
+        set
+        {
+            _settings.Current.Welcome.Name = WelcomeName.Clean(value);
+            _settings.Save();
+            OnPropertyChanged();
+        }
+    }
+
     // ===== Winter theme =====
 
     public IReadOnlyList<Choice<WinterMode>> WinterChoices { get; } =

@@ -35,11 +35,22 @@ public sealed class AppSettings
 
     public WinterSettings Winter { get; set; } = new();
 
+    public WelcomeSettings Welcome { get; set; } = new();
+
     /// <summary>Language code; null follows Windows.</summary>
     public string? Language { get; set; }
 
     /// <summary>Set by "Run without installing" so setup doesn't appear on every start.</summary>
     public bool SkippedSetup { get; set; }
+}
+
+public sealed class WelcomeSettings
+{
+    /// <summary>What the Welcome page calls you. Stays on this PC.</summary>
+    public string? Name { get; set; }
+
+    /// <summary>Set once the question has been shown, so it only appears one time.</summary>
+    public bool NameAsked { get; set; }
 }
 
 public sealed class WinterSettings

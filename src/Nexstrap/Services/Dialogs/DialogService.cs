@@ -17,6 +17,9 @@ public interface IDialogService
     void Show(string title, string message, DialogKind kind = DialogKind.Info, string? details = null);
 
     bool Confirm(string title, string message, string confirmText = "Continue", string cancelText = "Cancel");
+
+    /// <summary>Asks for one line of text. Returns null if it was skipped.</summary>
+    string? Ask(string title, string message, string confirmText, string cancelText, int maxLength);
 }
 
 /// <summary>Shows Nexstrap-styled modal dialogs instead of the stock MessageBox.</summary>
@@ -28,6 +31,13 @@ public sealed class DialogService : IDialogService
     public bool Confirm(string title, string message, string confirmText = "Continue", string cancelText = "Cancel") =>
         Run(() => MessageDialog.ShowModal(Owner(), title, message, DialogKind.Question, null,
             Loc.GetOr("Common." + confirmText, confirmText), Loc.GetOr("Common." + cancelText, cancelText)));
+
+    public string? Ask(string title, string message, string confirmText, string cancelText, int maxLength)
+    {
+        string? answer = null;
+        Run(() => answer = MessageDialog.AskText(Owner(), title, message, confirmText, cancelText, maxLength));
+        return answer;
+    }
 
     private static Window? Owner() =>
         Application.Current?.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive && w.IsVisible)

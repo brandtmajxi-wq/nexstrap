@@ -2,6 +2,11 @@
 
 All notable changes to Nexstrap are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.17.0] - 2026-11-05
+
+### Added
+- **Your name on the Welcome page**: Nexstrap asks once how it should welcome you, so the page can say something like "Good afternoon, Liam". It's optional, stays on this PC, and can be changed under Appearance.
+
 ## [1.16.0] - 2026-11-05
 
 ### Added
@@ -162,6 +167,7 @@ First public release.
 - Quick update check on every launch with an in-app banner; release notes, progress and cancel.
 - Updates are installed only after verifying source, size, SHA-256, product name and version; failed swaps roll back.
 
+[1.17.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.17.0
 [1.16.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.16.0
 [1.15.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.15.0
 [1.14.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.14.0

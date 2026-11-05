@@ -806,5 +806,12 @@
   "Welcome.Christmas": "Frohe Weihnachten",
   "Welcome.NewYear": "Frohes neues Jahr",
   "Appearance.Winter.Christmas": "Weihnachtsmodus (nur Dev)",
-  "Appearance.Winter.Christmas.Text": "Schaltet das Winter-Design und den Weihnachtsgruß ein, egal welches Datum ist."
+  "Appearance.Winter.Christmas.Text": "Schaltet das Winter-Design und den Weihnachtsgruß ein, egal welches Datum ist.",
+  "Welcome.Name.Title": "Wie sollen wir dich begrüßen?",
+  "Welcome.Name.Text": "Gib einen Namen ein und die Willkommensseite nutzt ihn, zum Beispiel \"Guten Tag, Liam\". Das ist freiwillig, bleibt auf diesem PC und lässt sich jederzeit unter Darstellung ändern.",
+  "Welcome.Name.Placeholder": "Dein Name (optional)",
+  "Welcome.Name.Save": "Speichern",
+  "Welcome.Name.Skip": "Überspringen",
+  "Appearance.YourName": "Dein Name",
+  "Appearance.YourName.Text": "Die Willkommensseite begrüßt dich mit diesem Namen. Lass das Feld leer, wenn du keinen möchtest. Er bleibt auf diesem PC."
 }

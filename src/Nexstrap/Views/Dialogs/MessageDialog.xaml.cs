@@ -49,6 +49,27 @@ public partial class MessageDialog : Window
         return dialog.ShowDialog() == true;
     }
 
+    /// <summary>Asks for one line of text. Returns null if it was skipped.</summary>
+    public static string? AskText(Window? owner, string title, string message, string confirmText, string cancelText, int maxLength)
+    {
+        var dialog = new MessageDialog();
+        if (owner is { IsLoaded: true })
+            dialog.Owner = owner;
+        else
+            dialog.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+
+        dialog.TitleText.Text = title;
+        dialog.MessageText.Text = message;
+        dialog.ConfirmButton.Content = confirmText;
+        dialog.CancelButton.Content = cancelText;
+        dialog.IconGlyph.Text = char.ConvertFromUtf32(0xE77B);
+        dialog.AnswerBox.MaxLength = maxLength;
+        dialog.AnswerBox.Visibility = Visibility.Visible;
+        dialog.Loaded += (_, _) => dialog.AnswerBox.Focus();
+
+        return dialog.ShowDialog() == true ? dialog.AnswerBox.Text : null;
+    }
+
     private void OnConfirm(object sender, RoutedEventArgs e) => DialogResult = true;
 
     private void OnCancel(object sender, RoutedEventArgs e) => DialogResult = false;
