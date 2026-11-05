@@ -11,6 +11,16 @@ public static class AppInfo
 {
     public const string Name = "Nexstrap";
     public const string Tagline = "The Roblox launcher, reimagined.";
+    public const string DevLabel = "DEV Launcher";
+
+    /// <summary>True only in the Dev configuration: a personal copy that runs beside the public one.</summary>
+#if DEV_BUILD
+    public static bool IsDev => true;
+#else
+    public static bool IsDev => false;
+#endif
+
+    public static string DisplayName => IsDev ? $"{Name} {DevLabel}" : Name;
     public const string RepositoryOwner = "brandtmajxi-wq";
     public const string RepositoryName = "nexstrap";
     public const string RepositoryUrl = $"https://github.com/{RepositoryOwner}/{RepositoryName}";
@@ -34,7 +44,12 @@ public static class AppInfo
     {
         /// <summary>Overridable root so tests can redirect all I/O to a temp folder.</summary>
         public static string Root { get; set; } = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Name);
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), IsDev ? Name + " Dev" : Name);
+
+        /// <summary>The dev copy keeps its own settings but shares Roblox builds, which are hundreds of MB.</summary>
+        public static string Versions => IsDev
+            ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Name, "Versions")
+            : Path.Combine(Root, "Versions");
 
         public static string Settings => Path.Combine(Root, "Settings.json");
         public static string Logs => Path.Combine(Root, "Logs");

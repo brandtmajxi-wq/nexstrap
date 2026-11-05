@@ -68,6 +68,9 @@ public sealed class UpdateService(HttpClient http, ILogger<UpdateService> logger
 
     public async Task<UpdateCheckResult> CheckAsync(CancellationToken cancellationToken = default)
     {
+        // A public release must never replace the dev copy, which is newer than anything published.
+        if (AppInfo.IsDev) return Remember(new UpdateCheckResult(UpdateStatus.NoReleases, Loc.Get("Update.DevBuild")));
+
         var url = $"https://api.github.com/repos/{AppInfo.RepositoryOwner}/{AppInfo.RepositoryName}/releases/latest";
         try
         {

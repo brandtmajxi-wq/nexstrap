@@ -13,6 +13,10 @@ A page-by-page guide. Everything Nexstrap stores lives in `%LocalAppData%\Nexstr
 | **Uninstall** | From Installed apps in Windows Settings. Removes the exe, shortcuts and Windows entry, gives Roblox links back to your previous launcher, and asks whether to delete your data. A folder you chose is only removed if it's empty. |
 | **Languages** | English, Deutsch, Español, Français, Português (Brasil) and Русский, following Windows by default. The whole app is translated, except a few rare technical error messages and screen-reader labels. Change it under Appearance; it applies right away. Text from Roblox, such as game names, stays as Roblox provides it. |
 
+## Welcome
+
+The first page in the sidebar, so it's what opens by default. It greets you by the time of day, shows a live clock and the date in your Windows format, and fills the window with a landscape for morning, afternoon, evening or night. The landscapes are drawn by `tools/make-welcome-images.ps1` and cover your custom background on this page only. It only reads your PC's clock, so no location is used or sent. **Play Roblox** and **Go to Home** are underneath. If you've already changed your sidebar order, Welcome starts at the bottom of it, and you can move or hide it under Appearance.
+
 ## Home
 
 | Feature | Details |

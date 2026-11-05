@@ -86,7 +86,7 @@ public sealed class RobloxDeployment : IRobloxDeployment
     private readonly string _downloadsRoot;
 
     public RobloxDeployment(HttpClient http, ILogger<RobloxDeployment> logger)
-        : this(http, logger, Path.Combine(AppInfo.Paths.Root, "Versions"), AppInfo.Paths.Downloads) { }
+        : this(http, logger, AppInfo.Paths.Versions, AppInfo.Paths.Downloads) { }
 
     internal RobloxDeployment(HttpClient http, ILogger<RobloxDeployment> logger, string versionsRoot, string downloadsRoot)
     {

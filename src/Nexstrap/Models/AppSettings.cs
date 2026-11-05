@@ -33,11 +33,23 @@ public sealed class AppSettings
 
     public SidebarSettings Sidebar { get; set; } = new();
 
+    public WinterSettings Winter { get; set; } = new();
+
     /// <summary>Language code; null follows Windows.</summary>
     public string? Language { get; set; }
 
     /// <summary>Set by "Run without installing" so setup doesn't appear on every start.</summary>
     public bool SkippedSetup { get; set; }
+}
+
+public sealed class WinterSettings
+{
+    public Nexstrap.Core.WinterMode Mode { get; set; } = Nexstrap.Core.WinterMode.Automatic;
+
+    public bool Snow { get; set; } = true;
+
+    /// <summary>Dev only: winter theme and the Christmas greeting whatever the date.</summary>
+    public bool ChristmasMode { get; set; }
 }
 
 /// <summary>Page names in the chosen order, and the ones to hide. Empty means the default sidebar.</summary>

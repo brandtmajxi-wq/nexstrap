@@ -6,6 +6,9 @@
         ViewModel → View mapping for the navigation content host.
         Each page ViewModel gets one DataTemplate here.
     -->
+    <DataTemplate DataType="{x:Type vm:WelcomeViewModel}">
+        <pages:WelcomePage />
+    </DataTemplate>
     <DataTemplate DataType="{x:Type vm:HomeViewModel}">
         <pages:HomePage />
     </DataTemplate>

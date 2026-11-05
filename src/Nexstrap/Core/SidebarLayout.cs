@@ -6,7 +6,7 @@ namespace Nexstrap.Core;
 public static class SidebarLayout
 {
     public static IReadOnlyList<string> Pages { get; } =
-        ["Home", "Games", "Servers", "Appearance", "Loading Screen", "Performance", "FastFlags", "Roblox Settings", "Integrations"];
+        ["Welcome", "Home", "Games", "Servers", "Appearance", "Loading Screen", "Performance", "FastFlags", "Roblox Settings", "Integrations"];
 
     /// <summary>Home is where Roblox starts, and Appearance is where hidden pages come back from.</summary>
     public static bool CanHide(string page) => page is not ("Home" or "Appearance");

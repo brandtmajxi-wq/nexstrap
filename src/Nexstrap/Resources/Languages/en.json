@@ -791,5 +791,20 @@
   "Integrations.CardIcon.NoConnection": "Couldn't reach the image host. Check your connection and try again.",
   "Integrations.CardIcon.NotAnImage": "Choose a PNG, JPG or GIF image.",
   "Integrations.CardIcon.TooLarge": "That image is too big. The limit is {0} MB.",
-  "Integrations.CardIcon.BadReply": "The image host didn't return a usable link. Try again later."
+  "Integrations.CardIcon.BadReply": "The image host didn't return a usable link. Try again later.",
+  "Update.DevBuild": "The DEV Launcher updates from the dev script, not from GitHub.",
+  "Nav.Welcome": "Welcome",
+  "Page.Welcome": "Nice to see you.",
+  "Welcome.Night": "Good night",
+  "Appearance.Winter": "Winter theme",
+  "Appearance.Winter.Text": "Snowy Christmas pictures on the Welcome page and holiday greetings. Automatic runs from 1 December to 6 January.",
+  "Appearance.Winter.Automatic": "Automatic",
+  "Appearance.Winter.Always": "Always on",
+  "Appearance.Winter.Off": "Off",
+  "Appearance.Winter.Snow": "Falling snow",
+  "Appearance.Winter.Snow.Text": "Light snow across the window while the winter theme is on. It stops while you're in another app or a game.",
+  "Welcome.Christmas": "Merry Christmas",
+  "Welcome.NewYear": "Happy New Year",
+  "Appearance.Winter.Christmas": "Christmas mode (dev only)",
+  "Appearance.Winter.Christmas.Text": "Turns on the winter theme and the Merry Christmas greeting, whatever the date."
 }

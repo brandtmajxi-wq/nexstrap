@@ -81,10 +81,10 @@
             <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding CloseAfterLaunch}" AutomationProperties.Name="Close after launch" />
         </ui:SettingCard>
         <ui:SettingCard Icon="&#xE71B;" Header="{DynamicResource L.RobloxSettings.OpenWebsitePlayButtonsWithNexstrap}" Description="{Binding LinkHandlerText}">
-            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding UseNexstrapForLinks}" AutomationProperties.Name="Use Nexstrap for website links" />
+            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding UseNexstrapForLinks}" IsEnabled="{Binding CanChangeWindowsIntegration}" AutomationProperties.Name="Use Nexstrap for website links" />
         </ui:SettingCard>
         <ui:SettingCard Icon="&#xE7E8;" Header="{DynamicResource L.RobloxSettings.StartWithWindows}" Description="{DynamicResource L.RobloxSettings.StartWithWindows.Text}">
-            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding StartWithWindows}" AutomationProperties.Name="{DynamicResource L.RobloxSettings.StartWithWindows}" />
+            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding StartWithWindows}" IsEnabled="{Binding CanChangeWindowsIntegration}" AutomationProperties.Name="{DynamicResource L.RobloxSettings.StartWithWindows}" />
         </ui:SettingCard>
         <ui:SettingCard Icon="&#xE8FC;" Header="{DynamicResource L.RobloxSettings.StartHidden}" Description="{DynamicResource L.RobloxSettings.StartHidden.Text}">
             <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding StartHidden}" AutomationProperties.Name="{DynamicResource L.RobloxSettings.StartHidden}" />

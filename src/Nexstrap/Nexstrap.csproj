@@ -13,13 +13,22 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
 
     <!-- Version information (single source of truth for the updater) -->
-    <Version>1.15.0</Version>
-    <AssemblyVersion>1.15.0.0</AssemblyVersion>
-    <FileVersion>1.15.0.0</FileVersion>
+    <Version>1.16.0</Version>
+    <AssemblyVersion>1.16.0.0</AssemblyVersion>
+    <FileVersion>1.16.0.0</FileVersion>
     <Product>Nexstrap</Product>
     <Description>The Roblox launcher, reimagined.</Description>
     <Company>Nexstrap</Company>
     <Copyright>Copyright © 2026 Nexstrap contributors</Copyright>
+  </PropertyGroup>
+
+  <!-- Personal dev copy, built by tools/update-dev.ps1. Its own output folders keep it out of Release builds. -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Dev'">
+    <DefineConstants>$(DefineConstants);DEV_BUILD</DefineConstants>
+    <Optimize>true</Optimize>
+    <Version>1.17.0</Version>
+    <AssemblyVersion>1.17.0.0</AssemblyVersion>
+    <FileVersion>1.17.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,6 +39,8 @@
 
   <ItemGroup>
     <Resource Include="Resources\Branding\Nexstrap.ico" />
+    <Resource Include="Resources\Welcome\*.jpg" Exclude="Resources\Welcome\winter-*.jpg" />
+    <Resource Include="Resources\Welcome\winter-*.jpg" Condition="'$(Configuration)' == 'Dev'" />
     <EmbeddedResource Include="Resources\Languages\*.json" LogicalName="Nexstrap.Languages.%(Filename).json" />
   </ItemGroup>
 

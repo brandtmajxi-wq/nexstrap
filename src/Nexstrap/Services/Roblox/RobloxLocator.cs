@@ -30,7 +30,7 @@ public sealed class RobloxLocator(ILogger<RobloxLocator> logger) : IRobloxLocato
         var local = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         var x86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
 
-        yield return (InstallationSource.Nexstrap, Path.Combine(AppInfo.Paths.Root, "Versions"));
+        yield return (InstallationSource.Nexstrap, AppInfo.Paths.Versions);
         yield return (InstallationSource.Official, Path.Combine(local, "Roblox", "Versions"));
         if (!string.IsNullOrEmpty(x86))
             yield return (InstallationSource.Official, Path.Combine(x86, "Roblox", "Versions"));

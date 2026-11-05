@@ -170,6 +170,22 @@
             </Grid>
         </Border>
 
+        <!-- ===== Winter theme (dev only for now) ===== -->
+        <StackPanel Visibility="{Binding WinterAvailable, Converter={StaticResource BoolToVisibility}}">
+        <TextBlock Text="{DynamicResource L.Appearance.Winter}" Style="{StaticResource SectionHeader}" />
+        <ui:SettingCard Icon="&#xE9CA;" Header="{DynamicResource L.Appearance.Winter.Christmas}" Description="{DynamicResource L.Appearance.Winter.Christmas.Text}">
+            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding ChristmasMode}" AutomationProperties.Name="Christmas mode" />
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE9CA;" Header="{DynamicResource L.Appearance.Winter}" Description="{DynamicResource L.Appearance.Winter.Text}">
+            <ComboBox Width="190" ItemsSource="{Binding WinterChoices}" DisplayMemberPath="Label" SelectedValuePath="Value"
+                      SelectedValue="{Binding WinterTheme}" AutomationProperties.Name="{DynamicResource L.Appearance.Winter}" />
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE9CA;" Header="{DynamicResource L.Appearance.Winter.Snow}" Description="{DynamicResource L.Appearance.Winter.Snow.Text}">
+            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding WinterSnow}" AutomationProperties.Name="{DynamicResource L.Appearance.Winter.Snow}" />
+        </ui:SettingCard>
+
+        </StackPanel>
+
         <!-- ===== App size ===== -->
         <TextBlock Text="{DynamicResource L.Appearance.AppSize}" Style="{StaticResource SectionHeader}" />
         <ui:SettingCard Icon="&#xE8A3;" Header="{DynamicResource L.Appearance.AppSize}" Description="{DynamicResource L.Appearance.AppSize.Text}">

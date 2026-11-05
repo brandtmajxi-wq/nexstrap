@@ -791,5 +791,20 @@
   "Integrations.CardIcon.NoConnection": "Der Bilderdienst war nicht erreichbar. Prüfe deine Verbindung und versuch es noch mal.",
   "Integrations.CardIcon.NotAnImage": "Wähle ein PNG-, JPG- oder GIF-Bild.",
   "Integrations.CardIcon.TooLarge": "Das Bild ist zu groß. Das Limit liegt bei {0} MB.",
-  "Integrations.CardIcon.BadReply": "Der Bilderdienst hat keinen brauchbaren Link geliefert. Versuch es später noch mal."
+  "Integrations.CardIcon.BadReply": "Der Bilderdienst hat keinen brauchbaren Link geliefert. Versuch es später noch mal.",
+  "Update.DevBuild": "Der DEV Launcher wird über das Dev-Skript aktualisiert, nicht über GitHub.",
+  "Nav.Welcome": "Willkommen",
+  "Page.Welcome": "Schön, dich zu sehen.",
+  "Welcome.Night": "Gute Nacht",
+  "Appearance.Winter": "Winter-Design",
+  "Appearance.Winter.Text": "Verschneite Weihnachtsbilder auf der Willkommensseite und Feiertagsgrüße. Automatisch läuft vom 1. Dezember bis 6. Januar.",
+  "Appearance.Winter.Automatic": "Automatisch",
+  "Appearance.Winter.Always": "Immer an",
+  "Appearance.Winter.Off": "Aus",
+  "Appearance.Winter.Snow": "Fallender Schnee",
+  "Appearance.Winter.Snow.Text": "Leichter Schnee im Fenster, solange das Winter-Design an ist. Er pausiert, während du in einer anderen App oder einem Spiel bist.",
+  "Welcome.Christmas": "Frohe Weihnachten",
+  "Welcome.NewYear": "Frohes neues Jahr",
+  "Appearance.Winter.Christmas": "Weihnachtsmodus (nur Dev)",
+  "Appearance.Winter.Christmas.Text": "Schaltet das Winter-Design und den Weihnachtsgruß ein, egal welches Datum ist."
 }

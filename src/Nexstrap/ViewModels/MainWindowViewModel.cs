@@ -31,6 +31,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
         _notifications = notifications;
         _pages =
         [
+            new("Welcome", char.ConvertFromUtf32(0xE823), typeof(WelcomeViewModel)),
             new("Home", "", typeof(HomeViewModel)),
             new("Games", "", typeof(GamesViewModel)),
             new("Servers", "", typeof(ServersViewModel)),
@@ -70,8 +71,8 @@ public sealed partial class MainWindowViewModel : ObservableObject
         ArrangeSidebar();
         settings.Saved += (_, _) =>
         {
-            if (Application.Current is { } app) app.Dispatcher.BeginInvoke(ArrangeSidebar);
-            else ArrangeSidebar();
+            if (Application.Current is { } app) app.Dispatcher.BeginInvoke(AfterSettingsSaved);
+            else AfterSettingsSaved();
         };
 
         updates.Checked += (_, result) => Application.Current?.Dispatcher.BeginInvoke(() =>
@@ -82,6 +83,14 @@ public sealed partial class MainWindowViewModel : ObservableObject
 
     /// <summary>The pages the sidebar shows, in the chosen order.</summary>
     public ObservableCollection<NavItem> NavItems { get; } = [];
+
+    private void AfterSettingsSaved()
+    {
+        ArrangeSidebar();
+        OnPropertyChanged(nameof(ShowSnow));
+    }
+
+    public bool ShowSnow => _settings.Current.Winter.Snow && WinterSeason.Resolve(_settings.Current.Winter, DateTime.Now, WinterSeason.Available).Winter;
 
     private void ArrangeSidebar()
     {
@@ -97,7 +106,12 @@ public sealed partial class MainWindowViewModel : ObservableObject
 
     public string AppName => AppInfo.Name;
 
-    public string VersionLabel => $"v{AppInfo.VersionString}";
+    /// <summary>The dev copy shows when it was built, so it's clear whether it has the latest changes.</summary>
+    public string VersionLabel => AppInfo.IsDev && Environment.ProcessPath is { } exe
+        ? $"v{AppInfo.VersionString} · {System.IO.File.GetLastWriteTime(exe):d MMM HH:mm}"
+        : $"v{AppInfo.VersionString}";
+
+    public string? DevLabel => AppInfo.IsDev ? AppInfo.DevLabel : null;
 
     // ===== Update banner (shown on every page) =====
 

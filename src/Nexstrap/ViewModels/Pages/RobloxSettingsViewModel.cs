@@ -188,11 +188,15 @@ public sealed partial class RobloxSettingsViewModel : PageViewModel
         }
     }
 
+    /// <summary>Links and startup belong to the installed copy; the dev copy must not take them over.</summary>
+    public bool CanChangeWindowsIntegration => !AppInfo.IsDev;
+
     public bool UseNexstrapForLinks
     {
         get => _protocol.IsRegistered;
         set
         {
+            if (AppInfo.IsDev) return;
             try
             {
                 if (value) _protocol.Register();
@@ -213,6 +217,7 @@ public sealed partial class RobloxSettingsViewModel : PageViewModel
         get => _startup.IsEnabled;
         set
         {
+            if (AppInfo.IsDev) return;
             try
             {
                 if (value) _startup.Enable(StartHidden);

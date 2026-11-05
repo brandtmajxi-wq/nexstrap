@@ -791,5 +791,20 @@
   "Integrations.CardIcon.NoConnection": "Не удалось связаться с хостингом. Проверь подключение и попробуй ещё раз.",
   "Integrations.CardIcon.NotAnImage": "Выбери изображение PNG, JPG или GIF.",
   "Integrations.CardIcon.TooLarge": "Изображение слишком большое. Лимит: {0} МБ.",
-  "Integrations.CardIcon.BadReply": "Хостинг не вернул рабочую ссылку. Попробуй позже."
+  "Integrations.CardIcon.BadReply": "Хостинг не вернул рабочую ссылку. Попробуй позже.",
+  "Update.DevBuild": "DEV Launcher обновляется через dev-скрипт, а не с GitHub.",
+  "Nav.Welcome": "Приветствие",
+  "Page.Welcome": "Рады тебя видеть.",
+  "Welcome.Night": "Доброй ночи",
+  "Appearance.Winter": "Зимняя тема",
+  "Appearance.Winter.Text": "Снежные рождественские картинки на странице приветствия и праздничные поздравления. Автоматически: с 1 декабря по 6 января.",
+  "Appearance.Winter.Automatic": "Автоматически",
+  "Appearance.Winter.Always": "Всегда",
+  "Appearance.Winter.Off": "Выкл.",
+  "Appearance.Winter.Snow": "Падающий снег",
+  "Appearance.Winter.Snow.Text": "Лёгкий снег в окне, пока включена зимняя тема. Останавливается, когда ты в другом приложении или в игре.",
+  "Welcome.Christmas": "С Рождеством",
+  "Welcome.NewYear": "С Новым годом",
+  "Appearance.Winter.Christmas": "Режим Рождества (только dev)",
+  "Appearance.Winter.Christmas.Text": "Включает зимнюю тему и рождественское поздравление независимо от даты."
 }

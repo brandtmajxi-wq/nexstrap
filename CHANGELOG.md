@@ -2,6 +2,11 @@
 
 All notable changes to Nexstrap are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.16.0] - 2026-11-05
+
+### Added
+- **Welcome page**: the new first page greets you with good morning, afternoon, evening or night, shows a live clock and the date, and fills the window with a landscape for that time of day, covering your custom background on this page only. It only uses your PC's clock, never your location. You can hide it or move it under Appearance.
+
 ## [1.15.0] - 2026-11-05
 
 ### Added
@@ -157,6 +162,7 @@ First public release.
 - Quick update check on every launch with an in-app banner; release notes, progress and cancel.
 - Updates are installed only after verifying source, size, SHA-256, product name and version; failed swaps roll back.
 
+[1.16.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.16.0
 [1.15.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.15.0
 [1.14.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.14.0
 [1.13.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.13.0

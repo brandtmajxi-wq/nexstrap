@@ -31,7 +31,7 @@ public partial class App : Application
     private ILogger<App>? _logger;
     private EventWaitHandle? _showRequests;
 
-    private const string ShowRequestName = @"Local\Nexstrap.ShowWindow";
+    private static string ShowRequestName => AppInfo.IsDev ? @"Local\Nexstrap.Dev.ShowWindow" : @"Local\Nexstrap.ShowWindow";
 
     public static IServiceProvider Services => ((App)Current)._services
         ?? throw new InvalidOperationException("Services are not initialised yet.");
@@ -86,7 +86,7 @@ public partial class App : Application
             return;
         }
 
-        var offerSetup = install.ShouldOfferSetup(Options);
+        var offerSetup = !AppInfo.IsDev && install.ShouldOfferSetup(Options);
         if (offerSetup && !RunSetup())
             return;
 
@@ -302,6 +302,7 @@ public partial class App : Application
         services.AddSingleton<SetupViewModel>();
 
         // Pages (singletons so state survives tab switches)
+        services.AddSingleton<WelcomeViewModel>();
         services.AddSingleton<HomeViewModel>();
         services.AddSingleton<AppearanceViewModel>();
         services.AddSingleton<NotificationsViewModel>();

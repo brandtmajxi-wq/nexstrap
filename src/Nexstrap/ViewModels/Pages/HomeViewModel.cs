@@ -562,11 +562,11 @@ public sealed partial class HomeViewModel : PageViewModel
         _ => $"{bytes} B"
     };
 
-    private static string Greeting() => DateTime.Now.Hour switch
+    private static string Greeting() => TimeOfDay.Part(DateTime.Now.Hour) switch
     {
-        < 5 => Loc.Get("Home.Night"),
-        < 12 => Loc.Get("Home.Morning"),
-        < 18 => Loc.Get("Home.Afternoon"),
+        DayPart.Night => Loc.Get("Home.Night"),
+        DayPart.Morning => Loc.Get("Home.Morning"),
+        DayPart.Afternoon => Loc.Get("Home.Afternoon"),
         _ => Loc.Get("Home.Evening")
     };
 }

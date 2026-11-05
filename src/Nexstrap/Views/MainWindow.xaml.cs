@@ -20,7 +20,8 @@ public partial class MainWindow : Window
         _settings = settings;
         _logger = logger;
         InitializeComponent();
-        Language = System.Windows.Markup.XmlLanguage.GetLanguage(System.Globalization.CultureInfo.CurrentCulture.IetfLanguageTag);
+        Title = AppInfo.DisplayName;
+        Language =System.Windows.Markup.XmlLanguage.GetLanguage(System.Globalization.CultureInfo.CurrentCulture.IetfLanguageTag);
         DataContext = viewModel;
 
         RestoreWindowPlacement();

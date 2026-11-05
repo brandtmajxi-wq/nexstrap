@@ -14,7 +14,7 @@ public sealed partial class AboutViewModel(IShellService shell, FileLoggerProvid
 
     public override string Subtitle => Loc.Get("Page.About");
 
-    public string AppName => AppInfo.Name;
+    public string AppName => AppInfo.DisplayName;
 
     public string Tagline => AppInfo.Tagline;
 

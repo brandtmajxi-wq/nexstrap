@@ -114,12 +114,12 @@ public class NavigationTests
     }
 
     [Fact]
-    public void Unknown_start_page_falls_back_to_home()
+    public void Unknown_start_page_falls_back_to_the_top_page()
     {
         var nav = new FakeNavigation();
         var vm = Create(nav);
         vm.NavigateToStartPage("does-not-exist");
-        Assert.Equal([typeof(HomeViewModel)], nav.History);
+        Assert.Equal([typeof(WelcomeViewModel)], nav.History);
     }
 
     [Fact]

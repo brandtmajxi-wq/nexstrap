@@ -791,5 +791,20 @@
   "Integrations.CardIcon.NoConnection": "Impossible de joindre l'hébergeur. Vérifie ta connexion et réessaie.",
   "Integrations.CardIcon.NotAnImage": "Choisis une image PNG, JPG ou GIF.",
   "Integrations.CardIcon.TooLarge": "Cette image est trop lourde. La limite est de {0} Mo.",
-  "Integrations.CardIcon.BadReply": "L'hébergeur n'a pas renvoyé de lien utilisable. Réessaie plus tard."
+  "Integrations.CardIcon.BadReply": "L'hébergeur n'a pas renvoyé de lien utilisable. Réessaie plus tard.",
+  "Update.DevBuild": "Le DEV Launcher se met à jour avec le script de dev, pas depuis GitHub.",
+  "Nav.Welcome": "Bienvenue",
+  "Page.Welcome": "Content de te voir.",
+  "Welcome.Night": "Bonne nuit",
+  "Appearance.Winter": "Thème d'hiver",
+  "Appearance.Winter.Text": "Images de Noël enneigées sur la page d'accueil et vœux de fêtes. Automatique va du 1er décembre au 6 janvier.",
+  "Appearance.Winter.Automatic": "Automatique",
+  "Appearance.Winter.Always": "Toujours actif",
+  "Appearance.Winter.Off": "Désactivé",
+  "Appearance.Winter.Snow": "Neige qui tombe",
+  "Appearance.Winter.Snow.Text": "Une neige légère dans la fenêtre tant que le thème d'hiver est actif. Elle s'arrête quand tu es dans une autre appli ou un jeu.",
+  "Welcome.Christmas": "Joyeux Noël",
+  "Welcome.NewYear": "Bonne année",
+  "Appearance.Winter.Christmas": "Mode Noël (dev uniquement)",
+  "Appearance.Winter.Christmas.Text": "Active le thème d'hiver et le message de Noël, quelle que soit la date."
 }

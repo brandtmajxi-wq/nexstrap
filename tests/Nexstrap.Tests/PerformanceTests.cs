@@ -70,6 +70,13 @@ public class PerformancePlannerTests : IDisposable
         Assert.Single(flags.Flags);
     }
 
+    [Fact]
+    public void Normal_builds_are_not_the_dev_launcher()
+    {
+        Assert.False(Nexstrap.Core.AppInfo.IsDev);
+        Assert.Equal(Nexstrap.Core.AppInfo.Name, Nexstrap.Core.AppInfo.DisplayName);
+    }
+
     [Theory]
     [InlineData(0, true)]
     [InlineData(-1, true)]

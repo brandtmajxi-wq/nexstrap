@@ -34,7 +34,7 @@ public sealed class TrayService(ISettingsService settings, ILaunchCoordinator la
         _icon = new Forms.NotifyIcon
         {
             Icon = new System.Drawing.Icon(stream),
-            Text = AppInfo.Name,
+            Text = AppInfo.DisplayName,
             ContextMenuStrip = menu,
             Visible = true
         };

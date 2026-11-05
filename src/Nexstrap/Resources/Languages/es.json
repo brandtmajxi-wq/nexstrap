@@ -791,5 +791,20 @@
   "Integrations.CardIcon.NoConnection": "No se pudo conectar con el servicio de imágenes. Revisa tu conexión e inténtalo de nuevo.",
   "Integrations.CardIcon.NotAnImage": "Elige una imagen PNG, JPG o GIF.",
   "Integrations.CardIcon.TooLarge": "La imagen es demasiado grande. El límite es de {0} MB.",
-  "Integrations.CardIcon.BadReply": "El servicio de imágenes no devolvió un enlace válido. Inténtalo más tarde."
+  "Integrations.CardIcon.BadReply": "El servicio de imágenes no devolvió un enlace válido. Inténtalo más tarde.",
+  "Update.DevBuild": "El DEV Launcher se actualiza con el script de desarrollo, no desde GitHub.",
+  "Nav.Welcome": "Bienvenida",
+  "Page.Welcome": "Qué bueno verte.",
+  "Welcome.Night": "Buenas noches",
+  "Appearance.Winter": "Tema de invierno",
+  "Appearance.Winter.Text": "Imágenes navideñas con nieve en la página de bienvenida y saludos festivos. Automático va del 1 de diciembre al 6 de enero.",
+  "Appearance.Winter.Automatic": "Automático",
+  "Appearance.Winter.Always": "Siempre activo",
+  "Appearance.Winter.Off": "Desactivado",
+  "Appearance.Winter.Snow": "Nieve cayendo",
+  "Appearance.Winter.Snow.Text": "Nieve ligera en la ventana mientras el tema de invierno está activo. Se detiene cuando estás en otra app o en un juego.",
+  "Welcome.Christmas": "Feliz Navidad",
+  "Welcome.NewYear": "Feliz Año Nuevo",
+  "Appearance.Winter.Christmas": "Modo Navidad (solo dev)",
+  "Appearance.Winter.Christmas.Text": "Activa el tema de invierno y el saludo de Navidad, sea cual sea la fecha."
 }

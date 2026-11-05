@@ -42,3 +42,11 @@ An update is installed only if:
 - the exe's ProductName is `Nexstrap` and its file version equals the tag.
 
 Then it renames the running exe to `Nexstrap.exe.old`, copies the new one in place (rolling back on failure), restarts with `--updated`, and the new instance deletes the old file.
+
+## DEV Launcher
+
+`tools/update-dev.ps1` builds the current source in the `Dev` configuration and puts it in `%LocalAppData%\Programs\Nexstrap Dev`, with a desktop shortcut. Run it after every change, so the dev copy always has work before it's released. It's never published.
+
+The dev copy keeps its data in `%LocalAppData%\Nexstrap Dev` (copied from your setup the first time) and shares Roblox builds with the installed copy. It can run beside the installed copy, doesn't update from GitHub, and can't change Roblox link handling or Windows startup.
+
+The winter theme and Christmas mode are dev only for now: `WinterSeason.Available` is false in public builds, and the `winter-*.jpg` pictures are only built into the `Dev` configuration. The dev copy reports the next version, set in the `Dev` block of `Nexstrap.csproj`. To release winter, remove both limits and add it to `CHANGELOG.md` and `docs/FEATURES.md`.

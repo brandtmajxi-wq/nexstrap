@@ -217,6 +217,50 @@ public sealed partial class AppearanceViewModel : PageViewModel
         _syncing = false;
     }
 
+    // ===== Winter theme =====
+
+    public IReadOnlyList<Choice<WinterMode>> WinterChoices { get; } =
+    [
+        new(WinterMode.Automatic, () => Loc.Get("Appearance.Winter.Automatic")),
+        new(WinterMode.Always, () => Loc.Get("Appearance.Winter.Always")),
+        new(WinterMode.Off, () => Loc.Get("Appearance.Winter.Off"))
+    ];
+
+    public bool WinterAvailable => WinterSeason.Available;
+
+    public bool ChristmasMode
+    {
+        get => _settings.Current.Winter.ChristmasMode;
+        set
+        {
+            _settings.Current.Winter.ChristmasMode = value;
+            _settings.Save();
+            OnPropertyChanged();
+        }
+    }
+
+    public WinterMode WinterTheme
+    {
+        get => _settings.Current.Winter.Mode;
+        set
+        {
+            _settings.Current.Winter.Mode = value;
+            _settings.Save();
+            OnPropertyChanged();
+        }
+    }
+
+    public bool WinterSnow
+    {
+        get => _settings.Current.Winter.Snow;
+        set
+        {
+            _settings.Current.Winter.Snow = value;
+            _settings.Save();
+            OnPropertyChanged();
+        }
+    }
+
     // ===== App size =====
 
     public IReadOnlyList<Choice<double>> ScaleChoices { get; } =

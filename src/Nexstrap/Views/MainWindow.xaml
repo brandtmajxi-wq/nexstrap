@@ -39,6 +39,17 @@
         <!-- Optional custom background image (Appearance → Background) behind everything -->
         <Border Grid.ColumnSpan="2" Background="{DynamicResource Brush.BackgroundImage}" IsHitTestVisible="False" />
 
+        <!-- A page's own picture (Welcome) covers the custom background while that page is open -->
+        <Image Grid.ColumnSpan="2" Source="{Binding Navigation.CurrentPage.Backdrop}" Stretch="UniformToFill" IsHitTestVisible="False" />
+        <Border Grid.Column="1" IsHitTestVisible="False" Visibility="{Binding Navigation.CurrentPage.Backdrop, Converter={StaticResource NullToVisibility}}">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                    <GradientStop Offset="0" Color="#66000000" />
+                    <GradientStop Offset="0.62" Color="#00000000" />
+                </LinearGradientBrush>
+            </Border.Background>
+        </Border>
+
         <!-- ===== Sidebar ===== -->
         <Border Background="{DynamicResource Brush.Sidebar}" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,1,0">
             <DockPanel Margin="14,0,14,14">
@@ -47,6 +58,8 @@
                     <ContentPresenter Width="34" Height="34" ContentTemplate="{StaticResource Template.LogoMark}" Content="{Binding}" />
                     <StackPanel Margin="11,0,0,0" VerticalAlignment="Center">
                         <TextBlock Text="{Binding AppName}" Style="{StaticResource Text.Base}" FontSize="16.5" FontWeight="Bold" />
+                        <TextBlock Text="{Binding DevLabel}" Style="{StaticResource Text.Caption}" FontSize="11" FontWeight="Bold" Margin="0,1,0,0"
+                                   Foreground="{DynamicResource Brush.Warning}" Visibility="{Binding DevLabel, Converter={StaticResource NullToVisibility}}" />
                         <TextBlock Text="{Binding VersionLabel}" Style="{StaticResource Text.Caption}" FontSize="11" Margin="0,1,0,0" />
                     </StackPanel>
                 </StackPanel>
@@ -106,13 +119,16 @@
                             <TextBlock Text="{Binding UpdateBanner}" Style="{StaticResource Text.Base}" FontWeight="SemiBold" VerticalAlignment="Center" />
                         </DockPanel>
                     </Border>
-                    <TextBlock Text="{Binding Navigation.CurrentPage.Title}" Style="{StaticResource Text.Title}" />
-                    <TextBlock Text="{Binding Navigation.CurrentPage.Subtitle}" Style="{StaticResource Text.Secondary}" Margin="0,4,0,0" />
+                    <TextBlock Text="{Binding Navigation.CurrentPage.Title}" Style="{StaticResource Text.Title}" Visibility="{Binding Navigation.CurrentPage.HasHeader, Converter={StaticResource BoolToVisibility}}" />
+                    <TextBlock Text="{Binding Navigation.CurrentPage.Subtitle}" Style="{StaticResource Text.Secondary}" Margin="0,4,0,0" Visibility="{Binding Navigation.CurrentPage.HasHeader, Converter={StaticResource BoolToVisibility}}" />
                 </StackPanel>
                 <ScrollViewer x:Name="PageScroller" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
                     <ContentControl Content="{Binding Navigation.CurrentPage}" Margin="36,0,36,32" Focusable="False" />
                 </ScrollViewer>
             </Grid>
         </Grid>
+
+        <!-- Winter theme -->
+        <ui:SnowOverlay Grid.ColumnSpan="2" Visibility="{Binding ShowSnow, Converter={StaticResource BoolToVisibility}}" />
     </Grid>
 </Window>
