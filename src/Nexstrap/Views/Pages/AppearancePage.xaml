@@ -119,6 +119,51 @@
             </StackPanel>
         </Border>
 
+        <!-- ===== Design ===== -->
+        <TextBlock Text="{DynamicResource L.Appearance.Design}" Style="{StaticResource SectionHeader}" />
+        <ui:SettingCard Icon="&#xE7F4;" Header="{DynamicResource L.Appearance.Corners}" Description="{DynamicResource L.Appearance.Corners.Text}">
+            <ComboBox Width="190" ItemsSource="{Binding CornerChoices}" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding Corners}" AutomationProperties.Name="{DynamicResource L.Appearance.Corners}" />
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE7F4;" Header="{DynamicResource L.Appearance.Cards}" Description="{DynamicResource L.Appearance.Cards.Text}">
+            <ComboBox Width="190" ItemsSource="{Binding CardChoices}" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding Cards}" AutomationProperties.Name="{DynamicResource L.Appearance.Cards}" />
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE790;" Header="{DynamicResource L.Appearance.SidebarTone}" Description="{DynamicResource L.Appearance.SidebarTone.Text}">
+            <ComboBox Width="190" ItemsSource="{Binding SidebarToneChoices}" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding SidebarColour}" AutomationProperties.Name="{DynamicResource L.Appearance.SidebarTone}" />
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE700;" Header="{DynamicResource L.Appearance.IconSidebar}" Description="{DynamicResource L.Appearance.IconSidebar.Text}">
+            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding IconSidebar}" AutomationProperties.Name="Icons-only sidebar" />
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE790;" Header="{DynamicResource L.Appearance.GradientButtons}" Description="{DynamicResource L.Appearance.GradientButtons.Text}">
+            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding GradientButtons}" AutomationProperties.Name="Gradient buttons" />
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE790;" Header="{DynamicResource L.Appearance.GradientColour}" Description="{DynamicResource L.Appearance.GradientColour.Text}"
+                        Visibility="{Binding GradientButtons, Converter={StaticResource BoolToVisibility}}">
+            <TextBox Width="150" FontFamily="{StaticResource Font.Mono}" MaxLength="9" AutomationProperties.Name="Gradient second colour"
+                     Text="{Binding GradientColour, UpdateSourceTrigger=LostFocus}" />
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE768;" Header="{DynamicResource L.Appearance.Transition}" Description="{DynamicResource L.Appearance.Transition.Text}">
+            <ComboBox Width="190" ItemsSource="{Binding TransitionChoices}" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding Transition}" AutomationProperties.Name="{DynamicResource L.Appearance.Transition}" />
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xEB9F;" Header="{DynamicResource L.Appearance.Blur}" Description="{DynamicResource L.Appearance.Blur.Text}"
+                        Visibility="{Binding HasBackground, Converter={StaticResource BoolToVisibility}}">
+            <Slider Width="190" Minimum="0" Maximum="{Binding MaxBlur}" VerticalAlignment="Center" Value="{Binding BackgroundBlur, Delay=200}" AutomationProperties.Name="{DynamicResource L.Appearance.Blur}" />
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE8D2;" Header="{DynamicResource L.Appearance.BrandName}" Description="{DynamicResource L.Appearance.BrandName.Text}">
+            <TextBox Width="190" MaxLength="{Binding BrandLimit}" AutomationProperties.Name="{DynamicResource L.Appearance.BrandName}" Text="{Binding BrandName, UpdateSourceTrigger=LostFocus}" />
+        </ui:SettingCard>
+        <TextBlock Text="{Binding DesignError}" Style="{StaticResource Text.Caption}" Foreground="{DynamicResource Brush.Danger}" Margin="2,0,0,6"
+                   Visibility="{Binding DesignError, Converter={StaticResource NullToVisibility}}" />
+        <ui:SettingCard Icon="&#xE8B9;" Header="{DynamicResource L.Appearance.BrandLogo}" Description="{DynamicResource L.Appearance.BrandLogo.Text}">
+            <StackPanel Orientation="Horizontal">
+                <Button Content="{DynamicResource L.Appearance.ChooseImage}" ui:Ui.Icon="&#xE8E5;" Padding="10,6" Command="{Binding ChooseBrandLogoCommand}" />
+                <Button Style="{StaticResource Button.Ghost}" Content="{DynamicResource L.Appearance.Remove}" Padding="10,6" Margin="6,0,0,0" Command="{Binding RemoveBrandLogoCommand}"
+                        Visibility="{Binding HasBrandLogo, Converter={StaticResource BoolToVisibility}}" />
+            </StackPanel>
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE8D2;" Header="{DynamicResource L.Appearance.ShowTagline}" Description="{DynamicResource L.Appearance.ShowTagline.Text}">
+            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding ShowTagline}" AutomationProperties.Name="Show tagline" />
+        </ui:SettingCard>
+
         <!-- ===== Font ===== -->
         <DockPanel Margin="2,18,0,10">
             <Button DockPanel.Dock="Right" Style="{StaticResource Button.Ghost}" Padding="10,4" ui:Ui.Icon="&#xE777;"
@@ -152,7 +197,7 @@
                 </DockPanel>
 
                 <!-- Picking a font applies it app-wide, so the preview simply uses the live UI font -->
-                <Border Grid.Column="2" Background="{DynamicResource Brush.Input}" CornerRadius="{StaticResource Radius.Control}"
+                <Border Grid.Column="2" Background="{DynamicResource Brush.Input}" CornerRadius="{DynamicResource Radius.Control}"
                         BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1" Padding="20,18">
                     <StackPanel>
                         <TextBlock Text="{DynamicResource L.Appearance.PREVIEW}" Style="{StaticResource Text.Overline}" />

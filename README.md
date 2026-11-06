@@ -79,9 +79,12 @@ If you ran it without installing:
 Nexstrap has no accounts, ads or telemetry. It only talks to:
 - **github.com**, to check for and download Nexstrap updates;
 - **Roblox's public servers**, to download the Roblox client and look up public game and avatar info;
-- **the Discord app on your PC**, for Rich Presence (if enabled).
+- **the Discord app on your PC**, for Rich Presence (if enabled);
+- **catbox.moe**, only for an image you choose to upload for your Discord card. It becomes public and can't be deleted later.
 
-Roblox sign-in links from the website are passed straight to Roblox and never written to Nexstrap's logs.
+Roblox sign-in links from the website are passed straight to Roblox and never written to Nexstrap's logs. Nexstrap never reads your Roblox password or login cookie.
+
+The full privacy policy and terms of use are in the app under **About → Privacy and terms**. In short: Nexstrap is free and provided as it is, without warranty, and you're still bound by Roblox's own rules. Mods, custom fonts and FastFlags aren't supported by Roblox, so you use them at your own risk.
 
 ## Troubleshooting
 
@@ -107,4 +110,4 @@ Nexstrap is released under the [MIT License](LICENSE). It uses .NET/WPF, Communi
 
 ## Disclaimer
 
-Nexstrap is an independent project and is not affiliated with, endorsed by or sponsored by Roblox Corporation or Discord Inc. Roblox is a trademark of Roblox Corporation. Nexstrap starts the official Roblox client and does not modify it or bypass any of its security or anti-cheat systems.
+Nexstrap is an independent project and is not affiliated with, endorsed by or sponsored by Roblox Corporation or Discord Inc. Roblox is a trademark of Roblox Corporation. Nexstrap starts the official Roblox client and does not bypass any of its security or anti-cheat systems. Its optional font, sound and cursor features only change files in builds Nexstrap installed.

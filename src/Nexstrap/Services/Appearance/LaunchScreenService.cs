@@ -21,6 +21,9 @@ public interface ILaunchScreen
 
     /// <summary>Copies an image for the screen. Returns an error message, or null on success.</summary>
     string? SetImage(string sourcePath);
+
+    /// <summary>Copies a logo for the screen. Returns an error message, or null on success.</summary>
+    string? SetLogo(string sourcePath);
 }
 
 public sealed class LaunchScreenService(ISettingsService settings, IThemeService theme, ILogger<LaunchScreenService> logger) : ILaunchScreen
@@ -34,6 +37,7 @@ public sealed class LaunchScreenService(ISettingsService settings, IThemeService
         new("Midnight", "#0B1220", "#38BDF8", LaunchAnimation.Bar),
         new("Ember", "#1A0F0A", "#F97316", LaunchAnimation.Pulse),
         new("Daylight", "#F4F5F8", "#6366F1", LaunchAnimation.Bar),
+        new("Neon", "#0A0A14", "#22D3EE", LaunchAnimation.Dots),
         new("Minimal", "#000000", "#FFFFFF", LaunchAnimation.None)
     ];
 
@@ -42,8 +46,8 @@ public sealed class LaunchScreenService(ISettingsService settings, IThemeService
     private LaunchScreenSettings Options => settings.Current.LaunchScreen;
 
     /// <summary>Closes once Roblox shows a window or exits; never stays up past the timeout.</summary>
-    internal static bool ShouldClose(bool hasWindow, bool exited, TimeSpan elapsed, TimeSpan timeout) =>
-        hasWindow || exited || elapsed >= timeout;
+    internal static bool ShouldClose(bool hasWindow, bool exited, TimeSpan elapsed, TimeSpan timeout, TimeSpan minimum = default) =>
+        exited || elapsed >= timeout || (hasWindow && elapsed >= minimum);
 
     public void ShowUntilReady(int processId)
     {
@@ -58,7 +62,11 @@ public sealed class LaunchScreenService(ISettingsService settings, IThemeService
         _ = CloseAfterAsync(PreviewLength);
     }
 
-    public string? SetImage(string sourcePath)
+    public string? SetImage(string sourcePath) => CopyImage(sourcePath, "launch-", path => Options.BackgroundImage = path);
+
+    public string? SetLogo(string sourcePath) => CopyImage(sourcePath, "logo-", path => Options.LogoImage = path);
+
+    private string? CopyImage(string sourcePath, string prefix, Action<string> keep)
     {
         var ext = Path.GetExtension(sourcePath).ToLowerInvariant();
         if (!AppearanceService.SupportedImageExtensions.Contains(ext))
@@ -72,9 +80,9 @@ public sealed class LaunchScreenService(ISettingsService settings, IThemeService
             string hash;
             using (var stream = File.OpenRead(sourcePath))
                 hash = Convert.ToHexString(SHA256.HashData(stream))[..16].ToLowerInvariant();
-            var target = Path.Combine(AppInfo.Paths.Backgrounds, "launch-" + hash + ext);
+            var target = Path.Combine(AppInfo.Paths.Backgrounds, prefix + hash + ext);
             if (!File.Exists(target)) File.Copy(sourcePath, target);
-            Options.BackgroundImage = target;
+            keep(target);
             settings.Save();
             return null;
         }
@@ -86,15 +94,16 @@ public sealed class LaunchScreenService(ISettingsService settings, IThemeService
 
     private void Open()
     {
-        Close();
+        _window?.Close();
         var picture = Options.BackgroundImage is { } path ? theme.LoadImage(path) : null;
-        _window = new LaunchScreenWindow(Options, picture);
+        var logo = Options.LogoImage is { } logoPath ? theme.LoadImage(logoPath) : null;
+        _window = new LaunchScreenWindow(Options, picture, logo);
         _window.Show();
     }
 
     private void Close()
     {
-        _window?.Close();
+        _window?.CloseSoftly(Options.Fade);
         _window = null;
     }
 
@@ -108,7 +117,7 @@ public sealed class LaunchScreenService(ISettingsService settings, IThemeService
             {
                 await Task.Delay(300);
                 process.Refresh();
-                if (ShouldClose(!process.HasExited && process.MainWindowHandle != IntPtr.Zero, process.HasExited, clock.Elapsed, Timeout)) break;
+                if (ShouldClose(!process.HasExited && process.MainWindowHandle != IntPtr.Zero, process.HasExited, clock.Elapsed, Timeout, TimeSpan.FromSeconds(Options.MinimumSeconds))) break;
             }
         }
         catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)

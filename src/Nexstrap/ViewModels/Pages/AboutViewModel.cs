@@ -2,13 +2,14 @@ using System.Runtime.InteropServices;
 using CommunityToolkit.Mvvm.Input;
 using Nexstrap.Core;
 using Nexstrap.Services.Logging;
+using Nexstrap.Services.Navigation;
 using Nexstrap.Services.Shell;
 
 namespace Nexstrap.ViewModels.Pages;
 
 public sealed record ThirdPartyComponent(string Name, string License, string Url);
 
-public sealed partial class AboutViewModel(IShellService shell, FileLoggerProvider logs) : PageViewModel
+public sealed partial class AboutViewModel(IShellService shell, FileLoggerProvider logs, INavigationService navigation) : PageViewModel
 {
     public override string Title => Loc.Get("Nav.About");
 
@@ -43,4 +44,7 @@ public sealed partial class AboutViewModel(IShellService shell, FileLoggerProvid
 
     [RelayCommand]
     private void OpenLink(string url) => shell.OpenUrl(url);
+
+    [RelayCommand]
+    private void OpenLegal() => navigation.NavigateTo<LegalViewModel>();
 }

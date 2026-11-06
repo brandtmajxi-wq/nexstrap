@@ -23,6 +23,7 @@
         <!-- Sidebar entry; RadioButton gives single-selection + keyboard navigation for free -->
         <DataTemplate x:Key="Template.NavItem">
             <RadioButton Style="{StaticResource NavItem}" GroupName="Nav" Content="{Binding Label}" ui:Ui.Icon="{Binding Glyph}"
+                         ToolTip="{Binding Label}" ToolTipService.IsEnabled="{DynamicResource Sidebar.Compact}"
                          IsChecked="{Binding IsSelected, Mode=TwoWay}" />
         </DataTemplate>
     </Window.Resources>
@@ -32,12 +33,14 @@
             <ScaleTransform ScaleX="{DynamicResource App.Scale}" ScaleY="{DynamicResource App.Scale}" />
         </Grid.LayoutTransform>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="236" />
+            <ColumnDefinition Width="{DynamicResource Sidebar.Width}" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
         <!-- Optional custom background image (Appearance → Background) behind everything -->
-        <Border Grid.ColumnSpan="2" Background="{DynamicResource Brush.BackgroundImage}" IsHitTestVisible="False" />
+        <Grid Grid.ColumnSpan="2" ClipToBounds="True" IsHitTestVisible="False">
+            <Border x:Name="BackgroundLayer" Background="{DynamicResource Brush.BackgroundImage}" />
+        </Grid>
 
         <!-- A page's own picture (Welcome) covers the custom background while that page is open -->
         <Image Grid.ColumnSpan="2" Source="{Binding Navigation.CurrentPage.Backdrop}" Stretch="UniformToFill" IsHitTestVisible="False" />
@@ -55,9 +58,13 @@
             <DockPanel Margin="14,0,14,14">
                 <!-- Brand -->
                 <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="6,18,0,26">
-                    <ContentPresenter Width="34" Height="34" ContentTemplate="{StaticResource Template.LogoMark}" Content="{Binding}" />
-                    <StackPanel Margin="11,0,0,0" VerticalAlignment="Center">
-                        <TextBlock Text="{Binding AppName}" Style="{StaticResource Text.Base}" FontSize="16.5" FontWeight="Bold" />
+                    <Grid Width="34" Height="34">
+                        <ContentPresenter ContentTemplate="{StaticResource Template.LogoMark}" Content="{Binding}"
+                                          Visibility="{Binding HasBrandLogo, Converter={StaticResource InverseBoolToVisibility}}" />
+                        <Image Source="{Binding BrandLogo}" Stretch="Uniform" Visibility="{Binding HasBrandLogo, Converter={StaticResource BoolToVisibility}}" />
+                    </Grid>
+                    <StackPanel Margin="11,0,0,0" VerticalAlignment="Center" Visibility="{DynamicResource Sidebar.LabelVisibility}">
+                        <TextBlock Text="{Binding BrandName}" Style="{StaticResource Text.Base}" FontSize="16.5" FontWeight="Bold" MaxWidth="150" TextTrimming="CharacterEllipsis" />
                         <TextBlock Text="{Binding DevLabel}" Style="{StaticResource Text.Caption}" FontSize="11" FontWeight="Bold" Margin="0,1,0,0"
                                    Foreground="{DynamicResource Brush.Warning}" Visibility="{Binding DevLabel, Converter={StaticResource NullToVisibility}}" />
                         <TextBlock Text="{Binding VersionLabel}" Style="{StaticResource Text.Caption}" FontSize="11" Margin="0,1,0,0" />
@@ -68,13 +75,14 @@
                 <StackPanel DockPanel.Dock="Bottom">
                     <Border Style="{StaticResource Divider}" Margin="6,0,6,8" />
                     <ItemsControl ItemsSource="{Binding FooterItems}" ItemTemplate="{StaticResource Template.NavItem}" Focusable="False" />
-                    <TextBlock Text="{DynamicResource L.Tagline}" Style="{StaticResource Text.Caption}" Margin="8,10,6,0" TextWrapping="Wrap" />
+                    <TextBlock Text="{DynamicResource L.Tagline}" Style="{StaticResource Text.Caption}" Margin="8,10,6,0" TextWrapping="Wrap"
+                               Visibility="{Binding ShowTagline, Converter={StaticResource BoolToVisibility}}" />
                 </StackPanel>
 
                 <!-- Navigation items -->
                 <ScrollViewer VerticalScrollBarVisibility="Auto" Focusable="False">
                     <StackPanel>
-                        <TextBlock Text="{DynamicResource L.Nav.Menu}" Style="{StaticResource Text.Overline}" Margin="8,0,0,8" />
+                        <TextBlock Text="{DynamicResource L.Nav.Menu}" Style="{StaticResource Text.Overline}" Margin="8,0,0,8" Visibility="{DynamicResource Sidebar.LabelVisibility}" />
                         <ItemsControl ItemsSource="{Binding NavItems}" ItemTemplate="{StaticResource Template.NavItem}" Focusable="False" />
                     </StackPanel>
                 </ScrollViewer>

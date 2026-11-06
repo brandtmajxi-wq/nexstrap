@@ -217,6 +217,143 @@ public sealed partial class AppearanceViewModel : PageViewModel
         _syncing = false;
     }
 
+    // ===== Design =====
+
+    public IReadOnlyList<Choice<CornerStyle>> CornerChoices { get; } =
+    [
+        new(CornerStyle.Normal, () => Loc.Get("Appearance.Corners.Normal")),
+        new(CornerStyle.Sharp, () => Loc.Get("Appearance.Corners.Sharp")),
+        new(CornerStyle.Round, () => Loc.Get("Appearance.Corners.Round"))
+    ];
+
+    public IReadOnlyList<Choice<CardStyle>> CardChoices { get; } =
+    [
+        new(CardStyle.Solid, () => Loc.Get("Appearance.Cards.Solid")),
+        new(CardStyle.Glass, () => Loc.Get("Appearance.Cards.Glass")),
+        new(CardStyle.Outline, () => Loc.Get("Appearance.Cards.Outline"))
+    ];
+
+    public IReadOnlyList<Choice<SidebarTone>> SidebarToneChoices { get; } =
+    [
+        new(SidebarTone.Default, () => Loc.Get("Appearance.SidebarTone.Default")),
+        new(SidebarTone.Accent, () => Loc.Get("Appearance.SidebarTone.Accent")),
+        new(SidebarTone.Clear, () => Loc.Get("Appearance.SidebarTone.Clear"))
+    ];
+
+    public IReadOnlyList<Choice<PageTransition>> TransitionChoices { get; } =
+    [
+        new(PageTransition.Slide, () => Loc.Get("Appearance.Transition.Slide")),
+        new(PageTransition.Fade, () => Loc.Get("Appearance.Transition.Fade")),
+        new(PageTransition.None, () => Loc.Get("Appearance.Transition.None"))
+    ];
+
+    public CornerStyle Corners
+    {
+        get => Current.Corners;
+        set { if (!_syncing && value != Current.Corners) _appearance.ChangeDesign(a => a.Corners = value); }
+    }
+
+    public CardStyle Cards
+    {
+        get => Current.Cards;
+        set { if (!_syncing && value != Current.Cards) _appearance.ChangeDesign(a => a.Cards = value); }
+    }
+
+    public SidebarTone SidebarColour
+    {
+        get => Current.SidebarTone;
+        set { if (!_syncing && value != Current.SidebarTone) _appearance.ChangeDesign(a => a.SidebarTone = value); }
+    }
+
+    public PageTransition Transition
+    {
+        get => Current.PageTransition;
+        set { if (!_syncing && value != Current.PageTransition) _appearance.ChangeDesign(a => a.PageTransition = value); }
+    }
+
+    public bool IconSidebar
+    {
+        get => Current.CompactSidebar;
+        set { if (!_syncing) _appearance.ChangeDesign(a => a.CompactSidebar = value); }
+    }
+
+    public bool GradientButtons
+    {
+        get => Current.GradientButtons;
+        set { if (!_syncing) _appearance.ChangeDesign(a => a.GradientButtons = value); }
+    }
+
+    public string GradientColour
+    {
+        get => Current.GradientColor ?? "";
+        set
+        {
+            if (_syncing) return;
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                DesignError = null;
+                _appearance.ChangeDesign(a => a.GradientColor = null);
+            }
+            else if (ColorUtil.TryParseHex(value, out var color))
+            {
+                DesignError = null;
+                _appearance.ChangeDesign(a => a.GradientColor = ColorUtil.ToHex(color));
+            }
+            else
+            {
+                DesignError = Loc.Get("Appearance.UseRGBOrRRGGBBEG");
+            }
+        }
+    }
+
+    public double MaxBlur => DesignTokens.MaxBlur;
+
+    public double BackgroundBlur
+    {
+        get => Current.BackgroundBlur;
+        set { if (!_syncing) _appearance.ChangeDesign(a => a.BackgroundBlur = Math.Round(Math.Clamp(value, 0, DesignTokens.MaxBlur))); }
+    }
+
+    public int BrandLimit => DesignTokens.BrandNameLimit;
+
+    public string BrandName
+    {
+        get => Current.BrandName ?? "";
+        set
+        {
+            if (_syncing) return;
+            if (!NameFilter.IsAllowed(value))
+            {
+                DesignError = Loc.Get("Welcome.Name.NotAllowed");
+                return;
+            }
+            DesignError = null;
+            _appearance.ChangeDesign(a => a.BrandName = WelcomeName.Clean(value));
+        }
+    }
+
+    public bool HasBrandLogo => Current.BrandLogo is not null;
+
+    public bool ShowTagline
+    {
+        get => !Current.HideTagline;
+        set { if (!_syncing) _appearance.ChangeDesign(a => a.HideTagline = !value); }
+    }
+
+    [ObservableProperty]
+    private string? _designError;
+
+    [RelayCommand]
+    private void ChooseBrandLogo()
+    {
+        var filter = "Images|" + string.Join(';', AppearanceService.SupportedImageExtensions.Select(e => "*" + e));
+        if (_files.OpenFile(Loc.Get("LaunchScreen.ChooseALogo"), filter) is not { } path) return;
+        if (_appearance.SetBrandLogo(path) is { } error) _dialogs.Show(Loc.Get("Appearance.CouldntUseThatImage"), error, DialogKind.Warning);
+    }
+
+    [RelayCommand]
+    private void RemoveBrandLogo() => _appearance.ChangeDesign(a => a.BrandLogo = null);
+
     // ===== Your name =====
 
     public int NameLimit => WelcomeName.MaxLength;
@@ -663,6 +800,8 @@ public sealed partial class AppearanceViewModel : PageViewModel
             OnPropertyChanged(nameof(BackgroundOpacityPercent));
             OnPropertyChanged(nameof(SelectedFit));
             OnPropertyChanged(nameof(SelectedAnchor));
+            foreach (var name in new[] { nameof(Corners), nameof(Cards), nameof(SidebarColour), nameof(Transition), nameof(IconSidebar), nameof(GradientButtons), nameof(GradientColour), nameof(BackgroundBlur), nameof(BrandName), nameof(HasBrandLogo), nameof(ShowTagline) })
+                OnPropertyChanged(name);
         }
         finally
         {

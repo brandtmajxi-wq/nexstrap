@@ -40,10 +40,34 @@
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <TextBlock Text="{DynamicResource L.LaunchScreen.Customize}" Style="{StaticResource SectionHeader}" Margin="2,8,0,10" />
+        <DockPanel Margin="2,8,0,10">
+            <Button DockPanel.Dock="Right" Style="{StaticResource Button.Ghost}" Content="{DynamicResource L.LaunchScreen.Reset}" ui:Ui.Icon="&#xE72C;" Padding="10,4" Command="{Binding ResetCommand}" />
+            <TextBlock Text="{DynamicResource L.LaunchScreen.TextSection}" Style="{StaticResource Text.Section}" VerticalAlignment="Center" />
+        </DockPanel>
         <ui:SettingCard Icon="&#xE8D2;" Header="{DynamicResource L.LaunchScreen.Text}" Description="{DynamicResource L.LaunchScreen.TheLineUnderTheLogo}">
             <TextBox Width="220" MaxLength="60" AutomationProperties.Name="Loading text" Text="{Binding ScreenTitle, UpdateSourceTrigger=LostFocus}" />
         </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE8D2;" Header="{DynamicResource L.LaunchScreen.SecondLine}" Description="{DynamicResource L.LaunchScreen.SecondLine.Text}">
+            <TextBox Width="220" MaxLength="90" AutomationProperties.Name="Loading second line" Text="{Binding ScreenSubtitle, UpdateSourceTrigger=LostFocus}" />
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE8D2;" Header="{DynamicResource L.LaunchScreen.TextSize}" Description="{DynamicResource L.LaunchScreen.TextSize.Text}">
+            <ComboBox Width="170" ItemsSource="{Binding TextSizeChoices}" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding TextSize}" AutomationProperties.Name="Loading text size" />
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE790;" Header="{DynamicResource L.LaunchScreen.TextColour}" Description="{DynamicResource L.LaunchScreen.TextColour.Text}">
+            <TextBox Width="150" FontFamily="{StaticResource Font.Mono}" MaxLength="9" AutomationProperties.Name="Loading text colour"
+                     Text="{Binding TextColor, UpdateSourceTrigger=LostFocus}" />
+        </ui:SettingCard>
+
+        <TextBlock Text="{DynamicResource L.LaunchScreen.LogoSection}" Style="{StaticResource SectionHeader}" />
+        <ui:SettingCard Icon="&#xE8B9;" Header="{DynamicResource L.LaunchScreen.LogoSection}" Description="{DynamicResource L.LaunchScreen.Logo.Text}">
+            <StackPanel Orientation="Horizontal">
+                <Button Content="{DynamicResource L.Appearance.ChooseImage}" ui:Ui.Icon="&#xE8E5;" Padding="10,6" Margin="0,0,8,0" Command="{Binding ChooseLogoCommand}"
+                        Visibility="{Binding ChoosesLogo, Converter={StaticResource BoolToVisibility}}" />
+                <ComboBox Width="170" ItemsSource="{Binding LogoChoices}" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding Logo}" AutomationProperties.Name="Loading logo" />
+            </StackPanel>
+        </ui:SettingCard>
+
+        <TextBlock Text="{DynamicResource L.LaunchScreen.ColoursSection}" Style="{StaticResource SectionHeader}" />
         <ui:SettingCard Icon="&#xE790;" Header="{DynamicResource L.LaunchScreen.BackgroundColour}" Description="{DynamicResource L.LaunchScreen.TextSwitchesBetweenBlackAndWhite}">
             <TextBox Width="150" FontFamily="{StaticResource Font.Mono}" MaxLength="9" AutomationProperties.Name="Loading background colour"
                      Text="{Binding BackgroundColor, UpdateSourceTrigger=LostFocus}" />
@@ -54,16 +78,52 @@
         </ui:SettingCard>
         <TextBlock Text="{Binding ColorError}" Style="{StaticResource Text.Caption}" Foreground="{DynamicResource Brush.Danger}" Margin="2,0,0,6"
                    Visibility="{Binding ColorError, Converter={StaticResource NullToVisibility}}" />
-        <ui:SettingCard Icon="&#xE768;" Header="{DynamicResource L.LaunchScreen.Animation}" Description="{DynamicResource L.LaunchScreen.ShownWhileRobloxLoads}">
-            <ComboBox Width="170" ItemsSource="{Binding AnimationChoices}" DisplayMemberPath="Label" SelectedValuePath="Value"
-                      SelectedValue="{Binding Animation}" AutomationProperties.Name="Loading animation" />
-        </ui:SettingCard>
         <ui:SettingCard Icon="&#xEB9F;" Header="{DynamicResource L.Appearance.BackgroundImage}" Description="{DynamicResource L.LaunchScreen.ShownBehindTheLogoTheImage}">
             <StackPanel Orientation="Horizontal">
                 <Button Content="{DynamicResource L.Appearance.ChooseImage}" ui:Ui.Icon="&#xE8E5;" Padding="10,6" Command="{Binding ChooseImageCommand}" />
                 <Button Style="{StaticResource Button.Ghost}" Content="{DynamicResource L.Appearance.Remove}" Padding="10,6" Margin="6,0,0,0" Command="{Binding RemoveImageCommand}"
                         Visibility="{Binding HasImage, Converter={StaticResource BoolToVisibility}}" />
             </StackPanel>
+        </ui:SettingCard>
+        <StackPanel Visibility="{Binding HasImage, Converter={StaticResource BoolToVisibility}}">
+            <ui:SettingCard Icon="&#xEB9F;" Header="{DynamicResource L.LaunchScreen.ImageStrength}" Description="{DynamicResource L.LaunchScreen.ImageStrength.Text}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding ImageOpacityLabel}" Style="{StaticResource Text.Secondary}" VerticalAlignment="Center" Margin="0,0,10,0" />
+                    <Slider Width="150" Minimum="0.1" Maximum="1" VerticalAlignment="Center" Value="{Binding ImageOpacity, Delay=200}" AutomationProperties.Name="Loading image strength" />
+                </StackPanel>
+            </ui:SettingCard>
+            <ui:SettingCard Icon="&#xEB9F;" Header="{DynamicResource L.LaunchScreen.ImageFit}" Description="{DynamicResource L.LaunchScreen.ImageFit.Text}">
+                <ComboBox Width="170" ItemsSource="{Binding ImageFitChoices}" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding ImageFit}" AutomationProperties.Name="Loading image fit" />
+            </ui:SettingCard>
+            <ui:SettingCard Icon="&#xEB9F;" Header="{DynamicResource L.LaunchScreen.ImageBlur}" Description="{DynamicResource L.LaunchScreen.ImageBlur.Text}">
+                <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding ImageBlur}" AutomationProperties.Name="Blur loading image" />
+            </ui:SettingCard>
+        </StackPanel>
+
+        <TextBlock Text="{DynamicResource L.LaunchScreen.Animation}" Style="{StaticResource SectionHeader}" />
+        <ui:SettingCard Icon="&#xE768;" Header="{DynamicResource L.LaunchScreen.Animation}" Description="{DynamicResource L.LaunchScreen.ShownWhileRobloxLoads}">
+            <ComboBox Width="170" ItemsSource="{Binding AnimationChoices}" DisplayMemberPath="Label" SelectedValuePath="Value"
+                      SelectedValue="{Binding Animation}" AutomationProperties.Name="Loading animation" />
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE916;" Header="{DynamicResource L.LaunchScreen.Speed}" Description="{DynamicResource L.LaunchScreen.Speed.Text}">
+            <ComboBox Width="170" ItemsSource="{Binding SpeedChoices}" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding Speed}" AutomationProperties.Name="Loading animation speed" />
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE7B3;" Header="{DynamicResource L.LaunchScreen.Fade}" Description="{DynamicResource L.LaunchScreen.Fade.Text}">
+            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding Fade}" AutomationProperties.Name="Fade loading screen" />
+        </ui:SettingCard>
+
+        <TextBlock Text="{DynamicResource L.LaunchScreen.WindowSection}" Style="{StaticResource SectionHeader}" />
+        <ui:SettingCard Icon="&#xE8A3;" Header="{DynamicResource L.LaunchScreen.Size}" Description="{DynamicResource L.LaunchScreen.Size.Text}">
+            <ComboBox Width="170" ItemsSource="{Binding WindowSizeChoices}" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding WindowSize}" AutomationProperties.Name="Loading window size" />
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE707;" Header="{DynamicResource L.LaunchScreen.Position}" Description="{DynamicResource L.LaunchScreen.Position.Text}">
+            <ComboBox Width="170" ItemsSource="{Binding PositionChoices}" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding Position}" AutomationProperties.Name="Loading window position" />
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE7F4;" Header="{DynamicResource L.LaunchScreen.Corners}" Description="{DynamicResource L.LaunchScreen.Corners.Text}">
+            <ComboBox Width="170" ItemsSource="{Binding CornerChoices}" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding Corners}" AutomationProperties.Name="Loading window corners" />
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE916;" Header="{DynamicResource L.LaunchScreen.MinTime}" Description="{DynamicResource L.LaunchScreen.MinTime.Text}">
+            <ComboBox Width="170" ItemsSource="{Binding MinimumChoices}" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding MinimumSeconds}" AutomationProperties.Name="Loading minimum time" />
         </ui:SettingCard>
     </StackPanel>
 </UserControl>

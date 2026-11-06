@@ -10,6 +10,11 @@
     <CornerRadius x:Key="Radius.Card">12</CornerRadius>
     <CornerRadius x:Key="Radius.Control">8</CornerRadius>
     <CornerRadius x:Key="Radius.Small">6</CornerRadius>
+    <CornerRadius x:Key="Radius.Large">10</CornerRadius>
+
+    <GridLength x:Key="Sidebar.Width">236</GridLength>
+    <Visibility x:Key="Sidebar.LabelVisibility">Visible</Visibility>
+    <sys:Boolean x:Key="Sidebar.Compact">False</sys:Boolean>
 
     <Duration x:Key="Motion.Fast">0:0:0.12</Duration>
     <Duration x:Key="Motion.Normal">0:0:0.22</Duration>
@@ -63,7 +68,7 @@
         <Setter Property="Background" Value="{DynamicResource Brush.Card}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="CornerRadius" Value="{StaticResource Radius.Card}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.Card}" />
         <Setter Property="Padding" Value="20" />
     </Style>
 

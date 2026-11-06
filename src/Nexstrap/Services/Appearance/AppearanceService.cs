@@ -36,6 +36,12 @@ public interface IAppearanceService
 
     void SetBackgroundAnchor(BackgroundAnchor anchor);
 
+    /// <summary>Changes a design option, applies it and saves.</summary>
+    void ChangeDesign(Action<AppearanceSettings> change);
+
+    /// <summary>Copies an image for the sidebar. Returns an error message or null.</summary>
+    string? SetBrandLogo(string sourcePath);
+
     void ApplyProfile(ThemeProfile profile);
 
     IReadOnlyList<ThemeProfile> LoadSavedProfiles();
@@ -196,6 +202,37 @@ public sealed class AppearanceService : IAppearanceService
         Commit();
     }
 
+    public void ChangeDesign(Action<AppearanceSettings> change)
+    {
+        change(Current);
+        _theme.ApplyDesign(Current);
+        Commit();
+    }
+
+    public string? SetBrandLogo(string sourcePath)
+    {
+        var ext = Path.GetExtension(sourcePath).ToLowerInvariant();
+        if (!SupportedImageExtensions.Contains(ext))
+            return Loc.Format("Appearance.FilesArentSupportedUsePNGJPG", ext);
+        if (_theme.LoadImage(sourcePath) is null)
+            return Loc.Get("Appearance.ThatFileCouldntBeReadAs");
+
+        try
+        {
+            Directory.CreateDirectory(_backgroundsDir);
+            string target;
+            using (var stream = File.OpenRead(sourcePath))
+                target = Path.Combine(_backgroundsDir, "brand-" + Convert.ToHexString(SHA256.HashData(stream))[..16].ToLowerInvariant() + ext);
+            if (!File.Exists(target)) File.Copy(sourcePath, target);
+            ChangeDesign(a => a.BrandLogo = target);
+            return null;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            return Loc.Get("Appearance.NexstrapCouldntCopyThatImage") + ex.Message;
+        }
+    }
+
     // ===== Profiles =====
 
     public void ApplyProfile(ThemeProfile profile)
@@ -324,6 +361,15 @@ public sealed class AppearanceService : IAppearanceService
         clean.BackgroundOpacity = double.IsFinite(clean.BackgroundOpacity) ? Math.Clamp(clean.BackgroundOpacity, 0, 1) : 0.35;
         // A background from another PC won't exist here.
         if (clean.BackgroundImage is not null && !File.Exists(clean.BackgroundImage)) clean.BackgroundImage = null;
+        if (clean.BrandLogo is not null && !File.Exists(clean.BrandLogo)) clean.BrandLogo = null;
+        if (!Enum.IsDefined(clean.Corners)) clean.Corners = CornerStyle.Normal;
+        if (!Enum.IsDefined(clean.Cards)) clean.Cards = CardStyle.Solid;
+        if (!Enum.IsDefined(clean.SidebarTone)) clean.SidebarTone = SidebarTone.Default;
+        if (!Enum.IsDefined(clean.PageTransition)) clean.PageTransition = PageTransition.Slide;
+        if (!ColorUtil.TryParseHex(clean.GradientColor, out _)) clean.GradientColor = null;
+        clean.BackgroundBlur = double.IsFinite(clean.BackgroundBlur) ? Math.Clamp(clean.BackgroundBlur, 0, DesignTokens.MaxBlur) : 0;
+        // Themes can come from other people, so a shared name goes through the same filter.
+        clean.BrandName = WelcomeName.Clean(clean.BrandName) is { } brand && NameFilter.IsAllowed(brand) ? brand : null;
         return clean;
     }
 

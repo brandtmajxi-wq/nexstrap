@@ -79,6 +79,7 @@
     <!-- Secondary: the default button look -->
     <Style x:Key="Button.Secondary" TargetType="Button">
         <Setter Property="Template" Value="{StaticResource Template.Button}" />
+        <Setter Property="ui:Ui.CornerRadius" Value="{DynamicResource Radius.Control}" />
         <Setter Property="FontFamily" Value="{DynamicResource Font.Primary}" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="FontWeight" Value="Medium" />
@@ -97,7 +98,7 @@
 
     <Style x:Key="Button.Primary" TargetType="Button" BasedOn="{StaticResource Button.Secondary}">
         <Setter Property="Foreground" Value="{DynamicResource Brush.AccentForeground}" />
-        <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
+        <Setter Property="Background" Value="{DynamicResource Brush.AccentFill}" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="ui:Ui.HoverBrush" Value="{StaticResource Brush.LightOverlay}" />
@@ -126,7 +127,7 @@
     <Style x:Key="Button.Play" TargetType="Button" BasedOn="{StaticResource Button.Primary}">
         <Setter Property="FontSize" Value="16" />
         <Setter Property="Padding" Value="28,14" />
-        <Setter Property="ui:Ui.CornerRadius" Value="10" />
+        <Setter Property="ui:Ui.CornerRadius" Value="{DynamicResource Radius.Large}" />
         <Setter Property="Effect">
             <Setter.Value>
                 <DropShadowEffect BlurRadius="22" ShadowDepth="3" Opacity="0.3" Color="Black" />
@@ -191,8 +192,8 @@
             <Setter.Value>
                 <ControlTemplate TargetType="RadioButton">
                     <Grid>
-                        <Border x:Name="Bg" CornerRadius="8" Background="{DynamicResource Brush.Hover}" Opacity="0" />
-                        <Border x:Name="Sel" CornerRadius="8" Background="{DynamicResource Brush.AccentSoft}" Opacity="0" />
+                        <Border x:Name="Bg" CornerRadius="{DynamicResource Radius.Control}" Background="{DynamicResource Brush.Hover}" Opacity="0" />
+                        <Border x:Name="Sel" CornerRadius="{DynamicResource Radius.Control}" Background="{DynamicResource Brush.AccentSoft}" Opacity="0" />
                         <Border x:Name="Indicator" Width="3" Height="16" CornerRadius="2" HorizontalAlignment="Left"
                                 Background="{DynamicResource Brush.Accent}" Opacity="0" RenderTransformOrigin="0.5,0.5">
                             <Border.RenderTransform>
@@ -202,7 +203,7 @@
                         <StackPanel Orientation="Horizontal" Margin="14,0">
                             <TextBlock x:Name="Icon" Text="{TemplateBinding ui:Ui.Icon}" FontFamily="{StaticResource Font.Icons}"
                                        FontSize="16" Width="20" VerticalAlignment="Center" Foreground="{TemplateBinding Foreground}" />
-                            <ContentPresenter Margin="12,0,0,0" VerticalAlignment="Center" />
+                            <ContentPresenter Margin="12,0,0,0" VerticalAlignment="Center" Visibility="{DynamicResource Sidebar.LabelVisibility}" />
                         </StackPanel>
                         <!-- Count from NavItem.Badge (the row's DataContext) -->
                         <Border HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" MinWidth="20" Height="20" CornerRadius="10" Padding="6,0"

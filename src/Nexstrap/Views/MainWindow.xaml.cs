@@ -3,6 +3,8 @@ using System.Windows;
 using System.Windows.Media.Animation;
 using Microsoft.Extensions.Logging;
 using Nexstrap.Core;
+using Nexstrap.Models;
+using Nexstrap.Services.Appearance;
 using Nexstrap.Services.Configuration;
 using Nexstrap.Services.Navigation;
 using Nexstrap.ViewModels;
@@ -15,7 +17,7 @@ public partial class MainWindow : Window
     private readonly ILogger<MainWindow> _logger;
 
     public MainWindow(MainWindowViewModel viewModel, ISettingsService settings, INavigationService navigation,
-        ILogger<MainWindow> logger)
+        ILogger<MainWindow> logger, IAppearanceService appearance)
     {
         _settings = settings;
         _logger = logger;
@@ -24,10 +26,20 @@ public partial class MainWindow : Window
         Language =System.Windows.Markup.XmlLanguage.GetLanguage(System.Globalization.CultureInfo.CurrentCulture.IetfLanguageTag);
         DataContext = viewModel;
 
+        ApplyBackgroundBlur();
+        appearance.Changed += (_, _) => ApplyBackgroundBlur();
         RestoreWindowPlacement();
         StateChanged += (_, _) => UpdateMaximizedState();
         navigation.Navigated += (_, _) => PlayPageTransition();
         ContentRendered += OnContentRendered;
+    }
+
+    /// <summary>The layer is made larger than the window so the blur doesn't soften its edges into the window colour.</summary>
+    private void ApplyBackgroundBlur()
+    {
+        var radius = _settings.Current.Appearance.BackgroundBlur;
+        BackgroundLayer.Effect = radius > 0 ? new System.Windows.Media.Effects.BlurEffect { Radius = radius } : null;
+        BackgroundLayer.Margin = new Thickness(-radius * 2);
     }
 
     private void RestoreWindowPlacement()
@@ -50,9 +62,14 @@ public partial class MainWindow : Window
     private void PlayPageTransition()
     {
         PageScroller.ScrollToTop();
+        var style = _settings.Current.Appearance.PageTransition;
+        if (style == PageTransition.None) return;
+
         var fade = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(220)) { EasingFunction = new CubicEase() };
-        var slide = new DoubleAnimation(10, 0, TimeSpan.FromMilliseconds(260)) { EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut } };
         PageHost.BeginAnimation(OpacityProperty, fade);
+        if (style != PageTransition.Slide) return;
+
+        var slide = new DoubleAnimation(10, 0, TimeSpan.FromMilliseconds(260)) { EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut } };
         PageShift.BeginAnimation(System.Windows.Media.TranslateTransform.YProperty, slide);
     }
 

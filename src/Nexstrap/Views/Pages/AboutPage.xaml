@@ -30,6 +30,11 @@
             <Button Content="{DynamicResource L.About.Open}" ui:Ui.Icon="&#xE838;" Padding="10,6" Command="{Binding OpenLogsFolderCommand}" />
         </ui:SettingCard>
 
+        <TextBlock Text="{DynamicResource L.About.Legal}" Style="{StaticResource SectionHeader}" />
+        <ui:SettingCard Icon="&#xE72E;" Header="{DynamicResource L.About.Legal.Item}" Description="{DynamicResource L.About.Legal.Text}">
+            <Button Content="{DynamicResource L.About.Open}" ui:Ui.Icon="&#xE8A7;" Padding="10,6" Command="{Binding OpenLegalCommand}" />
+        </ui:SettingCard>
+
         <TextBlock Text="{DynamicResource L.About.OpenSourceComponents}" Style="{StaticResource SectionHeader}" />
         <ItemsControl ItemsSource="{Binding Components}">
             <ItemsControl.ItemTemplate>

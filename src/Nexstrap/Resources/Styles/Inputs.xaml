@@ -19,7 +19,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="TextBox">
                     <Border x:Name="Bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{StaticResource Radius.Control}">
+                            BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{DynamicResource Radius.Control}">
                         <Grid Margin="{TemplateBinding Padding}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -136,7 +136,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="ToggleButton">
                     <Border x:Name="Bd" Background="{DynamicResource Brush.Input}" BorderBrush="{DynamicResource Brush.BorderStrong}"
-                            BorderThickness="1" CornerRadius="{StaticResource Radius.Control}">
+                            BorderThickness="1" CornerRadius="{DynamicResource Radius.Control}">
                         <TextBlock Text="&#xE70D;" FontFamily="{StaticResource Font.Icons}" FontSize="10" Margin="0,0,12,0"
                                    HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{DynamicResource Brush.TextSecondary}" />
                     </Border>
@@ -184,7 +184,7 @@
                                AllowsTransparency="True" Focusable="False" PopupAnimation="Fade" VerticalOffset="4">
                             <Border MinWidth="{TemplateBinding ActualWidth}" MaxHeight="{TemplateBinding MaxDropDownHeight}"
                                     Background="{DynamicResource Brush.Raised}" BorderBrush="{DynamicResource Brush.BorderStrong}"
-                                    BorderThickness="1" CornerRadius="{StaticResource Radius.Control}" Padding="4" Margin="0,0,8,8">
+                                    BorderThickness="1" CornerRadius="{DynamicResource Radius.Control}" Padding="4" Margin="0,0,8,8">
                                 <Border.Effect>
                                     <DropShadowEffect BlurRadius="16" ShadowDepth="2" Opacity="0.3" />
                                 </Border.Effect>
@@ -212,7 +212,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ComboBoxItem">
-                    <Border x:Name="Bd" CornerRadius="{StaticResource Radius.Small}" Padding="{TemplateBinding Padding}" Background="Transparent">
+                    <Border x:Name="Bd" CornerRadius="{DynamicResource Radius.Small}" Padding="{TemplateBinding Padding}" Background="Transparent">
                         <ContentPresenter />
                     </Border>
                     <ControlTemplate.Triggers>
@@ -244,7 +244,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="ListBox">
                     <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{StaticResource Radius.Control}">
+                            BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{DynamicResource Radius.Control}">
                         <ScrollViewer Padding="{TemplateBinding Padding}" Focusable="False" CanContentScroll="True">
                             <ItemsPresenter />
                         </ScrollViewer>
@@ -262,7 +262,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ListBoxItem">
-                    <Border x:Name="Bd" CornerRadius="{StaticResource Radius.Small}" Padding="{TemplateBinding Padding}" Background="Transparent">
+                    <Border x:Name="Bd" CornerRadius="{DynamicResource Radius.Small}" Padding="{TemplateBinding Padding}" Background="Transparent">
                         <ContentPresenter />
                     </Border>
                     <ControlTemplate.Triggers>

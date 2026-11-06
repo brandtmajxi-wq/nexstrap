@@ -19,6 +19,9 @@ public interface IThemeService
 
     void ApplyFont(string familyName);
 
+    /// <summary>Corners, cards, sidebar and gradient buttons.</summary>
+    void ApplyDesign(AppearanceSettings appearance);
+
     /// <summary>Returns false (and clears the background) if the image can't be loaded.</summary>
     bool ApplyBackground(AppearanceSettings appearance);
 
@@ -49,10 +52,43 @@ public sealed class ThemeService(ILogger<ThemeService> logger) : IThemeService
 
     public void Apply(AppearanceSettings appearance)
     {
+        _design = appearance;
         ApplyTheme(appearance.Theme);
         ApplyAccent(ColorUtil.TryParseHex(appearance.AccentColor, out var c) ? c : DefaultAccent);
         ApplyFont(appearance.FontFamily);
         ApplyBackground(appearance);
+        ApplyDesign(appearance);
+    }
+
+    public void ApplyDesign(AppearanceSettings appearance)
+    {
+        _design = appearance;
+
+        var radii = DesignTokens.RadiiFor(appearance.Corners);
+        Resources["Radius.Card"] = new CornerRadius(radii.Card);
+        Resources["Radius.Control"] = new CornerRadius(radii.Control);
+        Resources["Radius.Small"] = new CornerRadius(radii.Small);
+        Resources["Radius.Large"] = new CornerRadius(radii.Large);
+
+        var compact = appearance.CompactSidebar;
+        Resources["Sidebar.Width"] = new GridLength(compact ? DesignTokens.IconSidebar : DesignTokens.FullSidebar);
+        Resources["Sidebar.LabelVisibility"] = compact ? Visibility.Collapsed : Visibility.Visible;
+        Resources["Sidebar.Compact"] = compact;
+
+        UpdateAccentFill();
+        UpdateSurfaceTranslucency();
+    }
+
+    private void UpdateAccentFill()
+    {
+        if (!_design.GradientButtons)
+        {
+            SetBrush("Brush.AccentFill", _accent);
+            return;
+        }
+        var gradient = new LinearGradientBrush(_accent, DesignTokens.GradientEnd(_accent, _design.GradientColor), 0);
+        gradient.Freeze();
+        Resources["Brush.AccentFill"] = gradient;
     }
 
     public void ApplyTheme(AppTheme theme)
@@ -76,9 +112,11 @@ public sealed class ThemeService(ILogger<ThemeService> logger) : IThemeService
     }
 
     /// <summary>Surfaces that turn slightly see-through while a background image is shown.</summary>
-    private static readonly string[] TranslucentSurfaces = ["Brush.Card", "Brush.CardHover", "Brush.Sidebar"];
+    private static readonly string[] CardSurfaces = ["Brush.Card", "Brush.CardHover"];
 
     private bool _hasBackground;
+    private AppearanceSettings _design = new();
+    private Color _accent = DefaultAccent;
 
     /// <summary>
     /// With a background image, overrides surface brushes at app level with translucent copies of
@@ -87,22 +125,32 @@ public sealed class ThemeService(ILogger<ThemeService> logger) : IThemeService
     private void UpdateSurfaceTranslucency()
     {
         var themeDict = Resources.MergedDictionaries.FirstOrDefault(d => d.Contains(ThemeMarkerKey));
-        foreach (var key in TranslucentSurfaces)
+        var alpha = DesignTokens.CardAlpha(_design.Cards, _hasBackground);
+        foreach (var key in CardSurfaces)
         {
-            if (_hasBackground && themeDict?[key] is SolidColorBrush source)
-                SetBrush(key, ColorUtil.WithAlpha(source.Color, 0xD0));
+            if (alpha is { } value && themeDict?[key] is SolidColorBrush source)
+                SetBrush(key, ColorUtil.WithAlpha(source.Color, value));
             else
                 Resources.Remove(key);
         }
+
+        if (themeDict?["Brush.Sidebar"] is SolidColorBrush sidebar
+            && DesignTokens.SidebarColor(sidebar.Color, _accent, _design.SidebarTone, _hasBackground) is { } tone)
+            SetBrush("Brush.Sidebar", tone);
+        else
+            Resources.Remove("Brush.Sidebar");
     }
 
     public void ApplyAccent(Color accent)
     {
         accent.A = 255;
+        _accent = accent;
         SetBrush("Brush.Accent", accent);
         SetBrush("Brush.AccentSoft", ColorUtil.WithAlpha(accent, 0x2E));
         SetBrush("Brush.AccentForeground", ColorUtil.ReadableForeground(accent));
         Resources["Color.Accent"] = accent;
+        UpdateAccentFill();
+        UpdateSurfaceTranslucency();
     }
 
     public void ApplyFont(string familyName)

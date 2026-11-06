@@ -79,7 +79,8 @@ public sealed class RobloxClientService(
 
     /// <summary>
     /// Pinned choice if it still exists; otherwise a build matching Roblox's live version
-    /// (Nexstrap's own first); otherwise the most recently updated build.
+    /// (Nexstrap's own first); otherwise Nexstrap's newest build; otherwise the most recently updated one.
+    /// Roblox updates often, so for a while after each update no build matches and this last step decides.
     /// </summary>
     internal RobloxInstallation? ResolvePreferred(IReadOnlyList<RobloxInstallation> installs, ClientVersionInfo? latest)
     {
@@ -98,7 +99,7 @@ public sealed class RobloxClientService(
             if (current is not null) return current;
         }
 
-        return installs.FirstOrDefault();
+        return installs.FirstOrDefault(i => i.Source == InstallationSource.Nexstrap) ?? installs.FirstOrDefault();
     }
 
     public void SetPreferred(RobloxInstallation? installation)

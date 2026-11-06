@@ -2,6 +2,16 @@
 
 All notable changes to Nexstrap are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.18.0] - 2026-11-06
+
+### Added
+- **Privacy and terms** (About): what Nexstrap does with your data, what goes online, and the terms for using it.
+- **Design options** (Appearance): sharp or extra round corners, glass and outline cards, a sidebar colour, an icons-only sidebar, gradient buttons with your own second colour, page animations, background blur, and your own sidebar name and logo. Saved themes keep all of it.
+- **Much more loading screen customisation**: a second line of text, text size and colour, your own logo or no logo, window size, position and corners, image strength, fit and blur, a bouncing dots animation, animation speed, fading in and out, a minimum time on screen, a Neon preset and a reset button.
+
+### Fixed
+- Right after a Roblox update, Play could switch to another launcher's build. It now stays on Nexstrap's own build until you update.
+
 ## [1.17.2] - 2026-11-05
 
 ### Added
@@ -177,6 +187,7 @@ First public release.
 - Quick update check on every launch with an in-app banner; release notes, progress and cancel.
 - Updates are installed only after verifying source, size, SHA-256, product name and version; failed swaps roll back.
 
+[1.18.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.18.0
 [1.17.2]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.17.2
 [1.17.1]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.17.1
 [1.17.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.17.0

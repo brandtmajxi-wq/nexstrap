@@ -25,7 +25,7 @@ The first page in the sidebar, so it's what opens by default. It greets you by t
 | **Install / Update Roblox** | Shown when no build is found or yours is older than Roblox's live version. Downloads the official build from `setup.rbxcdn.com`, verifies each package's MD5, and installs to `%LocalAppData%\Nexstrap\Versions`. Cancel leaves nothing behind. |
 | **Join an experience** | Paste a place ID, `roblox.com/games/<id>/…` link or `…/games/start?placeId=…` link. Nexstrap looks up the name via Roblox's public API, then launches `roblox://placeId=<id>`. If Roblox is already open you're asked first, since Roblox runs one game at a time. |
 | **Rejoin last server** | Shown for 24 hours after leaving a game Nexstrap followed. Uses Roblox's `gameInstanceId` link, so it only works if that server is still running and has room, and may not work for private servers. Also in the tray menu. |
-| **Installations** | Every build found on the PC. *Choose automatically* uses the one matching Roblox's live version (Nexstrap's own first). Builds from other launchers can be used but are never modified or deleted. |
+| **Installations** | Every build found on the PC. *Choose automatically* uses the one matching Roblox's live version (Nexstrap's own first). If none matches, it stays on Nexstrap's own build. Builds from other launchers can be used but are never modified or deleted. |
 | **Quick settings** | Light theme, close Nexstrap after launch, check for updates on launch. |
 | **Nexstrap updates** | Current version, latest release, release notes, *Download & install*. |
 
@@ -53,7 +53,7 @@ Ping is the average Roblox reports for the server, not your own.
 
 ## Loading Screen
 
-A small window shown when you start Roblox from Nexstrap. It closes when Roblox's window opens, when Roblox exits, or after 20 seconds. Customize the text, background and accent colours, background image and animation (spinner, sliding bar, pulsing logo or none), or use a preset. Roblox's own start-up isn't changed.
+A small window shown when you start Roblox from Nexstrap. It closes when Roblox's window opens, when Roblox exits, or after 20 seconds. Customize the text and an optional second line, text size and colour, the logo (Nexstrap, your own image or hidden), background and accent colours, background image with its strength, fit and blur, animation (spinner, sliding bar, pulsing logo, bouncing dots or none) and its speed, fading, window size, position and corners, or use a preset. *Stay open for at least* keeps it up for 2 or 5 seconds if Roblox opens quickly, on top of Roblox for that time. *Reset loading screen* puts everything back. Roblox's own start-up isn't changed.
 
 ## Appearance
 
@@ -62,6 +62,7 @@ A small window shown when you start Roblox from Nexstrap. It closes when Roblox'
 - **Accent colour**: swatches or `#RGB` / `#RRGGBB`. Text on accent-coloured buttons switches between black and white for readability.
 - **Font**: any installed text font (symbol fonts are hidden). The whole app switches immediately.
 - **Roblox font** (opt-in, off by default): uses a .ttf/.otf file or your Nexstrap font in Roblox itself by pointing the font family files of a Nexstrap-installed build at that font. Other launchers' builds are never changed. The original files are backed up inside the build and restored at the next launch after you turn it off. Chinese, Japanese and Korean fallback text is left alone. Roblox doesn't support this: it may stop working after a Roblox update, and text from a game's own fonts may not change.
+- **Design**: corners (normal, sharp or extra round), card style (solid, glass or outline), sidebar colour (theme, accent tint or see-through), an icons-only sidebar, gradient buttons with an optional second colour, page animation (slide and fade, fade or none), background blur, your own sidebar name and logo, and the tagline. Saved themes keep these; presets leave them alone. Exports don't include the logo file, and shared sidebar names go through the name filter.
 - **App size**: 85%, 100%, 115% or 130%. Not part of saved themes.
 - **Sidebar**: hide pages and change their order. The top page opens when Nexstrap starts. Home and Appearance can't be hidden, and links inside the app can still open hidden pages. Notifications and About stay at the bottom.
 - **Death sound and mouse cursor** (opt-in): an .ogg file replaces `content\sounds\ouch.ogg`, and a .png up to 256 × 256 replaces the arrow cursors in `content\textures\Cursors\KeyboardMouse`. Only Nexstrap-installed builds change. Originals are backed up inside the build and restored at the next launch after you remove the file. Roblox doesn't support this, and games with their own sound or cursor won't change.
@@ -121,7 +122,7 @@ An inbox with a count in the sidebar. It covers new Nexstrap releases, Roblox bu
 
 ## About
 
-Version and runtime details, *Copy diagnostics*, data and log folders, open-source credits.
+Version and runtime details, *Copy diagnostics*, data and log folders, open-source credits, and **Privacy and terms**, which explains what stays on your PC, what goes online and the terms for using Nexstrap.
 
 ## Files and folders
 

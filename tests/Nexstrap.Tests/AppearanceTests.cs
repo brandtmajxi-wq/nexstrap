@@ -18,6 +18,7 @@ internal sealed class FakeThemeService : IThemeService
     public void ApplyTheme(AppTheme theme) => Calls.Add("theme:" + theme);
     public void ApplyAccent(Color accent) => Calls.Add("accent:" + accent);
     public void ApplyFont(string familyName) => Calls.Add("font:" + familyName);
+    public void ApplyDesign(AppearanceSettings a) => Calls.Add("design");
     public bool ApplyBackground(AppearanceSettings a) { Calls.Add("bg"); return a.BackgroundImage is null || ImagesLoad; }
     public BitmapSource? LoadImage(string path) => null;
 }

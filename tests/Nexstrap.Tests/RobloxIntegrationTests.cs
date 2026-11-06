@@ -245,6 +245,18 @@ public class ClientSelectionTests
     }
 
     [Fact]
+    public void Keeps_nexstraps_own_build_when_nothing_matches_a_new_roblox_version()
+    {
+        var voidstrap = Install(InstallationSource.Voidstrap, "version-old", 0);
+        var nexstrap = Install(InstallationSource.Nexstrap, "version-old", 2);
+        var service = Create(new MemorySettings());
+
+        Assert.Equal(nexstrap, service.ResolvePreferred([voidstrap, nexstrap], new ClientVersionInfo("2", "version-new")));
+        Assert.Equal(nexstrap, service.ResolvePreferred([voidstrap, nexstrap], null));
+        Assert.Equal(voidstrap, service.ResolvePreferred([voidstrap], new ClientVersionInfo("2", "version-new")));
+    }
+
+    [Fact]
     public void Pinned_choice_wins_until_it_disappears()
     {
         var a = Install(InstallationSource.Official, "version-a", 1);

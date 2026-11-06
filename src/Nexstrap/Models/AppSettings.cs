@@ -124,8 +124,23 @@ public enum LaunchAnimation
     Spinner,
     Bar,
     Pulse,
-    None
+    None,
+    Dots
 }
+
+public enum LaunchSpeed { Slow, Normal, Fast }
+
+public enum LaunchTextSize { Small, Medium, Large }
+
+public enum LaunchWindowSize { Small, Medium, Large }
+
+public enum LaunchPosition { Center, TopLeft, TopRight, BottomLeft, BottomRight }
+
+public enum LaunchCorners { Square, Rounded, VeryRounded }
+
+public enum LaunchLogo { Nexstrap, Custom, Hidden }
+
+public enum LaunchImageFit { Fill, Fit }
 
 /// <summary>The window shown while Roblox starts.</summary>
 public sealed class LaunchScreenSettings
@@ -138,6 +153,30 @@ public sealed class LaunchScreenSettings
 
     /// <summary>Copy in Nexstrap's Backgrounds folder; null for a plain colour.</summary>
     public string? BackgroundImage { get; set; }
+
+    /// <summary>Optional smaller text under the title.</summary>
+    public string? Subtitle { get; set; }
+
+    /// <summary>Null picks black or white, whichever is easier to read.</summary>
+    public string? TextColor { get; set; }
+
+    public LaunchTextSize TextSize { get; set; } = LaunchTextSize.Medium;
+    public LaunchSpeed Speed { get; set; } = LaunchSpeed.Normal;
+    public LaunchWindowSize WindowSize { get; set; } = LaunchWindowSize.Medium;
+    public LaunchPosition Position { get; set; } = LaunchPosition.Center;
+    public LaunchCorners Corners { get; set; } = LaunchCorners.Rounded;
+    public LaunchLogo Logo { get; set; } = LaunchLogo.Nexstrap;
+
+    /// <summary>Copy in Nexstrap's Backgrounds folder.</summary>
+    public string? LogoImage { get; set; }
+
+    public LaunchImageFit ImageFit { get; set; } = LaunchImageFit.Fill;
+    public double ImageOpacity { get; set; } = 0.45;
+    public bool ImageBlur { get; set; }
+    public bool Fade { get; set; } = true;
+
+    /// <summary>Stays up at least this long after opening, even if Roblox is faster.</summary>
+    public int MinimumSeconds { get; set; }
 }
 
 public sealed class CompanionApp
@@ -277,6 +316,14 @@ public enum BackgroundAnchor
     Right
 }
 
+public enum CornerStyle { Normal, Sharp, Round }
+
+public enum CardStyle { Solid, Glass, Outline }
+
+public enum SidebarTone { Default, Accent, Clear }
+
+public enum PageTransition { Slide, Fade, None }
+
 public sealed class AppearanceSettings
 {
     public const string DefaultFont = "Segoe UI Variable Display";
@@ -300,6 +347,27 @@ public sealed class AppearanceSettings
 
     public BackgroundAnchor BackgroundAnchor { get; set; } = BackgroundAnchor.Center;
 
+    public CornerStyle Corners { get; set; } = CornerStyle.Normal;
+    public CardStyle Cards { get; set; } = CardStyle.Solid;
+    public SidebarTone SidebarTone { get; set; } = SidebarTone.Default;
+    public PageTransition PageTransition { get; set; } = PageTransition.Slide;
+    public bool CompactSidebar { get; set; }
+    public bool GradientButtons { get; set; }
+
+    /// <summary>Second gradient colour; null uses a lighter accent.</summary>
+    public string? GradientColor { get; set; }
+
+    /// <summary>Blur radius for the background image; 0 is off.</summary>
+    public double BackgroundBlur { get; set; }
+
+    /// <summary>Shown at the top of the sidebar instead of Nexstrap.</summary>
+    public string? BrandName { get; set; }
+
+    /// <summary>Copy in the Backgrounds folder, shown instead of the Nexstrap logo.</summary>
+    public string? BrandLogo { get; set; }
+
+    public bool HideTagline { get; set; }
+
     public AppearanceSettings Clone() => (AppearanceSettings)MemberwiseClone();
 
     /// <summary>Copies every value from <paramref name="other"/> into this instance.</summary>
@@ -312,6 +380,17 @@ public sealed class AppearanceSettings
         BackgroundOpacity = other.BackgroundOpacity;
         BackgroundFit = other.BackgroundFit;
         BackgroundAnchor = other.BackgroundAnchor;
+        Corners = other.Corners;
+        Cards = other.Cards;
+        SidebarTone = other.SidebarTone;
+        PageTransition = other.PageTransition;
+        CompactSidebar = other.CompactSidebar;
+        GradientButtons = other.GradientButtons;
+        GradientColor = other.GradientColor;
+        BackgroundBlur = other.BackgroundBlur;
+        BrandName = other.BrandName;
+        BrandLogo = other.BrandLogo;
+        HideTagline = other.HideTagline;
     }
 }
 

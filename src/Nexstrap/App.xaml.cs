@@ -323,6 +323,7 @@ public partial class App : Application
 
         // Pages (singletons so state survives tab switches)
         services.AddSingleton<WelcomeViewModel>();
+        services.AddSingleton<LegalViewModel>();
         services.AddSingleton<HomeViewModel>();
         services.AddSingleton<AppearanceViewModel>();
         services.AddSingleton<NotificationsViewModel>();

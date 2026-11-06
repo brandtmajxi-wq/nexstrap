@@ -88,6 +88,10 @@ public sealed partial class MainWindowViewModel : ObservableObject
     {
         ArrangeSidebar();
         OnPropertyChanged(nameof(ShowSnow));
+        OnPropertyChanged(nameof(BrandName));
+        OnPropertyChanged(nameof(BrandLogo));
+        OnPropertyChanged(nameof(HasBrandLogo));
+        OnPropertyChanged(nameof(ShowTagline));
     }
 
     public bool ShowSnow => _settings.Current.Winter.Snow && WinterSeason.Resolve(_settings.Current.Winter, DateTime.Now, WinterSeason.Available).Winter;
@@ -105,6 +109,41 @@ public sealed partial class MainWindowViewModel : ObservableObject
     public IReadOnlyList<NavItem> FooterItems { get; }
 
     public string AppName => AppInfo.Name;
+
+    public string BrandName => _settings.Current.Appearance.BrandName ?? AppName;
+
+    public bool ShowTagline => !_settings.Current.Appearance.HideTagline && !_settings.Current.Appearance.CompactSidebar;
+
+    public bool HasBrandLogo => BrandLogo is not null;
+
+    private string? _brandLogoPath;
+    private System.Windows.Media.ImageSource? _brandLogo;
+
+    /// <summary>Read fully into memory so the file is never locked; a missing file falls back to the Nexstrap logo.</summary>
+    public System.Windows.Media.ImageSource? BrandLogo
+    {
+        get
+        {
+            var path = _settings.Current.Appearance.BrandLogo;
+            if (path == _brandLogoPath) return _brandLogo;
+            _brandLogoPath = path;
+            _brandLogo = null;
+            if (path is null || !System.IO.File.Exists(path)) return null;
+            try
+            {
+                var image = new System.Windows.Media.Imaging.BitmapImage();
+                image.BeginInit();
+                image.UriSource = new Uri(path);
+                image.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
+                image.DecodePixelWidth = 96;
+                image.EndInit();
+                image.Freeze();
+                _brandLogo = image;
+            }
+            catch (Exception ex) when (ex is System.IO.IOException or NotSupportedException or UnauthorizedAccessException or UriFormatException) { }
+            return _brandLogo;
+        }
+    }
 
     /// <summary>The dev copy shows when it was built, so it's clear whether it has the latest changes.</summary>
     public string VersionLabel => AppInfo.IsDev && Environment.ProcessPath is { } exe
