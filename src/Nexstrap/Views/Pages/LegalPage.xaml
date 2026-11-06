@@ -18,7 +18,7 @@
         </Style>
     </UserControl.Resources>
     <StackPanel>
-        <Button Style="{StaticResource Button.Ghost}" Content="{DynamicResource L.Legal.Back}" ui:Ui.Icon="&#xE72B;" Padding="10,5" HorizontalAlignment="Left" Command="{Binding BackCommand}" />
+        <Button Content="{DynamicResource L.Legal.Back}" ui:Ui.Icon="&#xE72B;" Padding="10,5" HorizontalAlignment="Left" Command="{Binding BackCommand}" />
 
         <TextBlock Text="{DynamicResource L.Legal.Privacy}" Style="{StaticResource SectionHeader}" />
         <Border Style="{StaticResource Card}" Padding="22,18,22,6">

@@ -14,7 +14,7 @@ public partial class MessageDialog : Window
     }
 
     public static bool ShowModal(Window? owner, string title, string message, DialogKind kind,
-        string? details, string confirmText, string? cancelText)
+        string? details, string confirmText, string? cancelText, bool cancelIsDefault = false)
     {
         var dialog = new MessageDialog();
         if (owner is { IsLoaded: true })
@@ -35,6 +35,13 @@ public partial class MessageDialog : Window
         {
             dialog.DetailsExpander.Visibility = Visibility.Visible;
             dialog.DetailsText.Text = details;
+        }
+
+        if (cancelIsDefault)
+        {
+            dialog.ConfirmButton.IsDefault = false;
+            dialog.CancelButton.IsDefault = true;
+            dialog.Loaded += (_, _) => dialog.CancelButton.Focus();
         }
 
         (string glyph, string brush, string soft) = kind switch

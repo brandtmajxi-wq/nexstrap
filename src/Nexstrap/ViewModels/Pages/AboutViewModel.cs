@@ -47,4 +47,10 @@ public sealed partial class AboutViewModel(IShellService shell, FileLoggerProvid
 
     [RelayCommand]
     private void OpenLegal() => navigation.NavigateTo<LegalViewModel>();
+
+    [RelayCommand]
+    private void ViewLogs() => navigation.NavigateTo<LogsViewModel>();
+
+    [RelayCommand]
+    private void Tour() => (System.Windows.Application.Current as App)?.ShowTour();
 }

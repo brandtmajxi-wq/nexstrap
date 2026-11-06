@@ -1,0 +1,32 @@
+<UserControl x:Class="Nexstrap.Views.Pages.LogsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="clr-namespace:Nexstrap.Controls"
+             xmlns:vm="clr-namespace:Nexstrap.ViewModels.Pages"
+             mc:Ignorable="d" d:DataContext="{d:DesignInstance vm:LogsViewModel}">
+    <StackPanel>
+        <DockPanel Margin="0,0,0,10">
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                <Button Content="{DynamicResource L.Logs.Refresh}" ui:Ui.Icon="&#xE72C;" Padding="10,5" Margin="0,0,8,0" Command="{Binding RefreshCommand}" />
+                <Button Content="{DynamicResource L.About.Open}" ui:Ui.Icon="&#xE838;" Padding="10,5" Command="{Binding OpenFolderCommand}" />
+            </StackPanel>
+            <Button Content="{DynamicResource L.Legal.Back}" ui:Ui.Icon="&#xE72B;" Padding="10,5" HorizontalAlignment="Left" Command="{Binding BackCommand}" />
+        </DockPanel>
+        <Grid Margin="0,0,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="130" />
+                <ColumnDefinition Width="280" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <ComboBox ItemsSource="{Binding SourceChoices}" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding Source}" AutomationProperties.Name="Log source" />
+            <ComboBox Grid.Column="1" Margin="8,0,0,0" ItemsSource="{Binding Files}" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding SelectedFile}" AutomationProperties.Name="Log file" />
+            <TextBox Grid.Column="2" Margin="8,0,0,0" ui:Ui.Icon="&#xE721;" ui:Ui.Placeholder="{DynamicResource L.Logs.Search}" AutomationProperties.Name="{DynamicResource L.Logs.Search}"
+                     Text="{Binding Search, UpdateSourceTrigger=PropertyChanged, Delay=250}" />
+        </Grid>
+        <TextBox Height="400" IsReadOnly="True" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" VerticalContentAlignment="Top"
+                 FontFamily="{StaticResource Font.Mono}" FontSize="11.5" AutomationProperties.Name="Log text" Text="{Binding Text, Mode=OneWay}" />
+        <TextBlock Text="{Binding Status}" Style="{StaticResource Text.Caption}" Margin="2,8,0,0" />
+    </StackPanel>
+</UserControl>

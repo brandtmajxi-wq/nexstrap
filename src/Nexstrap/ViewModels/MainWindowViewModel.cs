@@ -34,6 +34,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
             new("Welcome", char.ConvertFromUtf32(0xE823), typeof(WelcomeViewModel)),
             new("Home", "", typeof(HomeViewModel)),
             new("Games", "", typeof(GamesViewModel)),
+            new("Stats", char.ConvertFromUtf32(0xE9D2), typeof(StatsViewModel)),
             new("Servers", "", typeof(ServersViewModel)),
             new("Appearance", "", typeof(AppearanceViewModel)),
             new("Loading Screen", "", typeof(LaunchScreenViewModel)),
@@ -80,6 +81,37 @@ public sealed partial class MainWindowViewModel : ObservableObject
     }
 
     public INavigationService Navigation { get; }
+
+    // ===== Settings search =====
+
+    public ObservableCollection<SettingResult> SearchResults { get; } = [];
+
+    public bool HasSearchResults => SearchResults.Count > 0;
+
+    [ObservableProperty]
+    private string _settingsQuery = "";
+
+    [RelayCommand]
+    private void ClearSettingsSearch() => SettingsQuery = "";
+
+    /// <summary>Asks the window to scroll to the card with this header.</summary>
+    public event EventHandler<string>? ScrollToSetting;
+
+    partial void OnSettingsQueryChanged(string value)
+    {
+        SearchResults.Clear();
+        foreach (var result in SettingsCatalog.Search(value)) SearchResults.Add(result);
+        OnPropertyChanged(nameof(HasSearchResults));
+    }
+
+    [RelayCommand]
+    private void OpenSearchResult(SettingResult result)
+    {
+        SettingsQuery = "";
+        if (_pages.Concat(FooterItems).FirstOrDefault(p => p.Title == result.Page) is not { } page) return;
+        Navigation.NavigateTo(page.PageType);
+        ScrollToSetting?.Invoke(this, result.Label);
+    }
 
     /// <summary>The pages the sidebar shows, in the chosen order.</summary>
     public ObservableCollection<NavItem> NavItems { get; } = [];

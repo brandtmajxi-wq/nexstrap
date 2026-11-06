@@ -65,7 +65,7 @@ public class GameShortcutTests : IDisposable
 public class RecentGamesTests
 {
     private static LaunchCoordinator Create(MemorySettings settings) =>
-        new(null!, null!, null!, null!, null!, settings, null!, null!, null!);
+        new(null!, null!, null!, null!, null!, settings, null!, null!, null!, null!);
 
     [Fact]
     public void Keeps_newest_first_without_duplicates_and_preserves_names()

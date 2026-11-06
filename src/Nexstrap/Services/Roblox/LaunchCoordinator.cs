@@ -37,7 +37,8 @@ public sealed class LaunchCoordinator(
     ISettingsService settings,
     IDialogService dialogs,
     ILaunchScreen screen,
-    IPlayHistoryService history) : ILaunchCoordinator
+    IPlayHistoryService history,
+    IGameProfileService profiles) : ILaunchCoordinator
 {
     internal const int MaxRecent = 20;
 
@@ -48,7 +49,7 @@ public sealed class LaunchCoordinator(
     public Task<LaunchResult?> JoinAsync(long placeId, string? name, string? serverId = null)
     {
         var uri = serverId is null ? RobloxLinks.PlaceLaunchUri(placeId) : RobloxLinks.ServerLaunchUri(placeId, serverId);
-        return RunAsync(i => launcher.LaunchUri(i, uri), replacesGame: true, () => RememberRecent(placeId, name));
+        return RunAsync(i => launcher.LaunchUri(i, uri), replacesGame: true, () => RememberRecent(placeId, name), beforeLaunch: () => profiles.ApplyFor(placeId));
     }
 
     public Task<LaunchResult?> HopAsync(long placeId, string? name, string serverId)
@@ -57,7 +58,7 @@ public sealed class LaunchCoordinator(
         return RunAsync(i => launcher.LaunchUri(i, uri), replacesGame: false, () => RememberRecent(placeId, name), quiet: true);
     }
 
-    private async Task<LaunchResult?> RunAsync(Func<RobloxInstallation, LaunchResult> launch, bool replacesGame, Action? onStarted, bool quiet = false)
+    private async Task<LaunchResult?> RunAsync(Func<RobloxInstallation, LaunchResult> launch, bool replacesGame, Action? onStarted, bool quiet = false, Action? beforeLaunch = null)
     {
         var state = client.State;
         if (state.Preferred is not { } installation)
@@ -77,6 +78,7 @@ public sealed class LaunchCoordinator(
                 Loc.Get("Launch.LaunchAnyway"), Loc.Get("Launch.NotNow")))
             return null;
 
+        beforeLaunch?.Invoke();
         var launchedAt = DateTime.UtcNow;
         var result = await Task.Run(() => launch(installation));
         if (!result.Success)

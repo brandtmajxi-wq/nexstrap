@@ -27,7 +27,14 @@
             <Button Content="{DynamicResource L.About.Open}" ui:Ui.Icon="&#xE838;" Padding="10,6" Command="{Binding OpenDataFolderCommand}" />
         </ui:SettingCard>
         <ui:SettingCard Icon="&#xE9F9;" Header="{DynamicResource L.About.Logs}" Description="{DynamicResource L.About.OneLogFilePerSessionThe}">
-            <Button Content="{DynamicResource L.About.Open}" ui:Ui.Icon="&#xE838;" Padding="10,6" Command="{Binding OpenLogsFolderCommand}" />
+            <StackPanel Orientation="Horizontal">
+                <Button Content="{DynamicResource L.About.ViewLogs}" ui:Ui.Icon="&#xE9F9;" Padding="10,6" Margin="0,0,8,0" Command="{Binding ViewLogsCommand}" />
+                <Button Content="{DynamicResource L.About.Open}" ui:Ui.Icon="&#xE838;" Padding="10,6" Command="{Binding OpenLogsFolderCommand}" />
+            </StackPanel>
+        </ui:SettingCard>
+
+        <ui:SettingCard Icon="&#xE7BE;" Header="{DynamicResource L.About.Tour}" Description="{DynamicResource L.About.Tour.Text}">
+            <Button Content="{DynamicResource L.About.Tour.Start}" ui:Ui.Icon="&#xE768;" Padding="10,6" Command="{Binding TourCommand}" />
         </ui:SettingCard>
 
         <TextBlock Text="{DynamicResource L.About.Legal}" Style="{StaticResource SectionHeader}" />

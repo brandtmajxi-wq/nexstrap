@@ -95,7 +95,7 @@
                      Text="{Binding MenuTopLine, UpdateSourceTrigger=LostFocus}" />
         </ui:SettingCard>
         <ui:SettingCard Icon="&#xE8D2;" Header="{DynamicResource L.Integrations.MenuTextSecondLine}"
-                        Description="{DynamicResource L.Integrations.ForExampleBrowsingZovstrapUpdatesOn}">
+                        Description="{DynamicResource L.Integrations.ForExampleBrowsingNexstrapUpdatesOn}">
             <TextBox Width="220" MaxLength="128" ui:Ui.Placeholder="Browsing Roblox" AutomationProperties.Name="Menu text second line"
                      Text="{Binding MenuBottomLine, UpdateSourceTrigger=LostFocus}" />
         </ui:SettingCard>

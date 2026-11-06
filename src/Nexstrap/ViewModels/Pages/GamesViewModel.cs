@@ -37,8 +37,68 @@ public sealed partial class GameItem(long placeId, string name, bool isFavorite)
 /// <summary>One line of the play history list.</summary>
 public sealed record HistoryRow(string Name, string TimeText, string LastPlayedText);
 
+/// <summary>One game profile; changes save straight away.</summary>
+public sealed class GameProfileRow(GameProfile profile, IGameProfileService service)
+{
+    public GameProfile Profile { get; } = profile;
+
+    public string Name => Profile.Name;
+
+    public int Fps
+    {
+        get => Profile.FramerateCap ?? GamesViewModel.NormalSetting;
+        set { Profile.FramerateCap = value == GamesViewModel.NormalSetting ? null : value; service.Save(); }
+    }
+
+    public int Quality
+    {
+        get => Profile.Quality ?? GamesViewModel.NormalSetting;
+        set { Profile.Quality = value == GamesViewModel.NormalSetting ? null : value; service.Save(); }
+    }
+}
+
 public sealed partial class GamesViewModel : PageViewModel
 {
+    internal const int NormalSetting = -1;
+
+    private readonly IGameProfileService _profiles;
+
+    public ObservableCollection<GameProfileRow> ProfileRows { get; } = [];
+
+    public bool HasProfiles => ProfileRows.Count > 0;
+
+    public IReadOnlyList<Choice<int>> FpsChoices { get; } =
+    [
+        new(NormalSetting, () => Loc.Get("Games.Profile.Default")), new(60, "60 FPS"), new(120, "120 FPS"), new(144, "144 FPS"), new(240, "240 FPS"),
+        new(Nexstrap.Services.Performance.PerformancePlanner.NoLimitCap, () => Loc.Get("Performance.NoLimit.Choice"))
+    ];
+
+    public IReadOnlyList<Choice<int>> QualityChoices { get; } = BuildQualityChoices();
+
+    private static IReadOnlyList<Choice<int>> BuildQualityChoices()
+    {
+        var list = new List<Choice<int>> { new(NormalSetting, () => Loc.Get("Games.Profile.Default")), new(0, () => Loc.Get("Performance.Automatic")) };
+        for (var level = 1; level <= 10; level++)
+        {
+            var shown = level;
+            list.Add(new Choice<int>(shown, () => Loc.Format("Games.Profile.Quality", shown)));
+        }
+        return list;
+    }
+
+    private void RebuildProfiles()
+    {
+        ProfileRows.Clear();
+        foreach (var profile in _profiles.Profiles) ProfileRows.Add(new GameProfileRow(profile, _profiles));
+        OnPropertyChanged(nameof(HasProfiles));
+    }
+
+    [RelayCommand]
+    private void AddProfile(GameItem game) => _profiles.Add(game.PlaceId, game.Name);
+
+    [RelayCommand]
+    private void RemoveProfile(GameProfileRow row) => _profiles.Remove(row.Profile);
+
     private readonly ISettingsService _settings;
     private readonly ILaunchCoordinator _launch;
     private readonly IExperienceInfoService _experiences;
@@ -50,8 +110,11 @@ public sealed partial class GamesViewModel : PageViewModel
     private readonly IGameSearchService _search;
 
     public GamesViewModel(ISettingsService settings, ILaunchCoordinator launch, IExperienceInfoService experiences,
-        IGameShortcutService shortcuts, IDialogService dialogs, INavigationService navigation, ServersViewModel servers, IPlayHistoryService history, IGameSearchService search)
+        IGameShortcutService shortcuts, IDialogService dialogs, INavigationService navigation, ServersViewModel servers, IPlayHistoryService history, IGameSearchService search, IGameProfileService profiles)
     {
+        _profiles = profiles;
+        profiles.Changed += (_, _) => Application.Current?.Dispatcher.BeginInvoke(RebuildProfiles);
+        RebuildProfiles();
         _settings = settings;
         _launch = launch;
         _experiences = experiences;
@@ -168,7 +231,7 @@ public sealed partial class GamesViewModel : PageViewModel
     private void RebuildHistory()
     {
         History.Clear();
-        foreach (var game in _history.Games.Take(HistoryRows))
+        foreach (var game in PlayStats.MergeByName(_history.Games).Take(HistoryRows))
         {
             var name = game.Name.Length > 0 ? game.Name : Loc.Format("Launch.Place", game.PlaceId);
             History.Add(new HistoryRow(name, PlayHistoryService.FormatDuration(game.Seconds),

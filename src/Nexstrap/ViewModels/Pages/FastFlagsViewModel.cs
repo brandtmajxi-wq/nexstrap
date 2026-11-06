@@ -96,6 +96,17 @@ public sealed class KnownFlagRow(KnownFlag flag, bool isAdded)
 
 public sealed partial class FastFlagsViewModel : PageViewModel
 {
+    public IReadOnlyList<FastFlagPreset> Presets => FastFlagPresets.All;
+
+    [ObservableProperty]
+    private string? _presetMessage;
+
+    [RelayCommand]
+    private void ApplyFlagPreset(FastFlagPreset preset)
+    {
+        PresetMessage = FastFlagPresets.Apply(_flags, preset) ?? Loc.Format("FastFlags.Preset.Added", preset.Name);
+    }
+
     private const string JsonFilter = "JSON (*.json)|*.json";
 
     private readonly IFastFlagService _flags;

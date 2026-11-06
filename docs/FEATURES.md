@@ -37,6 +37,12 @@ Favorites and recently played experiences (newest 20) with thumbnails from Roblo
 
 **Play history** counts time in games while Nexstrap follows Roblox, which means Roblox was started from Nexstrap or through a link it handles. Time in the Roblox menu isn't counted, and visits under 15 seconds are ignored. Each place or server counts as a separate session. Totals, session counts, the last 7 days and last played dates are stored in `History.json` on this PC. It can be turned off or cleared on the Games page.
 
+**Game profiles** give a game its own FPS cap and graphics quality, set in Roblox's own settings when you join it from Nexstrap, whichever build you use. Your previous values are saved first and go back when Roblox closes, or the next time Nexstrap opens if it closed first. Profiles don't apply to website links, or while Roblox is already open.
+
+## Stats
+
+Total play time, sessions, current and best streak, the last 14 days and your top five games, from the history on the Games page. Streaks and daily bars use the newest 500 sessions. A streak survives until a whole day is missed.
+
 ## Tray icon
 
 While Nexstrap runs it has an icon in the notification area. Left-click opens the window; right-click offers Open, Play Roblox, the five most recent games and Quit. *Keep running in the tray when closed* makes the X hide the window, and *Start hidden in the tray* keeps it there when Windows opens Nexstrap. Starting Nexstrap again brings the running copy forward.
@@ -49,7 +55,7 @@ Ping is the average Roblox reports for the server, not your own.
 
 **Server locations.** Roblox's public list has no locations, and asking for them before joining needs your account's sign-in, which Nexstrap never touches. Once you're on a server, Roblox writes its address to its own log, and Nexstrap matches that to a city using a community list of Roblox's addresses. The list isn't official, so locations can be wrong, out of date or unknown.
 
-**Find a server by region** (experimental) joins public servers one at a time until one is in the city you picked, up to 8 tries. It closes Roblox between tries, can take a few minutes, and may not find one. Companion programs set to close with Roblox close and restart with each try.
+**Find a server by region** (experimental) joins public servers one at a time until one is in the city you picked, up to 8 tries. It closes Roblox between tries, ending it after 10 seconds if it hasn't closed by itself, can take a few minutes, and may not find one. Companion programs set to close with Roblox close and restart with each try.
 
 ## Loading Screen
 
@@ -92,6 +98,7 @@ Anything else is ignored (harmlessly). Nexstrap labels every flag accordingly an
 - Flags are written only into builds Nexstrap installed, right before each launch.
 - Import accepts `{ "Name": value }` JSON (Roblox/Bloxstrap/Voidstrap format). *Import from Roblox build* reads another launcher's file without changing it.
 - Backups are made before imports, resets, restores and your first edit each session (newest 20 kept).
+- **Quick presets** add a set of allowlisted flags in one click: Low-end PC, Clean look and Sharp graphics.
 
 ## Roblox Settings
 
@@ -105,6 +112,7 @@ maximum frame rate (60/120/144/240), automatic or fixed graphics quality (1–10
 - **Open Nexstrap when Windows starts** adds a per-user startup entry, which uninstalling removes.
 - **Roblox CPU priority and CPU cores** use normal Windows process settings when Roblox starts from Nexstrap, with any build. Realtime priority isn't offered because it can freeze a PC. They don't add FPS by themselves, and fewer cores can lower it.
 - **Roblox window title** changes the title of Roblox's window once it opens.
+- **Global hotkeys** (off by default): Ctrl+Alt+N opens Nexstrap and Ctrl+Alt+J rejoins your last server, from any app while Nexstrap is running.
 - **Clean up old files** deletes files older than 7 days from Roblox's logs folder, Roblox's temp folder and Nexstrap's Downloads folder, and waits if Roblox is open. Settings, games and Roblox builds aren't touched.
 
 ## Integrations
@@ -122,7 +130,7 @@ An inbox with a count in the sidebar. It covers new Nexstrap releases, Roblox bu
 
 ## About
 
-Version and runtime details, *Copy diagnostics*, data and log folders, open-source credits, and **Privacy and terms**, which explains what stays on your PC, what goes online and the terms for using Nexstrap.
+Version and runtime details, *Copy diagnostics*, data and log folders, a **log viewer** for Nexstrap's and Roblox's logs (the last 3,000 lines, with search), a replayable tour, open-source credits, and **Privacy and terms**, which explains what stays on your PC, what goes online and the terms for using Nexstrap.
 
 ## Files and folders
 

@@ -96,6 +96,33 @@
                 <RowDefinition />
             </Grid.RowDefinitions>
 
+            <!-- Settings search -->
+            <Grid Width="300" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="36,7,0,0" WindowChrome.IsHitTestVisibleInChrome="True">
+                <TextBox x:Name="SettingsSearch" ui:Ui.Icon="&#xE721;" ui:Ui.Placeholder="{DynamicResource L.Search.Placeholder}" AutomationProperties.Name="{DynamicResource L.Search.Placeholder}"
+                         Text="{Binding SettingsQuery, UpdateSourceTrigger=PropertyChanged}">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Escape" Command="{Binding ClearSettingsSearchCommand}" />
+                    </TextBox.InputBindings>
+                </TextBox>
+                <Popup IsOpen="{Binding HasSearchResults, Mode=OneWay}" PlacementTarget="{Binding ElementName=SettingsSearch}" Placement="Bottom" AllowsTransparency="True" VerticalOffset="4">
+                    <Border Width="300" Padding="6" CornerRadius="{DynamicResource Radius.Control}" Background="{DynamicResource Brush.Window}" BorderBrush="{DynamicResource Brush.BorderStrong}" BorderThickness="1">
+                        <ItemsControl ItemsSource="{Binding SearchResults}" Focusable="False">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Style="{StaticResource Button.Ghost}" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" Padding="8,5" CommandParameter="{Binding}" AutomationProperties.Name="{Binding Label}"
+                                            Command="{Binding DataContext.OpenSearchResultCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Label}" Style="{StaticResource Text.Base}" FontSize="12.5" TextTrimming="CharacterEllipsis" />
+                                            <TextBlock Text="{Binding PageLabel}" Style="{StaticResource Text.Caption}" FontWeight="Normal" />
+                                        </StackPanel>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Border>
+                </Popup>
+            </Grid>
+
             <!-- Title bar: draggable area + caption buttons -->
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
                 <Button Style="{StaticResource Button.Caption}" Content="&#xE921;" ToolTip="{DynamicResource L.Main.Minimize}" Click="OnMinimize" />

@@ -2,6 +2,25 @@
 
 All notable changes to Nexstrap are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.19.0] - 2026-11-06
+
+### Added
+- **Game profiles** (Games): give a game its own FPS cap and graphics quality. They're set when you join it from Nexstrap, and your normal settings come back when Roblox closes.
+- **Stats**: a new page with your total play time, sessions, streaks, the last 14 days and your top games.
+- **Log viewer** (About): read and search Nexstrap's and Roblox's logs inside the app.
+- **FastFlag presets**: Low-end PC, Clean look and Sharp graphics, using only flags Roblox still allows.
+- **Global hotkeys** (Roblox Settings, off by default): Ctrl+Alt+N opens Nexstrap and Ctrl+Alt+J rejoins your last server.
+- **Settings search**: find any option from the top of the window, or press Ctrl+K.
+- **First-run tour**: a short tour for new users, which you can replay from About.
+
+### Fixed
+- **Find a server by region** stopped after one try, because Roblox takes about 30 seconds to close by itself. It now ends Roblox after 10 seconds, and can't mistake the old server for the new one.
+- A game with several places no longer appears more than once in your play history.
+
+### Changed
+- The uninstall question now keeps your data if you press Enter.
+- The Back button on the privacy page is easier to see.
+
 ## [1.18.1] - 2026-11-06
 
 ### Added
@@ -192,6 +211,7 @@ First public release.
 - Quick update check on every launch with an in-app banner; release notes, progress and cancel.
 - Updates are installed only after verifying source, size, SHA-256, product name and version; failed swaps roll back.
 
+[1.19.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.19.0
 [1.18.1]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.18.1
 [1.18.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.18.0
 [1.17.2]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.17.2

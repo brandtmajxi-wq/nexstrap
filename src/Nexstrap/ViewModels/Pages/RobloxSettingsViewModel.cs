@@ -30,14 +30,16 @@ public sealed partial class RobloxSettingsViewModel : PageViewModel
     private readonly IShellService _shell;
     private readonly INavigationService _navigation;
     private readonly IWindowsStartup _startup;
+    private readonly IHotkeyService _hotkeys;
     private readonly ICleanupService _cleanup;
     private RobloxUserSettings _loaded = new();
     private bool _loading;
 
     public RobloxSettingsViewModel(IRobloxUserSettingsService robloxSettings, IRobloxLauncher launcher, IRobloxClientService client,
         IProtocolRegistration protocol, ISettingsService settings, IDialogService dialogs, IShellService shell, INavigationService navigation,
-        IWindowsStartup startup, ICleanupService cleanup)
+        IWindowsStartup startup, ICleanupService cleanup, IHotkeyService hotkeys)
     {
+        _hotkeys = hotkeys;
         _robloxSettings = robloxSettings;
         _launcher = launcher;
         _client = client;
@@ -228,6 +230,21 @@ public sealed partial class RobloxSettingsViewModel : PageViewModel
                 _dialogs.Show(Loc.Get("RobloxSettings.CouldntChangeStartup"), ex.Message, DialogKind.Error);
             }
             OnPropertyChanged();
+        }
+    }
+
+    public bool GlobalHotkeys
+    {
+        get => _settings.Current.Launcher.GlobalHotkeys;
+        set
+        {
+            var result = _hotkeys.Apply(value);
+            _settings.Current.Launcher.GlobalHotkeys = value && result != HotkeyResult.NoneWorking;
+            _settings.Save();
+            OnPropertyChanged();
+            // After the toggle has updated, because this dialog waits for an answer.
+            if (result != HotkeyResult.AllWorking)
+                Application.Current?.Dispatcher.BeginInvoke(() => _dialogs.Show(Loc.Get("RobloxSettings.Hotkeys.Taken"), Loc.Get("RobloxSettings.Hotkeys.Taken.Text"), DialogKind.Warning));
         }
     }
 

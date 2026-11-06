@@ -66,7 +66,12 @@ public sealed class RobloxLauncher(
             foreach (var process in processes)
             {
                 var left = deadline - DateTime.UtcNow;
-                if (!process.WaitForExit(left > TimeSpan.Zero ? left : TimeSpan.Zero)) return false;
+                if (process.WaitForExit(left > TimeSpan.Zero ? left : TimeSpan.Zero)) continue;
+
+                // Asking only leaves the game, and Roblox can then sit for about 30 seconds before exiting.
+                logger.LogInformation("Roblox was still open after being asked to close, so it was ended");
+                process.Kill();
+                if (!process.WaitForExit(TimeSpan.FromSeconds(5))) return false;
             }
             return true;
         }

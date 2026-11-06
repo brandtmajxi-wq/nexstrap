@@ -16,7 +16,8 @@ public interface IDialogService
 {
     void Show(string title, string message, DialogKind kind = DialogKind.Info, string? details = null);
 
-    bool Confirm(string title, string message, string confirmText = "Continue", string cancelText = "Cancel");
+    /// <param name="cancelIsDefault">Makes Enter choose the cancel button, for answers that can't be undone.</param>
+    bool Confirm(string title, string message, string confirmText = "Continue", string cancelText = "Cancel", bool cancelIsDefault = false);
 
     /// <summary>Asks for one line of text. Returns null if it was skipped. <paramref name="validate"/> returns a problem to show, or null.</summary>
     string? Ask(string title, string message, string confirmText, string cancelText, int maxLength, Func<string, string?>? validate = null);
@@ -28,9 +29,9 @@ public sealed class DialogService : IDialogService
     public void Show(string title, string message, DialogKind kind = DialogKind.Info, string? details = null) =>
         Run(() => MessageDialog.ShowModal(Owner(), title, message, kind, details, Loc.Get("Common.OK"), null));
 
-    public bool Confirm(string title, string message, string confirmText = "Continue", string cancelText = "Cancel") =>
+    public bool Confirm(string title, string message, string confirmText = "Continue", string cancelText = "Cancel", bool cancelIsDefault = false) =>
         Run(() => MessageDialog.ShowModal(Owner(), title, message, DialogKind.Question, null,
-            Loc.GetOr("Common." + confirmText, confirmText), Loc.GetOr("Common." + cancelText, cancelText)));
+            Loc.GetOr("Common." + confirmText, confirmText), Loc.GetOr("Common." + cancelText, cancelText), cancelIsDefault));
 
     public string? Ask(string title, string message, string confirmText, string cancelText, int maxLength, Func<string, string?>? validate = null)
     {

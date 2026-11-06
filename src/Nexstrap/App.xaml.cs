@@ -75,6 +75,7 @@ public partial class App : Application
         _services.GetRequiredService<ILastServerService>();
         _services.GetRequiredService<IServerRegionService>();
         _services.GetRequiredService<IGameJoinAlerts>();
+        _services.GetRequiredService<IGameProfileService>();
         // Old exe and downloaded update files from a previous self-update.
         _services.GetRequiredService<IUpdateInstaller>().CleanUpAfterUpdate();
 
@@ -101,6 +102,7 @@ public partial class App : Application
         var shell = _services.GetRequiredService<MainWindowViewModel>();
         shell.NavigateToStartPage(Options.StartPage);
         if (Options.CapturePath is null) _services.GetRequiredService<ITrayService>().Show();
+        if (Options.CapturePath is null && settings.Current.Launcher.GlobalHotkeys) _services.GetRequiredService<IHotkeyService>().Apply(true);
         if (!Options.Tray) window.Show();
         _ = StartupPromptsAsync(shell);
         // Roblox update notifications shouldn't depend on Home being the first page opened.
@@ -190,10 +192,28 @@ public partial class App : Application
         var answer = _services!.GetRequiredService<IDialogService>().Ask(Loc.Get("Welcome.Name.Title"), Loc.Get("Welcome.Name.Text"),
             Loc.Get("Welcome.Name.Save"), Loc.Get("Welcome.Name.Skip"), WelcomeName.MaxLength,
             text => NameFilter.IsAllowed(text) ? null : Loc.Get("Welcome.Name.NotAllowed"));
-        if (WelcomeName.Clean(answer) is not { } name) return;
+        if (WelcomeName.Clean(answer) is { } name)
+        {
+            settings.Current.Welcome.Name = name;
+            settings.Save();
+        }
 
-        settings.Current.Welcome.Name = name;
-        settings.Save();
+        // Only people who hadn't seen this question are new, so only they get the tour.
+        ShowTour();
+    }
+
+    /// <summary>A few short steps that also open each page. Replayed from About.</summary>
+    public void ShowTour()
+    {
+        var dialogs = _services!.GetRequiredService<IDialogService>();
+        var navigation = _services!.GetRequiredService<INavigationService>();
+        var steps = new (Type Page, string Key)[] { (typeof(HomeViewModel), "Tour.Home"), (typeof(GamesViewModel), "Tour.Games"), (typeof(AppearanceViewModel), "Tour.Look") };
+        foreach (var (page, key) in steps)
+        {
+            navigation.NavigateTo(page);
+            if (!dialogs.Confirm(Loc.Get(key), Loc.Get(key + ".Text"), Loc.Get("Tour.Next"), Loc.Get("Tour.Skip"))) return;
+        }
+        dialogs.Confirm(Loc.Get("Tour.Find"), Loc.Get("Tour.Find.Text"), Loc.Get("Tour.Done"), Loc.Get("Tour.Skip")); // either button just closes it
     }
 
     /// <summary>Shows setup. Returns true if this copy should carry on and open normally.</summary>
@@ -232,7 +252,7 @@ public partial class App : Application
             return;
 
         var deleteData = dialogs.Confirm(Loc.Get("Uninstall.Data.Title"), Loc.Get("Uninstall.Data.Text"),
-            Loc.Get("Uninstall.Data.Delete"), Loc.Get("Uninstall.Data.Keep"));
+            Loc.Get("Uninstall.Data.Delete"), Loc.Get("Uninstall.Data.Keep"), cancelIsDefault: true);
         try
         {
             install.Uninstall(deleteData);
@@ -358,6 +378,10 @@ public partial class App : Application
         // Pages (singletons so state survives tab switches)
         services.AddSingleton<WelcomeViewModel>();
         services.AddSingleton<LegalViewModel>();
+        services.AddSingleton<StatsViewModel>();
+        services.AddSingleton<LogsViewModel>();
+        services.AddSingleton<IGameProfileService, GameProfileService>();
+        services.AddSingleton<IHotkeyService, HotkeyService>();
         services.AddSingleton<HomeViewModel>();
         services.AddSingleton<AppearanceViewModel>();
         services.AddSingleton<NotificationsViewModel>();

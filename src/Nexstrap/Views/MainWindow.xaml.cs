@@ -31,6 +31,14 @@ public partial class MainWindow : Window
         RestoreWindowPlacement();
         StateChanged += (_, _) => UpdateMaximizedState();
         navigation.Navigated += (_, _) => PlayPageTransition();
+        viewModel.ScrollToSetting += (_, label) => Dispatcher.BeginInvoke(() => FindCard(PageScroller, label)?.BringIntoView(),
+            System.Windows.Threading.DispatcherPriority.ContextIdle);
+        PreviewKeyDown += (_, e) =>
+        {
+            if (e.Key != System.Windows.Input.Key.K || System.Windows.Input.Keyboard.Modifiers != System.Windows.Input.ModifierKeys.Control) return;
+            SettingsSearch.Focus();
+            e.Handled = true;
+        };
         ContentRendered += OnContentRendered;
     }
 
@@ -40,6 +48,17 @@ public partial class MainWindow : Window
         var radius = _settings.Current.Appearance.BackgroundBlur;
         BackgroundLayer.Effect = radius > 0 ? new System.Windows.Media.Effects.BlurEffect { Radius = radius } : null;
         BackgroundLayer.Margin = new Thickness(-radius * 2);
+    }
+
+    private static Nexstrap.Controls.SettingCard? FindCard(DependencyObject parent, string header)
+    {
+        for (var i = 0; i < System.Windows.Media.VisualTreeHelper.GetChildrenCount(parent); i++)
+        {
+            var child = System.Windows.Media.VisualTreeHelper.GetChild(parent, i);
+            if (child is Nexstrap.Controls.SettingCard card && card.Header == header) return card;
+            if (FindCard(child, header) is { } found) return found;
+        }
+        return null;
     }
 
     private void RestoreWindowPlacement()

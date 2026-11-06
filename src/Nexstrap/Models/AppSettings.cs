@@ -37,11 +37,33 @@ public sealed class AppSettings
 
     public WelcomeSettings Welcome { get; set; } = new();
 
+    /// <summary>Per-game frame-rate and graphics choices.</summary>
+    public List<GameProfile> GameProfiles { get; set; } = [];
+
     /// <summary>Language code; null follows Windows.</summary>
     public string? Language { get; set; }
 
     /// <summary>Set by "Run without installing" so setup doesn't appear on every start.</summary>
     public bool SkippedSetup { get; set; }
+}
+
+public sealed class GameProfile
+{
+    public long PlaceId { get; set; }
+    public string Name { get; set; } = "";
+
+    /// <summary>Null keeps the normal setting.</summary>
+    public int? FramerateCap { get; set; }
+
+    /// <summary>0 is automatic, 1-10 the graphics slider. Null keeps the normal setting.</summary>
+    public int? Quality { get; set; }
+}
+
+/// <summary>Roblox settings to put back once a game with a profile has ended.</summary>
+public sealed class ProfileRestore
+{
+    public int? FramerateCap { get; set; }
+    public int? Quality { get; set; }
 }
 
 public sealed class WelcomeSettings
@@ -234,6 +256,10 @@ public sealed class LauncherSettings
 
     /// <summary>Query GitHub for a newer Nexstrap when the app opens.</summary>
     public bool CheckForUpdatesOnStartup { get; set; } = true;
+
+    public bool GlobalHotkeys { get; set; }
+
+    public ProfileRestore? ProfileRestore { get; set; }
 
     public RobloxPriority RobloxPriority { get; set; }
 

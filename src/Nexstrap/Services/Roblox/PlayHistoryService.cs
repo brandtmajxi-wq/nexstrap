@@ -38,6 +38,9 @@ public interface IPlayHistoryService
     /// <summary>Most played first.</summary>
     IReadOnlyList<GamePlayStats> Games { get; }
 
+    /// <summary>The newest 500 sessions, oldest first.</summary>
+    IReadOnlyList<PlaySession> Sessions { get; }
+
     double TotalSeconds { get; }
 
     int TotalSessions { get; }
@@ -95,6 +98,11 @@ public sealed class PlayHistoryService : IPlayHistoryService
     public IReadOnlyList<GamePlayStats> Games
     {
         get { lock (_gate) return _document.Games.OrderByDescending(g => g.Seconds).ToList(); }
+    }
+
+    public IReadOnlyList<PlaySession> Sessions
+    {
+        get { lock (_gate) return _document.Sessions.ToList(); }
     }
 
     public double TotalSeconds

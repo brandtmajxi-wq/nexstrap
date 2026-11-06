@@ -96,7 +96,8 @@ public sealed class ServerRegionService : IServerRegionService
             ct.ThrowIfCancellationRequested();
             progress.Report(new RegionSearchProgress(attempt, total, false, null));
 
-            if (_launcher.IsRobloxRunning() && !await Task.Run(() => _launcher.CloseRoblox(TimeSpan.FromSeconds(15)), ct))
+            var previousServer = _session.Current?.JobId;
+            if (_launcher.IsRobloxRunning() && !await Task.Run(() => _launcher.CloseRoblox(TimeSpan.FromSeconds(10)), ct))
             {
                 _logger.LogWarning("Roblox didn't close for the region search");
                 return RegionSearchOutcome.Failed;
@@ -105,7 +106,7 @@ public sealed class ServerRegionService : IServerRegionService
             var result = await _launch.HopAsync(placeId, name, candidates[attempt - 1].Id);
             if (result is not { Success: true }) return RegionSearchOutcome.Failed;
 
-            if (await WaitForServerAsync(placeId, ct) is not { } address)
+            if (await WaitForServerAsync(placeId, previousServer, ct) is not { } address)
             {
                 _logger.LogInformation("Region search: no server address after {Timeout}", JoinTimeout);
                 continue;
@@ -125,12 +126,13 @@ public sealed class ServerRegionService : IServerRegionService
             .OrderByDescending(s => KnownRegion(s.Id) == region)
             .ToList();
 
-    private async Task<string?> WaitForServerAsync(long placeId, CancellationToken ct)
+    /// <summary>Ignores the server just left, which can still be showing for a moment after Roblox closes.</summary>
+    private async Task<string?> WaitForServerAsync(long placeId, string? previousServer, CancellationToken ct)
     {
         var deadline = DateTime.UtcNow + JoinTimeout;
         while (DateTime.UtcNow < deadline)
         {
-            if (_session.Current is { Kind: RobloxActivityKind.InGame, ServerAddress: { } address } current && current.PlaceId == placeId)
+            if (_session.Current is { Kind: RobloxActivityKind.InGame, ServerAddress: { } address } current && current.PlaceId == placeId && current.JobId != previousServer)
                 return address;
             await Task.Delay(PollDelay, ct);
         }

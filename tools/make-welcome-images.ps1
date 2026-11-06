@@ -138,7 +138,7 @@ public static class Painter
     {
         var warm = C("#FFC46B");
         var wall = Mix(C("#4A2C1D"), near, 0.35);
-        int cx = (int)(W * 0.85), ground = (int)shore[cx] + 8;
+        int cx = (int)(W * 0.815), ground = (int)shore[cx] + 8;
         int bw = 118, bh = 78, roof = 62;
 
         Box(px, cx + 44, ground - bh - roof - 12, cx + 66, ground - bh - 10, wall);
@@ -159,7 +159,7 @@ public static class Painter
         }
         Light(px, cx, ground - 30, 300, warm, 0.2 * s.Lights);
 
-        int tx = (int)(W * 0.765), baseY = (int)shore[tx] + 10;
+        int tx = (int)(W * 0.735), baseY = (int)shore[tx] + 10;
         double height = H * 0.3, half = height * 0.2;
         Pine(px, tree, snow, tx, baseY, height, half, 9, s.Seed + 2);
         var colors = new[] { C("#FF3B3B"), C("#FFC93B"), C("#3BE07A"), C("#3BA7FF"), C("#FF6BD6") };
