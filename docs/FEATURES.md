@@ -27,7 +27,7 @@ The first page in the sidebar, so it's what opens by default. It greets you by t
 | **Rejoin last server** | Shown for 24 hours after leaving a game Nexstrap followed. Uses Roblox's `gameInstanceId` link, so it only works if that server is still running and has room, and may not work for private servers. Also in the tray menu. |
 | **Installations** | Every build found on the PC. *Choose automatically* uses the one matching Roblox's live version (Nexstrap's own first). If none matches, it stays on Nexstrap's own build. Builds from other launchers can be used but are never modified or deleted. |
 | **Quick settings** | Light theme, close Nexstrap after launch, check for updates on launch. |
-| **Nexstrap updates** | Current version, latest release, release notes, *Download & install*. |
+| **Nexstrap updates** | Current version, latest release, release notes, *Download & install*. If a newer version is out when Nexstrap opens, it asks once per run, with **Update now** and **Later**. This follows *Check for updates on launch*. |
 
 ## Games
 

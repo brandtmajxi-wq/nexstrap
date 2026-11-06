@@ -2,6 +2,11 @@
 
 All notable changes to Nexstrap are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.18.1] - 2026-11-06
+
+### Added
+- **Update reminder**: if you open an older version, Nexstrap asks you to update right away, with **Update now** and **Later** buttons. It uses the same safety checks as other updates, and it follows the *Check for updates on launch* setting.
+
 ## [1.18.0] - 2026-11-06
 
 ### Added
@@ -187,6 +192,7 @@ First public release.
 - Quick update check on every launch with an in-app banner; release notes, progress and cancel.
 - Updates are installed only after verifying source, size, SHA-256, product name and version; failed swaps roll back.
 
+[1.18.1]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.18.1
 [1.18.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.18.0
 [1.17.2]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.17.2
 [1.17.1]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.17.1

@@ -934,5 +934,7 @@
   "Legal.Terms.Changes": "Änderungen",
   "Legal.Terms.Changes.Text": "Diese Seiten können sich mit neuen Versionen ändern. Das Datum oben zeigt die letzte Änderung. Maßgeblich ist die englische Fassung.",
   "Legal.Contact": "Fragen? Öffne ein GitHub-Issue",
-  "Legal.Licence": "MIT-Lizenz lesen"
+  "Legal.Licence": "MIT-Lizenz lesen",
+  "Update.Prompt.Title": "Nexstrap aktualisieren?",
+  "Update.Prompt.Text": "Nexstrap v{0} ist da, und du nutzt v{1}. Ältere Versionen werden nicht empfohlen, also aktualisiere am besten jetzt."
 }

@@ -102,8 +102,7 @@ public partial class App : Application
         shell.NavigateToStartPage(Options.StartPage);
         if (Options.CapturePath is null) _services.GetRequiredService<ITrayService>().Show();
         if (!Options.Tray) window.Show();
-        if (Options.CapturePath is null) Dispatcher.BeginInvoke(AskForNameOnce, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
-        _ = shell.CheckForUpdatesOnLaunchAsync();
+        _ = StartupPromptsAsync(shell);
         // Roblox update notifications shouldn't depend on Home being the first page opened.
         _ = _services.GetRequiredService<IRobloxClientService>().RefreshAsync();
 
@@ -141,7 +140,42 @@ public partial class App : Application
         // Windows won't always let a background app take focus; this brings it above other windows.
         window.Topmost = true;
         window.Topmost = false;
-        AskForNameOnce();
+        ShowStartupQuestions();
+    }
+
+    private bool _updateOffered;
+
+    /// <summary>The update check runs first, so the two questions never appear on top of each other.</summary>
+    private async Task StartupPromptsAsync(MainWindowViewModel shell)
+    {
+        await shell.CheckForUpdatesOnLaunchAsync();
+        if (Options.CapturePath is not null) return;
+        await Dispatcher.InvokeAsync(() => { }, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+        ShowStartupQuestions();
+    }
+
+    private void ShowStartupQuestions()
+    {
+        if (!OfferUpdateOnce()) AskForNameOnce();
+    }
+
+    /// <summary>Returns true if an update has started.</summary>
+    private bool OfferUpdateOnce()
+    {
+        var result = _services!.GetRequiredService<IUpdateService>().LastResult;
+        if (!UpdatePrompt.ShouldOffer(result, _updateOffered, MainWindow is { IsVisible: true })) return false;
+        _updateOffered = true;
+
+        var dialogs = _services!.GetRequiredService<IDialogService>();
+        if (!dialogs.Confirm(Loc.Get("Update.Prompt.Title"), Loc.Format("Update.Prompt.Text", result!.LatestVersion!, AppInfo.VersionString),
+                Loc.Get("Home.UpdateNow"), Loc.Get("Appearance.Later")))
+            return false;
+
+        _services!.GetRequiredService<INavigationService>().ShowUpdates();
+        var install = _services!.GetRequiredService<HomeViewModel>().InstallUpdateCommand;
+        if (!install.CanExecute(null)) return false;
+        install.Execute(null);
+        return true;
     }
 
     /// <summary>Shown one time after updating or installing, the first time the window is on screen.</summary>

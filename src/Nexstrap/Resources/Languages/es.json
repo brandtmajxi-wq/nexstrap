@@ -934,5 +934,7 @@
   "Legal.Terms.Changes": "Cambios",
   "Legal.Terms.Changes.Text": "Estas páginas pueden cambiar con nuevas versiones. La fecha de arriba indica el último cambio. La versión en inglés es la principal.",
   "Legal.Contact": "¿Dudas? Abre un issue en GitHub",
-  "Legal.Licence": "Leer la licencia MIT"
+  "Legal.Licence": "Leer la licencia MIT",
+  "Update.Prompt.Title": "¿Actualizar Nexstrap?",
+  "Update.Prompt.Text": "Ya está disponible Nexstrap v{0} y tú usas la v{1}. No se recomienda usar versiones antiguas, así que lo mejor es actualizar ahora."
 }
