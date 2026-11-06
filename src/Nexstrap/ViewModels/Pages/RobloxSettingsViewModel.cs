@@ -233,6 +233,18 @@ public sealed partial class RobloxSettingsViewModel : PageViewModel
         }
     }
 
+    public bool AutoUpdateRoblox
+    {
+        get => _settings.Current.Launcher.AutoUpdateRoblox;
+        set
+        {
+            _settings.Current.Launcher.AutoUpdateRoblox = value;
+            _settings.Save();
+            OnPropertyChanged();
+            if (value) _ = _client.RefreshAsync();
+        }
+    }
+
     public bool GlobalHotkeys
     {
         get => _settings.Current.Launcher.GlobalHotkeys;

@@ -102,6 +102,7 @@ public partial class App : Application
         var shell = _services.GetRequiredService<MainWindowViewModel>();
         shell.NavigateToStartPage(Options.StartPage);
         if (Options.CapturePath is null) _services.GetRequiredService<ITrayService>().Show();
+        if (Options.CapturePath is null) _services.GetRequiredService<IRobloxAutoUpdater>().Start();
         if (Options.CapturePath is null && settings.Current.Launcher.GlobalHotkeys) _services.GetRequiredService<IHotkeyService>().Apply(true);
         if (!Options.Tray) window.Show();
         _ = StartupPromptsAsync(shell);
@@ -382,6 +383,7 @@ public partial class App : Application
         services.AddSingleton<LogsViewModel>();
         services.AddSingleton<IGameProfileService, GameProfileService>();
         services.AddSingleton<IHotkeyService, HotkeyService>();
+        services.AddSingleton<IRobloxAutoUpdater, RobloxAutoUpdater>();
         services.AddSingleton<HomeViewModel>();
         services.AddSingleton<AppearanceViewModel>();
         services.AddSingleton<NotificationsViewModel>();

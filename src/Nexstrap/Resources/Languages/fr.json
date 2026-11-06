@@ -988,5 +988,7 @@
   "Games.Profiles.Empty": "Aucun profil pour l'instant. Appuie sur le bouton de réglages d'un jeu pour en ajouter un.",
   "Games.Profile.Add": "Ajouter un profil de jeu",
   "Games.Profile.Default": "Réglage normal",
-  "Games.Profile.Quality": "Qualité {0}"
+  "Games.Profile.Quality": "Qualité {0}",
+  "RobloxSettings.AutoUpdate": "Mettre à jour Roblox automatiquement",
+  "RobloxSettings.AutoUpdate.Text": "Télécharge les nouvelles versions de Roblox en arrière-plan quand il est fermé, et s'arrête si tu le lances. Uniquement pour les versions Nexstrap, et pas si tu as épinglé une version."
 }

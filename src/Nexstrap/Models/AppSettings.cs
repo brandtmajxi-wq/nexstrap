@@ -259,6 +259,8 @@ public sealed class LauncherSettings
 
     public bool GlobalHotkeys { get; set; }
 
+    public bool AutoUpdateRoblox { get; set; } = true;
+
     public ProfileRestore? ProfileRestore { get; set; }
 
     public RobloxPriority RobloxPriority { get; set; }

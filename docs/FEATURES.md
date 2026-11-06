@@ -112,6 +112,7 @@ maximum frame rate (60/120/144/240), automatic or fixed graphics quality (1–10
 - **Open Nexstrap when Windows starts** adds a per-user startup entry, which uninstalling removes.
 - **Roblox CPU priority and CPU cores** use normal Windows process settings when Roblox starts from Nexstrap, with any build. Realtime priority isn't offered because it can freeze a PC. They don't add FPS by themselves, and fewer cores can lower it.
 - **Roblox window title** changes the title of Roblox's window once it opens.
+- **Update Roblox automatically** (on by default): checks when Nexstrap opens, when Roblox closes and every 30 minutes, then installs new versions in the background with the same checks as the Update button. It only runs while Roblox is closed and stops if you start Roblox. It needs a Nexstrap-installed build, and leaves a build pinned with *Use for Play* alone.
 - **Global hotkeys** (off by default): Ctrl+Alt+N opens Nexstrap and Ctrl+Alt+J rejoins your last server, from any app while Nexstrap is running.
 - **Clean up old files** deletes files older than 7 days from Roblox's logs folder, Roblox's temp folder and Nexstrap's Downloads folder, and waits if Roblox is open. Settings, games and Roblox builds aren't touched.
 

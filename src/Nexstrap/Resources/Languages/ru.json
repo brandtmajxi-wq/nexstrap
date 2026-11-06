@@ -988,5 +988,7 @@
   "Games.Profiles.Empty": "Профилей пока нет. Нажми кнопку настроек у игры, чтобы добавить.",
   "Games.Profile.Add": "Добавить профиль игры",
   "Games.Profile.Default": "Обычная настройка",
-  "Games.Profile.Quality": "Качество {0}"
+  "Games.Profile.Quality": "Качество {0}",
+  "RobloxSettings.AutoUpdate": "Обновлять Roblox автоматически",
+  "RobloxSettings.AutoUpdate.Text": "Скачивает новые версии Roblox в фоне, пока он закрыт, и останавливается при запуске. Только для сборок Nexstrap и если сборка не закреплена."
 }

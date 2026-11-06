@@ -92,6 +92,9 @@
         <ui:SettingCard Icon="&#xE921;" Header="{DynamicResource L.RobloxSettings.CloseToTray}" Description="{DynamicResource L.RobloxSettings.CloseToTray.Text}">
             <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding CloseToTray}" AutomationProperties.Name="{DynamicResource L.RobloxSettings.CloseToTray}" />
         </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE896;" Header="{DynamicResource L.RobloxSettings.AutoUpdate}" Description="{DynamicResource L.RobloxSettings.AutoUpdate.Text}">
+            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding AutoUpdateRoblox}" AutomationProperties.Name="{DynamicResource L.RobloxSettings.AutoUpdate}" />
+        </ui:SettingCard>
         <ui:SettingCard Icon="&#xE765;" Header="{DynamicResource L.RobloxSettings.Hotkeys}" Description="{DynamicResource L.RobloxSettings.Hotkeys.Text}">
             <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding GlobalHotkeys}" AutomationProperties.Name="{DynamicResource L.RobloxSettings.Hotkeys}" />
         </ui:SettingCard>

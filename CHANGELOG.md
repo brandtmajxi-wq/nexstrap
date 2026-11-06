@@ -2,6 +2,11 @@
 
 All notable changes to Nexstrap are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.19.1] - 2026-11-06
+
+### Added
+- **Automatic Roblox updates** (Roblox Settings, on by default): new Roblox versions download in the background while Roblox is closed, and the download stops if you start Roblox. This only applies to Nexstrap's own builds, and not if you've pinned a build.
+
 ## [1.19.0] - 2026-11-06
 
 ### Added
@@ -211,6 +216,7 @@ First public release.
 - Quick update check on every launch with an in-app banner; release notes, progress and cancel.
 - Updates are installed only after verifying source, size, SHA-256, product name and version; failed swaps roll back.
 
+[1.19.1]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.19.1
 [1.19.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.19.0
 [1.18.1]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.18.1
 [1.18.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.18.0

@@ -988,5 +988,7 @@
   "Games.Profiles.Empty": "No profiles yet. Press the settings button on a game to add one.",
   "Games.Profile.Add": "Add a game profile",
   "Games.Profile.Default": "Normal setting",
-  "Games.Profile.Quality": "Quality {0}"
+  "Games.Profile.Quality": "Quality {0}",
+  "RobloxSettings.AutoUpdate": "Update Roblox automatically",
+  "RobloxSettings.AutoUpdate.Text": "Downloads new Roblox versions in the background while Roblox is closed, and pauses if you start it. Only for Nexstrap's own builds, and not if you've pinned a build."
 }
