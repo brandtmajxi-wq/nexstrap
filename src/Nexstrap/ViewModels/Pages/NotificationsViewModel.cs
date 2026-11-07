@@ -13,12 +13,14 @@ public sealed partial class NotificationsViewModel : PageViewModel
     private readonly INotificationCenter _center;
     private readonly ISettingsService _settings;
     private readonly INavigationService _navigation;
+    private readonly IPlayReminder _reminder;
 
-    public NotificationsViewModel(INotificationCenter center, ISettingsService settings, INavigationService navigation)
+    public NotificationsViewModel(INotificationCenter center, ISettingsService settings, INavigationService navigation, IPlayReminder reminder)
     {
         _center = center;
         _settings = settings;
         _navigation = navigation;
+        _reminder = reminder;
         center.Changed += (_, _) => Application.Current?.Dispatcher.BeginInvoke(Rebuild);
     }
 
@@ -50,6 +52,21 @@ public sealed partial class NotificationsViewModel : PageViewModel
         set => Change(() => _settings.Current.Notifications.GameJoinAlerts = value);
     }
 
+    public bool CrashAlerts
+    {
+        get => _settings.Current.Notifications.CrashAlerts;
+        set => Change(() => _settings.Current.Notifications.CrashAlerts = value);
+    }
+
+    public IReadOnlyList<Choice<int>> PlayReminderChoices { get; } =
+        PlayReminder.Choices.Select(m => new Choice<int>(m, () => PlayReminder.Label(m))).ToList();
+
+    public int PlayReminderMinutes
+    {
+        get => _settings.Current.Notifications.PlayReminderMinutes;
+        set => Change(() => _settings.Current.Notifications.PlayReminderMinutes = value);
+    }
+
     public bool ConfigurationWarnings
     {
         get => _settings.Current.Notifications.ConfigurationWarnings;
@@ -72,6 +89,9 @@ public sealed partial class NotificationsViewModel : PageViewModel
             default: _navigation.NavigateTo<HomeViewModel>(); break;
         }
     }
+
+    [RelayCommand]
+    private void PreviewReminder() => _reminder.Preview();
 
     [RelayCommand]
     private void Dismiss(AppNotification item) => _center.Dismiss(item);

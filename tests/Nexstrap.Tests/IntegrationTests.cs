@@ -15,6 +15,7 @@ internal sealed class ManualSession : IRobloxSessionService
     public RobloxActivity? Current { get; private set; }
     public DateTime? StartedUtc => Current?.SinceUtc;
     public event EventHandler? Changed;
+    public event EventHandler<RobloxCrash>? Crashed { add { } remove { } }
     public void Track(int processId, DateTime launchedAtUtc) => Set(new RobloxActivity(RobloxActivityKind.Starting, launchedAtUtc));
     public Task WaitForEndAsync() => Task.CompletedTask;
     public void Set(RobloxActivity? a) { Current = a; Changed?.Invoke(this, EventArgs.Empty); }

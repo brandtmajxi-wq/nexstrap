@@ -146,6 +146,7 @@ public class PresenceFlowTests
         public RobloxActivity? Current { get; set; }
         public DateTime? StartedUtc { get; set; }
         public event EventHandler? Changed;
+        public event EventHandler<RobloxCrash>? Crashed { add { } remove { } }
         public void Track(int processId, DateTime launchedAtUtc) { }
         public Task WaitForEndAsync() => Task.CompletedTask;
         public void Raise() => Changed?.Invoke(this, EventArgs.Empty);

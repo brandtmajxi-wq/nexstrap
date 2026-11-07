@@ -990,5 +990,20 @@
   "Games.Profile.Default": "Réglage normal",
   "Games.Profile.Quality": "Qualité {0}",
   "RobloxSettings.AutoUpdate": "Mettre à jour Roblox automatiquement",
-  "RobloxSettings.AutoUpdate.Text": "Télécharge les nouvelles versions de Roblox en arrière-plan quand il est fermé, et s'arrête si tu le lances. Uniquement pour les versions Nexstrap, et pas si tu as épinglé une version."
+  "RobloxSettings.AutoUpdate.Text": "Télécharge les nouvelles versions de Roblox en arrière-plan quand il est fermé, et s'arrête si tu le lances. Uniquement pour les versions Nexstrap, et pas si tu as épinglé une version.",
+  "Notifications.CrashAlerts": "Alertes de plantage",
+  "Notifications.CrashAlerts.Text": "Si Roblox se ferme soudainement, Nexstrap te propose de retourner sur ton serveur ou d'ouvrir les journaux.",
+  "Notifications.PlayReminder": "Rappel de temps de jeu",
+  "Notifications.PlayReminder.Text": "Une petite note par-dessus Roblox chaque fois que ce temps de jeu est écoulé.",
+  "Notifications.PlayReminder.Off": "Désactivé",
+  "Notifications.PlayReminder.Preview": "Aperçu",
+  "Format.Hours": "{0} h",
+  "Reminder.Title": "{0} sur Roblox",
+  "Reminder.Text": "C'est peut-être le moment d'une petite pause ?",
+  "Crash.Title": "Roblox s'est fermé de façon inattendue",
+  "Crash.Text": "Il a peut-être planté. Les journaux peuvent montrer ce qui s'est passé.",
+  "Crash.InGame": "Il a peut-être planté pendant que tu étais dans {0}. Tu veux retourner sur le même serveur ?",
+  "Crash.Rejoin": "Rejoindre",
+  "Crash.OpenLogs": "Ouvrir les journaux",
+  "Crash.Close": "Fermer"
 }

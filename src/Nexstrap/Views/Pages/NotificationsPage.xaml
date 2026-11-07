@@ -75,6 +75,16 @@
         <ui:SettingCard Icon="&#xE7FC;" Header="{DynamicResource L.Notifications.GameJoinAlerts}" Description="{DynamicResource L.Notifications.GameJoinAlerts.Text}">
             <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding GameJoinAlerts}" AutomationProperties.Name="{DynamicResource L.Notifications.GameJoinAlerts}" />
         </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE783;" Header="{DynamicResource L.Notifications.CrashAlerts}" Description="{DynamicResource L.Notifications.CrashAlerts.Text}">
+            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding CrashAlerts}" AutomationProperties.Name="{DynamicResource L.Notifications.CrashAlerts}" />
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE823;" Header="{DynamicResource L.Notifications.PlayReminder}" Description="{DynamicResource L.Notifications.PlayReminder.Text}">
+            <StackPanel Orientation="Horizontal">
+                <Button Content="{DynamicResource L.Notifications.PlayReminder.Preview}" Padding="10,5" Margin="0,0,8,0" Command="{Binding PreviewReminderCommand}" />
+                <ComboBox Width="120" ItemsSource="{Binding PlayReminderChoices}" DisplayMemberPath="Label" SelectedValuePath="Value"
+                          SelectedValue="{Binding PlayReminderMinutes}" AutomationProperties.Name="{DynamicResource L.Notifications.PlayReminder}" />
+            </StackPanel>
+        </ui:SettingCard>
         <TextBlock Style="{StaticResource Text.Caption}" Margin="2,10,0,0"
                    Text="{DynamicResource L.Notifications.NotificationsAppearInsideNexstrapWhileIts}" />
     </StackPanel>

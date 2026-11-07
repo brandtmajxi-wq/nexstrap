@@ -34,6 +34,7 @@
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,22,0,0">
                 <Button x:Name="CancelButton" Margin="0,0,8,0" MinWidth="90" IsCancel="True" Click="OnCancel" />
+                <Button x:Name="ExtraButton" Margin="0,0,8,0" MinWidth="90" Visibility="Collapsed" Click="OnExtra" />
                 <Button x:Name="ConfirmButton" Style="{StaticResource Button.Primary}" MinWidth="90" IsDefault="True" Click="OnConfirm" />
             </StackPanel>
         </StackPanel>

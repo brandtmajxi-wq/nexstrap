@@ -990,5 +990,20 @@
   "Games.Profile.Default": "Normale Einstellung",
   "Games.Profile.Quality": "Qualität {0}",
   "RobloxSettings.AutoUpdate": "Roblox automatisch aktualisieren",
-  "RobloxSettings.AutoUpdate.Text": "Lädt neue Roblox-Versionen im Hintergrund, solange Roblox geschlossen ist, und pausiert, wenn du es startest. Nur für Nexstrap-Builds und nicht, wenn du einen Build festgelegt hast."
+  "RobloxSettings.AutoUpdate.Text": "Lädt neue Roblox-Versionen im Hintergrund, solange Roblox geschlossen ist, und pausiert, wenn du es startest. Nur für Nexstrap-Builds und nicht, wenn du einen Build festgelegt hast.",
+  "Notifications.CrashAlerts": "Absturz-Hinweise",
+  "Notifications.CrashAlerts.Text": "Wenn Roblox plötzlich schließt, bietet Nexstrap an, dich zurück auf deinen Server zu bringen oder die Logs zu öffnen.",
+  "Notifications.PlayReminder": "Spielzeit-Erinnerung",
+  "Notifications.PlayReminder.Text": "Ein kleiner Hinweis über Roblox, immer wenn so viel Spielzeit vergangen ist.",
+  "Notifications.PlayReminder.Off": "Aus",
+  "Notifications.PlayReminder.Preview": "Vorschau",
+  "Format.Hours": "{0} Std.",
+  "Reminder.Title": "{0} auf Roblox",
+  "Reminder.Text": "Vielleicht Zeit für eine kurze Pause?",
+  "Crash.Title": "Roblox wurde unerwartet geschlossen",
+  "Crash.Text": "Es ist vielleicht abgestürzt. Die Logs können zeigen, was passiert ist.",
+  "Crash.InGame": "Es ist vielleicht abgestürzt, während du in {0} warst. Willst du zurück auf denselben Server?",
+  "Crash.Rejoin": "Wieder beitreten",
+  "Crash.OpenLogs": "Logs öffnen",
+  "Crash.Close": "Schließen"
 }

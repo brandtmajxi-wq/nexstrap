@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
+using Nexstrap.Core;
 
 namespace Nexstrap.Services.Roblox;
 
@@ -18,6 +19,9 @@ public enum RobloxActivityKind
 
 public sealed record RobloxActivity(RobloxActivityKind Kind, DateTime SinceUtc, long? PlaceId = null, long? UniverseId = null,
     string? JobId = null, long? UserId = null, string? ServerAddress = null);
+
+/// <summary>Roblox stopped without closing normally. PlaceId is set if it happened during a game.</summary>
+public sealed record RobloxCrash(long? PlaceId, int? ExitCode, string LogPath);
 
 /// <summary>
 /// Reads the Roblox Player's own log lines (verified against 0.745 logs):
@@ -57,6 +61,14 @@ public static partial class RobloxLogParser
         return null;
     }
 
+    /// <summary>Every normal close in real logs ends with these lines; a process that was cut off never writes them.</summary>
+    public static bool ClosedNormally(IEnumerable<string> lastLines) =>
+        lastLines.Any(l => l.Contains("[FLog::SingleSurfaceApp] shutDown:", StringComparison.Ordinal)
+                           || l.Contains("[DFLog::SystemDialogHandler] Platform handler was destroyed", StringComparison.Ordinal));
+
+    /// <summary>Needs both signs, because a false alarm after a normal close is worse than a missed crash.</summary>
+    public static bool IsCrash(int? exitCode, IEnumerable<string> lastLines) => exitCode != 0 && !ClosedNormally(lastLines);
+
     internal static DateTime Timestamp(string line)
     {
         var comma = line.IndexOf(',');
@@ -89,6 +101,9 @@ public interface IRobloxSessionService
     /// <summary>Raised on activity changes and when the session ends (Current becomes null). Background thread.</summary>
     event EventHandler? Changed;
 
+    /// <summary>Raised after the session ended, on a background thread. WaitForEndAsync waits for the handlers.</summary>
+    event EventHandler<RobloxCrash>? Crashed;
+
     /// <summary>Start following a Roblox process Nexstrap just launched.</summary>
     void Track(int processId, DateTime launchedAtUtc);
 
@@ -102,6 +117,9 @@ public sealed class RobloxSessionService(ILogger<RobloxSessionService> logger) :
     private static readonly string LogsDir =
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Roblox", "logs");
 
+    /// <summary>In real logs the closing lines sit within the last 60 or so.</summary>
+    private const int CrashCheckLines = 200;
+
     private CancellationTokenSource? _cts;
     private Task _run = Task.CompletedTask;
 
@@ -112,6 +130,8 @@ public sealed class RobloxSessionService(ILogger<RobloxSessionService> logger) :
     public DateTime? StartedUtc { get; private set; }
 
     public event EventHandler? Changed;
+
+    public event EventHandler<RobloxCrash>? Crashed;
 
     public void Track(int processId, DateTime launchedAtUtc)
     {
@@ -127,6 +147,7 @@ public sealed class RobloxSessionService(ILogger<RobloxSessionService> logger) :
 
     private async Task RunAsync(int processId, DateTime launchedAtUtc, CancellationToken ct)
     {
+        RobloxCrash? crash = null;
         try
         {
             using var process = await ResolveProcessAsync(processId, ct);
@@ -148,6 +169,7 @@ public sealed class RobloxSessionService(ILogger<RobloxSessionService> logger) :
             }
 
             await TailAsync(log, process, ct);
+            crash = await CheckForCrashAsync(log, process, ct);
         }
         catch (OperationCanceledException) { }
         catch (Exception ex)
@@ -160,8 +182,47 @@ public sealed class RobloxSessionService(ILogger<RobloxSessionService> logger) :
             {
                 logger.LogInformation("Roblox session ended");
                 Set(null);
+                if (crash is not null) RaiseCrashed(crash);
             }
         }
+    }
+
+    /// <summary>Only for sessions that got as far as the menu, since a log with nothing in it says nothing about how Roblox closed.</summary>
+    private async Task<RobloxCrash?> CheckForCrashAsync(string log, Process process, CancellationToken ct)
+    {
+        if (Current is not { Kind: not RobloxActivityKind.Starting } last) return null;
+
+        await Task.Delay(1000, ct); // the last lines can land just after the process has gone
+
+        var running = Process.GetProcessesByName("RobloxPlayerBeta");
+        var stillOpen = running.Length > 0;
+        foreach (var other in running) other.Dispose();
+        if (stillOpen) return null;
+
+        int? exitCode = null;
+        try { exitCode = process.ExitCode; }
+        catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception or NotSupportedException)
+        {
+            logger.LogDebug(ex, "Roblox's exit code isn't available");
+        }
+
+        IReadOnlyList<string> lines;
+        try { lines = LogReader.Tail(log); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            logger.LogWarning(ex, "Couldn't read Roblox's log to see how it closed");
+            return null;
+        }
+
+        var crashed = RobloxLogParser.IsCrash(exitCode, lines.TakeLast(CrashCheckLines));
+        logger.LogInformation("Roblox closed with exit code {Code}, crashed: {Crashed}", exitCode, crashed);
+        return crashed ? new RobloxCrash(last.Kind == RobloxActivityKind.InGame ? last.PlaceId : null, exitCode, log) : null;
+    }
+
+    private void RaiseCrashed(RobloxCrash crash)
+    {
+        try { Crashed?.Invoke(this, crash); }
+        catch (Exception ex) { logger.LogError(ex, "Handling Roblox's crash failed"); }
     }
 
     /// <summary>

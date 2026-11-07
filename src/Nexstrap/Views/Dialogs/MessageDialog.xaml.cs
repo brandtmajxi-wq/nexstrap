@@ -7,6 +7,7 @@ namespace Nexstrap.Views.Dialogs;
 public partial class MessageDialog : Window
 {
     private Func<string, string?>? _validate;
+    private bool _extraChosen;
 
     private MessageDialog()
     {
@@ -58,6 +59,32 @@ public partial class MessageDialog : Window
         return dialog.ShowDialog() == true;
     }
 
+    /// <summary>A warning with up to three answers. It stays on top, because it can appear while Nexstrap is in the background.</summary>
+    public static DialogChoice Choose(Window? owner, string title, string message, string confirmText, string? extraText, string cancelText)
+    {
+        var dialog = new MessageDialog { Topmost = true };
+        if (owner is { IsLoaded: true })
+            dialog.Owner = owner;
+        else
+            dialog.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+
+        dialog.TitleText.Text = title;
+        dialog.MessageText.Text = message;
+        dialog.ConfirmButton.Content = confirmText;
+        dialog.CancelButton.Content = cancelText;
+        if (extraText is not null)
+        {
+            dialog.ExtraButton.Content = extraText;
+            dialog.ExtraButton.Visibility = Visibility.Visible;
+        }
+        dialog.IconGlyph.Text = char.ConvertFromUtf32(0xE7BA);
+        dialog.IconGlyph.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "Brush.Warning");
+        dialog.IconBadge.SetResourceReference(System.Windows.Controls.Border.BackgroundProperty, "Brush.WarningSoft");
+
+        var confirmed = dialog.ShowDialog() == true;
+        return dialog._extraChosen ? DialogChoice.Extra : confirmed ? DialogChoice.Confirm : DialogChoice.Cancel;
+    }
+
     /// <summary>Asks for one line of text. Returns null if it was skipped.</summary>
     public static string? AskText(Window? owner, string title, string message, string confirmText, string cancelText, int maxLength,
         Func<string, string?>? validate = null)
@@ -94,6 +121,12 @@ public partial class MessageDialog : Window
     }
 
     private void OnCancel(object sender, RoutedEventArgs e) => DialogResult = false;
+
+    private void OnExtra(object sender, RoutedEventArgs e)
+    {
+        _extraChosen = true;
+        DialogResult = false;
+    }
 
     private void OnDrag(object sender, MouseButtonEventArgs e)
     {

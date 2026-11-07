@@ -75,6 +75,8 @@ public partial class App : Application
         _services.GetRequiredService<ILastServerService>();
         _services.GetRequiredService<IServerRegionService>();
         _services.GetRequiredService<IGameJoinAlerts>();
+        _services.GetRequiredService<ICrashAlerts>();
+        _services.GetRequiredService<IPlayReminder>();
         _services.GetRequiredService<IGameProfileService>();
         // Old exe and downloaded update files from a previous self-update.
         _services.GetRequiredService<IUpdateInstaller>().CleanUpAfterUpdate();
@@ -346,6 +348,8 @@ public partial class App : Application
         services.AddSingleton<ILastServerService, LastServerService>();
         services.AddSingleton<IServerRegionService, ServerRegionService>();
         services.AddSingleton<IGameJoinAlerts, GameJoinAlerts>();
+        services.AddSingleton<ICrashAlerts, CrashAlerts>();
+        services.AddSingleton<IPlayReminder, PlayReminder>();
         services.AddSingleton<IGameSearchService, GameSearchService>();
         services.AddSingleton<ICardImageUploader>(_ => new CardImageUploader(CreateHttpClient(TimeSpan.FromMinutes(2))));
         services.AddSingleton<IRobloxProcessTuner, RobloxProcessTuner>();

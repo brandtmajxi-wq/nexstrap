@@ -990,5 +990,20 @@
   "Games.Profile.Default": "Ajuste normal",
   "Games.Profile.Quality": "Qualidade {0}",
   "RobloxSettings.AutoUpdate": "Atualizar o Roblox automaticamente",
-  "RobloxSettings.AutoUpdate.Text": "Baixa novas versões do Roblox em segundo plano enquanto ele está fechado e para se você abri-lo. Só para versões do Nexstrap, e não se você fixou uma versão."
+  "RobloxSettings.AutoUpdate.Text": "Baixa novas versões do Roblox em segundo plano enquanto ele está fechado e para se você abri-lo. Só para versões do Nexstrap, e não se você fixou uma versão.",
+  "Notifications.CrashAlerts": "Alertas de falha",
+  "Notifications.CrashAlerts.Text": "Se o Roblox fechar de repente, o Nexstrap oferece voltar ao seu servidor ou abrir os logs.",
+  "Notifications.PlayReminder": "Lembrete de tempo de jogo",
+  "Notifications.PlayReminder.Text": "Um pequeno aviso sobre o Roblox sempre que esse tempo de jogo passar.",
+  "Notifications.PlayReminder.Off": "Desligado",
+  "Notifications.PlayReminder.Preview": "Pré-visualizar",
+  "Format.Hours": "{0} h",
+  "Reminder.Title": "{0} no Roblox",
+  "Reminder.Text": "Talvez seja hora de uma pausa?",
+  "Crash.Title": "O Roblox fechou inesperadamente",
+  "Crash.Text": "Ele pode ter travado. Os logs podem mostrar o que aconteceu.",
+  "Crash.InGame": "Ele pode ter travado enquanto você estava em {0}. Quer voltar ao mesmo servidor?",
+  "Crash.Rejoin": "Voltar",
+  "Crash.OpenLogs": "Abrir logs",
+  "Crash.Close": "Fechar"
 }

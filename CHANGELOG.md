@@ -2,6 +2,12 @@
 
 All notable changes to Nexstrap are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.20.0] - 2026-11-07
+
+### Added
+- **Crash alerts** (Notifications, on by default): if Roblox closes suddenly, Nexstrap offers to rejoin the same server or open the logs. This works for Roblox started through Nexstrap.
+- **Play time reminder** (Notifications, off by default): a small note in the corner over Roblox every 30 minutes to 3 hours. It doesn't take focus and clicks pass through it. **Preview** shows what it looks like.
+
 ## [1.19.1] - 2026-11-06
 
 ### Added
@@ -216,6 +222,7 @@ First public release.
 - Quick update check on every launch with an in-app banner; release notes, progress and cancel.
 - Updates are installed only after verifying source, size, SHA-256, product name and version; failed swaps roll back.
 
+[1.20.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.20.0
 [1.19.1]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.19.1
 [1.19.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.19.0
 [1.18.1]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.18.1

@@ -127,6 +127,10 @@ maximum frame rate (60/120/144/240), automatic or fixed graphics quality (1–10
 
 An inbox with a count in the sidebar. It covers new Nexstrap releases, Roblox builds newer than the one Play uses, and configuration warnings: FastFlags Roblox ignores, flags that can't apply because Play uses another launcher's build, and a frame-rate cap above your display's refresh rate. Each category can be turned off. **Open** goes to the page that fixes it. A dismissed notification comes back only if something changes, such as a newer version. Notifications appear inside Nexstrap while it's open, not as Windows pop-ups.
 
+**Crash alerts** (on by default): if Roblox stops without closing normally, Nexstrap offers to rejoin the same server or open the logs. It looks at how Roblox's log ends and at its exit code, and only for Roblox started through Nexstrap once it has reached the menu. Ending Roblox in Task Manager looks the same as a crash.
+
+**Play time reminder** (off by default): a small note in the corner over Roblox every 30 minutes to 3 hours of a session. Clicks pass through it, it doesn't take focus and it disappears after 8 seconds. It counts from when Roblox was opened through Nexstrap, and **Preview** shows it right away.
+
 **Game ready alerts** are the one exception: a Windows pop-up from the tray icon when a game finishes loading while another app is in front. They need the tray icon, so they don't appear for games started from a website link while Nexstrap isn't open. Windows' Do Not Disturb can hide them.
 
 ## About

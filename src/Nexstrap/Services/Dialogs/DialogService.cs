@@ -12,6 +12,13 @@ public enum DialogKind
     Question
 }
 
+public enum DialogChoice
+{
+    Cancel,
+    Confirm,
+    Extra
+}
+
 public interface IDialogService
 {
     void Show(string title, string message, DialogKind kind = DialogKind.Info, string? details = null);
@@ -21,6 +28,9 @@ public interface IDialogService
 
     /// <summary>Asks for one line of text. Returns null if it was skipped. <paramref name="validate"/> returns a problem to show, or null.</summary>
     string? Ask(string title, string message, string confirmText, string cancelText, int maxLength, Func<string, string?>? validate = null);
+
+    /// <summary>A warning that stays on top, with a third answer if <paramref name="extraText"/> is given.</summary>
+    DialogChoice Choose(string title, string message, string confirmText, string? extraText, string cancelText);
 }
 
 /// <summary>Shows Nexstrap-styled modal dialogs instead of the stock MessageBox.</summary>
@@ -38,6 +48,13 @@ public sealed class DialogService : IDialogService
         string? answer = null;
         Run(() => answer = MessageDialog.AskText(Owner(), title, message, confirmText, cancelText, maxLength, validate));
         return answer;
+    }
+
+    public DialogChoice Choose(string title, string message, string confirmText, string? extraText, string cancelText)
+    {
+        var choice = DialogChoice.Cancel;
+        Run(() => choice = MessageDialog.Choose(Owner(), title, message, confirmText, extraText, cancelText));
+        return choice;
     }
 
     private static Window? Owner() =>

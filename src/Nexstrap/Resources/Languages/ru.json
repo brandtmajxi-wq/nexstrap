@@ -990,5 +990,20 @@
   "Games.Profile.Default": "Обычная настройка",
   "Games.Profile.Quality": "Качество {0}",
   "RobloxSettings.AutoUpdate": "Обновлять Roblox автоматически",
-  "RobloxSettings.AutoUpdate.Text": "Скачивает новые версии Roblox в фоне, пока он закрыт, и останавливается при запуске. Только для сборок Nexstrap и если сборка не закреплена."
+  "RobloxSettings.AutoUpdate.Text": "Скачивает новые версии Roblox в фоне, пока он закрыт, и останавливается при запуске. Только для сборок Nexstrap и если сборка не закреплена.",
+  "Notifications.CrashAlerts": "Оповещения о сбоях",
+  "Notifications.CrashAlerts.Text": "Если Roblox внезапно закроется, Nexstrap предложит вернуться на сервер или открыть логи.",
+  "Notifications.PlayReminder": "Напоминание о времени игры",
+  "Notifications.PlayReminder.Text": "Небольшое уведомление поверх Roblox каждый раз, когда пройдёт это время игры.",
+  "Notifications.PlayReminder.Off": "Выкл.",
+  "Notifications.PlayReminder.Preview": "Просмотр",
+  "Format.Hours": "{0} ч",
+  "Reminder.Title": "{0} в Roblox",
+  "Reminder.Text": "Может, пора сделать перерыв?",
+  "Crash.Title": "Roblox неожиданно закрылся",
+  "Crash.Text": "Возможно, произошёл сбой. В логах можно посмотреть, что случилось.",
+  "Crash.InGame": "Возможно, произошёл сбой, пока ты был в {0}. Вернуться на тот же сервер?",
+  "Crash.Rejoin": "Вернуться",
+  "Crash.OpenLogs": "Открыть логи",
+  "Crash.Close": "Закрыть"
 }

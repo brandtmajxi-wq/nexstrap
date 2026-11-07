@@ -1,0 +1,23 @@
+<Window x:Class="Nexstrap.Views.ReminderToast"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Nexstrap" WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        ResizeMode="NoResize" ShowInTaskbar="False" Topmost="True" ShowActivated="False" Focusable="False"
+        Width="340" SizeToContent="Height" WindowStartupLocation="Manual" FontFamily="{DynamicResource Font.Primary}">
+    <Border Margin="12" Background="{DynamicResource Brush.Card}" BorderBrush="{DynamicResource Brush.BorderStrong}"
+            BorderThickness="1" CornerRadius="12" Padding="16,14">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="18" ShadowDepth="3" Opacity="0.4" />
+        </Border.Effect>
+        <DockPanel>
+            <Border DockPanel.Dock="Left" Width="32" Height="32" CornerRadius="16" Background="{DynamicResource Brush.AccentSoft}" Margin="0,0,12,0" VerticalAlignment="Top">
+                <TextBlock Text="&#xE823;" Style="{StaticResource Text.Icon}" Foreground="{DynamicResource Brush.Accent}" FontSize="15"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <StackPanel>
+                <TextBlock x:Name="TitleText" Style="{StaticResource Text.Base}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                <TextBlock x:Name="MessageText" Style="{StaticResource Text.Secondary}" Margin="0,3,0,0" />
+            </StackPanel>
+        </DockPanel>
+    </Border>
+</Window>

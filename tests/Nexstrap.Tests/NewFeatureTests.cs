@@ -165,6 +165,7 @@ public class GameProfileTests
         public RobloxActivity? Current => null;
         public DateTime? StartedUtc => null;
         public event EventHandler? Changed { add { } remove { } }
+        public event EventHandler<RobloxCrash>? Crashed { add { } remove { } }
         public void Track(int processId, DateTime launchedAtUtc) { }
         public Task WaitForEndAsync() => Task.CompletedTask;
     }

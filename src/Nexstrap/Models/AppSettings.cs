@@ -137,6 +137,12 @@ public sealed class NotificationSettings
     /// <summary>Windows pop-up when a game finishes loading while another app is in front.</summary>
     public bool GameJoinAlerts { get; set; } = true;
 
+    /// <summary>Offer to rejoin or open the logs when Roblox stops suddenly.</summary>
+    public bool CrashAlerts { get; set; } = true;
+
+    /// <summary>A note over Roblox each time this much play time has passed; 0 is off.</summary>
+    public int PlayReminderMinutes { get; set; }
+
     /// <summary>Keys of dismissed notifications. Keys include the version or count, so new ones show again.</summary>
     public List<string> Dismissed { get; set; } = [];
 }
