@@ -51,6 +51,9 @@ public static class AppInfo
             ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Name, "Versions")
             : Path.Combine(Root, "Versions");
 
+        /// <summary>Roblox Studio builds, shared with the dev copy like Versions.</summary>
+        public static string Studio => Path.Combine(Path.GetDirectoryName(Versions)!, "Studio");
+
         public static string Settings => Path.Combine(Root, "Settings.json");
         public static string Logs => Path.Combine(Root, "Logs");
         public static string Backups => Path.Combine(Root, "Backups");

@@ -361,6 +361,10 @@ public partial class App : Application
         services.AddSingleton<IRobloxDeployment>(sp => new RobloxDeployment(
             CreateHttpClient(TimeSpan.FromMinutes(30)), sp.GetRequiredService<ILogger<RobloxDeployment>>()));
         services.AddSingleton<IRobloxClientService, RobloxClientService>();
+        services.AddSingleton<IStudioService>(sp => new StudioService(
+            RobloxDeployment.ForStudio(CreateHttpClient(TimeSpan.FromMinutes(30)), sp.GetRequiredService<ILogger<RobloxDeployment>>()),
+            sp.GetRequiredService<ILogger<StudioService>>()));
+        services.AddSingleton<StudioViewModel>();
         services.AddSingleton<IExperienceInfoService, ExperienceInfoService>();
         services.AddSingleton<IDisplayInfo, DisplayInfo>();
         services.AddSingleton<IRobloxSessionService, RobloxSessionService>();

@@ -304,6 +304,48 @@
             </StackPanel>
         </Border>
 
+        <!-- ===== Roblox Studio ===== -->
+        <TextBlock Text="{DynamicResource L.Studio.Title}" Style="{StaticResource SectionHeader}" />
+        <Border Style="{StaticResource Card}" Padding="18,14" DataContext="{Binding Studio}">
+            <StackPanel>
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Style="{StaticResource Button.Icon}" Content="&#xE838;" FontFamily="{StaticResource Font.Icons}" Margin="0,0,6,0"
+                                ToolTip="{DynamicResource L.Home.OpenFolder}" AutomationProperties.Name="{DynamicResource L.Home.OpenFolder}"
+                                Visibility="{Binding IsInstalled, Converter={StaticResource BoolToVisibility}}" Command="{Binding OpenFolderCommand}" />
+                        <Button Content="{Binding InstallText}" Padding="12,6" Margin="0,0,8,0" Command="{Binding InstallCommand}"
+                                Visibility="{Binding ShowInstall, Converter={StaticResource BoolToVisibility}}" />
+                        <Button Style="{StaticResource Button.Primary}" Content="{DynamicResource L.Studio.Open}" Padding="14,6"
+                                Command="{Binding OpenCommand}" />
+                    </StackPanel>
+                    <StackPanel Margin="0,0,12,0">
+                        <TextBlock Text="{Binding StatusText}" Style="{StaticResource Text.Base}" FontWeight="Medium" />
+                        <TextBlock Text="{Binding DetailText}" Margin="0,3,0,0" TextWrapping="Wrap">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource Text.Caption}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding UpdateAvailable}" Value="True">
+                                            <Setter Property="Foreground" Value="{DynamicResource Brush.Warning}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </StackPanel>
+                </DockPanel>
+                <StackPanel Margin="0,12,0,0" Visibility="{Binding IsInstalling, Converter={StaticResource BoolToVisibility}}">
+                    <DockPanel>
+                        <Button DockPanel.Dock="Right" Style="{StaticResource Button.Ghost}" Content="{DynamicResource L.Common.Cancel}" Padding="10,4"
+                                Command="{Binding CancelInstallCommand}" />
+                        <TextBlock Text="{Binding InstallStage}" Style="{StaticResource Text.Caption}" VerticalAlignment="Center" />
+                    </DockPanel>
+                    <ProgressBar Margin="0,8,0,0" Maximum="1" Value="{Binding InstallFraction, Mode=OneWay}" />
+                </StackPanel>
+                <TextBlock Text="{Binding Message}" Style="{StaticResource Text.Caption}" Margin="0,10,0,0" TextWrapping="Wrap"
+                           Visibility="{Binding Message, Converter={StaticResource NullToVisibility}}" />
+            </StackPanel>
+        </Border>
+
         <!-- ===== Quick settings + updates ===== -->
         <Grid Margin="0,6,0,0">
             <Grid.ColumnDefinitions>

@@ -48,8 +48,10 @@ public sealed partial class HomeViewModel : PageViewModel
 
     public HomeViewModel(IRobloxClientService client, ILaunchCoordinator coordinator, IExperienceInfoService experiences,
         IUpdateService updates, ISettingsService settings, IAppearanceService appearance, IDialogService dialogs,
-        IShellService shell, IRobloxSessionService session, IUpdateInstaller installer, ILastServerService lastServer, ILogger<HomeViewModel> logger)
+        IShellService shell, IRobloxSessionService session, IUpdateInstaller installer, ILastServerService lastServer, ILogger<HomeViewModel> logger,
+        StudioViewModel studio)
     {
+        Studio = studio;
         _installer = installer;
         _lastServer = lastServer;
         _session = session;
@@ -75,6 +77,8 @@ public sealed partial class HomeViewModel : PageViewModel
         });
         LoadRecent();
     }
+
+    public StudioViewModel Studio { get; }
 
     public bool CanRejoin => _lastServer.Available is not null;
 
@@ -267,6 +271,7 @@ public sealed partial class HomeViewModel : PageViewModel
 
         // The Nexstrap update check runs at app launch (MainWindowViewModel); its result arrives via _updates.Checked.
         _ = RefreshAsync();
+        Studio.RefreshOnce();
         if (_updates.LastResult is { } last) ApplyUpdateResult(last);
     }
 

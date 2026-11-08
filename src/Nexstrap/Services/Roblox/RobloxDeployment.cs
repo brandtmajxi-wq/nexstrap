@@ -24,6 +24,19 @@ public sealed record InstallProgress(string Stage, long BytesDone, long BytesTot
 
 public sealed class InstallException(string message, Exception? inner = null) : Exception(message, inner);
 
+/// <summary>What to download from Roblox's deployment CDN: the Player or Studio.</summary>
+public sealed record RobloxProduct(string BinaryType, string Executable, string ProgressKey,
+    IReadOnlyDictionary<string, string> PackageDirectories, IReadOnlySet<string> IgnoredPackages)
+{
+    public string VersionEndpoint => "https://clientsettingscdn.roblox.com/v2/client-version/" + BinaryType;
+
+    public static RobloxProduct Player { get; } = new("WindowsPlayer", RobloxLocator.PlayerExecutable, "Launch.DownloadingRoblox",
+        RobloxDeployment.PackageDirectories, new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "RobloxPlayerInstaller.exe" });
+
+    public static RobloxProduct Studio { get; } = new("WindowsStudio64", StudioLocator.StudioExecutable, "Studio.Downloading",
+        RobloxDeployment.StudioPackageDirectories, new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "RobloxStudioInstaller.exe" });
+}
+
 public interface IRobloxDeployment
 {
     Task<ClientVersionInfo> GetLatestVersionAsync(CancellationToken ct = default);
@@ -42,7 +55,7 @@ public interface IRobloxDeployment
 /// </summary>
 public sealed class RobloxDeployment : IRobloxDeployment
 {
-    public const string VersionEndpoint = "https://clientsettingscdn.roblox.com/v2/client-version/WindowsPlayer";
+    public static string VersionEndpoint => RobloxProduct.Player.VersionEndpoint;
     public const string CdnBase = "https://setup.rbxcdn.com/";
     public const string CompleteMarker = ".nexstrap-complete";
 
@@ -72,8 +85,44 @@ public sealed class RobloxDeployment : IRobloxDeployment
         ["extracontent-places.zip"] = @"ExtraContent\places",
     };
 
-    /// <summary>Manifest entries that aren't part of the client itself.</summary>
-    private static readonly HashSet<string> IgnoredPackages = new(StringComparer.OrdinalIgnoreCase) { "RobloxPlayerInstaller.exe" };
+    /// <summary>Studio's packages, checked against Roblox's own Studio install (0.745/0.746).</summary>
+    internal static readonly IReadOnlyDictionary<string, string> StudioPackageDirectories = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    {
+        ["RobloxStudio.zip"] = "",
+        ["Libraries.zip"] = "",
+        ["LibrariesQt5.zip"] = "",
+        ["redist.zip"] = "",
+        ["WebView2.zip"] = "",
+        ["ApplicationConfig.zip"] = "ApplicationConfig",
+        ["BuiltInPlugins.zip"] = "BuiltInPlugins",
+        ["BuiltInStandalonePlugins.zip"] = "BuiltInStandalonePlugins",
+        ["Plugins.zip"] = "Plugins",
+        ["StudioFonts.zip"] = "StudioFonts",
+        ["shaders.zip"] = "shaders",
+        ["ssl.zip"] = "ssl",
+        ["WebView2RuntimeInstaller.zip"] = "WebView2RuntimeInstaller",
+        ["content-avatar.zip"] = @"content\avatar",
+        ["content-configs.zip"] = @"content\configs",
+        ["content-fonts.zip"] = @"content\fonts",
+        ["content-models.zip"] = @"content\models",
+        ["content-qt_translations.zip"] = @"content\qt_translations",
+        ["content-sky.zip"] = @"content\sky",
+        ["content-sounds.zip"] = @"content\sounds",
+        ["content-textures2.zip"] = @"content\textures",
+        ["content-studio_svg_textures.zip"] = @"content\studio_svg_textures",
+        ["content-api-docs.zip"] = @"content\api_docs",
+        ["content-platform-fonts.zip"] = @"PlatformContent\pc\fonts",
+        ["content-platform-dictionaries.zip"] = @"PlatformContent\pc\shared_compression_dictionaries",
+        ["content-terrain.zip"] = @"PlatformContent\pc\terrain",
+        ["content-textures3.zip"] = @"PlatformContent\pc\textures",
+        ["extracontent-scripts.zip"] = @"ExtraContent\scripts",
+        ["extracontent-luapackages.zip"] = @"ExtraContent\LuaPackages",
+        ["extracontent-translations.zip"] = @"ExtraContent\translations",
+        ["extracontent-models.zip"] = @"ExtraContent\models",
+        ["extracontent-textures.zip"] = @"ExtraContent\textures",
+        ["studiocontent-models.zip"] = @"StudioContent\models",
+        ["studiocontent-textures.zip"] = @"StudioContent\textures",
+    };
 
     private const string AppSettingsXml =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<Settings>\r\n\t<ContentFolder>content</ContentFolder>\r\n\t<BaseUrl>http://www.roblox.com</BaseUrl>\r\n</Settings>\r\n";
@@ -84,17 +133,23 @@ public sealed class RobloxDeployment : IRobloxDeployment
     private readonly ILogger<RobloxDeployment> _logger;
     private readonly string _versionsRoot;
     private readonly string _downloadsRoot;
+    private readonly RobloxProduct _product;
 
     public RobloxDeployment(HttpClient http, ILogger<RobloxDeployment> logger)
         : this(http, logger, AppInfo.Paths.Versions, AppInfo.Paths.Downloads) { }
 
-    internal RobloxDeployment(HttpClient http, ILogger<RobloxDeployment> logger, string versionsRoot, string downloadsRoot)
+    internal RobloxDeployment(HttpClient http, ILogger<RobloxDeployment> logger, string versionsRoot, string downloadsRoot, RobloxProduct? product = null)
     {
         _http = http;
         _logger = logger;
         _versionsRoot = versionsRoot;
         _downloadsRoot = downloadsRoot;
+        _product = product ?? RobloxProduct.Player;
     }
+
+    /// <summary>Roblox Studio, kept in its own folder so Player detection and cleanup never see it.</summary>
+    public static RobloxDeployment ForStudio(HttpClient http, ILogger<RobloxDeployment> logger) =>
+        new(http, logger, AppInfo.Paths.Studio, AppInfo.Paths.Downloads, RobloxProduct.Studio);
 
     public string DirectoryFor(string versionHash) => Path.Combine(_versionsRoot, versionHash);
 
@@ -102,7 +157,7 @@ public sealed class RobloxDeployment : IRobloxDeployment
     {
         try
         {
-            var info = await _http.GetFromJsonAsync<ClientVersionInfo>(VersionEndpoint, ct);
+            var info = await _http.GetFromJsonAsync<ClientVersionInfo>(_product.VersionEndpoint, ct);
             if (info is null || !IsValidHash(info.VersionHash))
                 throw new InstallException("Roblox returned an unexpected version response.");
             return info;
@@ -151,13 +206,13 @@ public sealed class RobloxDeployment : IRobloxDeployment
 
         progress?.Report(new InstallProgress(Loc.Get("Launch.ReadingPackageList"), 0, 0));
         var manifestText = await GetStringAsync($"{CdnBase}{version.VersionHash}-rbxPkgManifest.txt", ct);
-        var packages = ParseManifest(manifestText).Where(p => !IgnoredPackages.Contains(p.Name)).ToList();
+        var packages = ParseManifest(manifestText).Where(p => !_product.IgnoredPackages.Contains(p.Name)).ToList();
 
-        var unknown = packages.Where(p => !PackageDirectories.ContainsKey(p.Name)).Select(p => p.Name).ToList();
+        var unknown = packages.Where(p => !_product.PackageDirectories.ContainsKey(p.Name)).Select(p => p.Name).ToList();
         if (unknown.Count > 0)
             throw new InstallException(
                 $"Roblox added packages Nexstrap doesn't know how to place yet ({string.Join(", ", unknown)}). " +
-                "Install Roblox from roblox.com for now; a Nexstrap update will add support.");
+                "Install it from roblox.com for now; a Nexstrap update will add support.");
 
         // Staging folder name deliberately doesn't start with "version-" so detection ignores it.
         var staging = Path.Combine(_versionsRoot, "_staging-" + version.VersionHash);
@@ -181,7 +236,7 @@ public sealed class RobloxDeployment : IRobloxDeployment
                     zip = await DownloadVerifiedAsync(version.VersionHash, package, bytes =>
                     {
                         var now = Interlocked.Add(ref done, bytes);
-                        progress?.Report(new InstallProgress(Loc.Get("Launch.DownloadingRoblox"), now, total));
+                        progress?.Report(new InstallProgress(Loc.Get(_product.ProgressKey), now, total));
                     }, ct);
                 }
                 finally
@@ -192,7 +247,7 @@ public sealed class RobloxDeployment : IRobloxDeployment
                 await extractLock.WaitAsync(ct);
                 try
                 {
-                    await Task.Run(() => ExtractSafely(zip, Path.Combine(staging, PackageDirectories[package.Name])), ct);
+                    await Task.Run(() => ExtractSafely(zip, Path.Combine(staging, _product.PackageDirectories[package.Name])), ct);
                 }
                 finally
                 {
@@ -204,8 +259,8 @@ public sealed class RobloxDeployment : IRobloxDeployment
             progress?.Report(new InstallProgress(Loc.Get("Launch.FinishingUp"), total, total));
             await File.WriteAllTextAsync(Path.Combine(staging, "AppSettings.xml"), AppSettingsXml, ct);
 
-            if (!File.Exists(Path.Combine(staging, RobloxLocator.PlayerExecutable)))
-                throw new InstallException("The downloaded build doesn't contain RobloxPlayerBeta.exe.");
+            if (!File.Exists(Path.Combine(staging, _product.Executable)))
+                throw new InstallException($"The downloaded build doesn't contain {_product.Executable}.");
 
             await File.WriteAllTextAsync(Path.Combine(staging, CompleteMarker), $"{version.Version}\n{DateTime.UtcNow:O}\n", ct);
 
