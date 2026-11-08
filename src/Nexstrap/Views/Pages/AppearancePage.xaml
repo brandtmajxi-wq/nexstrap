@@ -223,6 +223,10 @@
         </ui:SettingCard>
         <TextBlock Text="{Binding YourNameError}" Style="{StaticResource Text.Caption}" Foreground="{DynamicResource Brush.Danger}"
                    Margin="2,0,0,6" Visibility="{Binding YourNameError, Converter={StaticResource NullToVisibility}}" />
+        <ui:SettingCard Icon="&#xE80F;" Header="{DynamicResource L.Appearance.MoscowScene}" Description="{DynamicResource L.Appearance.MoscowScene.Text}"
+                        Visibility="{Binding MoscowAvailable, Converter={StaticResource BoolToVisibility}}">
+            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding MoscowScene}" AutomationProperties.Name="{DynamicResource L.Appearance.MoscowScene}" />
+        </ui:SettingCard>
 
         <!-- ===== Winter theme (dev only for now) ===== -->
         <StackPanel Visibility="{Binding WinterAvailable, Converter={StaticResource BoolToVisibility}}">

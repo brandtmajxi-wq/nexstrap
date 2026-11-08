@@ -1023,5 +1023,14 @@
   "Studio.InstallFailed": "Não foi possível instalar o Studio",
   "Studio.NotFound": "O Studio não está instalado ou a pasta foi movida.",
   "Studio.DidntStart": "O Studio não abriu",
-  "Studio.WindowsCouldntStart": "O Windows não conseguiu abrir o Studio: {0}"
+  "Studio.WindowsCouldntStart": "O Windows não conseguiu abrir o Studio: {0}",
+  "Secret.Title": "Sala secreta",
+  "Secret.Subtitle": "Protegida por senha.",
+  "Secret.Locked": "Esta página está bloqueada",
+  "Secret.Locked.Text": "Digite a senha para abri-la.",
+  "Secret.Unlock": "Desbloquear",
+  "Secret.Password": "Senha",
+  "Secret.Wrong": "Essa não é a senha.",
+  "Appearance.MoscowScene": "Tela de boas-vindas de Moscou",
+  "Appearance.MoscowScene.Text": "Moscou na sua hora do dia atrás da página de boas-vindas."
 }

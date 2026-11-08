@@ -389,6 +389,7 @@ public partial class App : Application
         services.AddSingleton<LegalViewModel>();
         services.AddSingleton<StatsViewModel>();
         services.AddSingleton<LogsViewModel>();
+        services.AddSingleton<MoscowViewModel>();
         services.AddSingleton<IGameProfileService, GameProfileService>();
         services.AddSingleton<IHotkeyService, HotkeyService>();
         services.AddSingleton<IRobloxAutoUpdater, RobloxAutoUpdater>();

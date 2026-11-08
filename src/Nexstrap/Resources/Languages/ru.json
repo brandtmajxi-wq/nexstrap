@@ -1023,5 +1023,14 @@
   "Studio.InstallFailed": "Не удалось установить Studio",
   "Studio.NotFound": "Studio не установлен или его папка перемещена.",
   "Studio.DidntStart": "Studio не запустился",
-  "Studio.WindowsCouldntStart": "Windows не смог запустить Studio: {0}"
+  "Studio.WindowsCouldntStart": "Windows не смог запустить Studio: {0}",
+  "Secret.Title": "Секретная комната",
+  "Secret.Subtitle": "Закрыта паролем.",
+  "Secret.Locked": "Эта страница закрыта",
+  "Secret.Locked.Text": "Введи пароль, чтобы открыть её.",
+  "Secret.Unlock": "Открыть",
+  "Secret.Password": "Пароль",
+  "Secret.Wrong": "Это не тот пароль.",
+  "Appearance.MoscowScene": "Экран приветствия «Москва»",
+  "Appearance.MoscowScene.Text": "Москва в твоё время суток на странице приветствия."
 }

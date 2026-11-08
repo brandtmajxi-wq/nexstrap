@@ -12,9 +12,27 @@
             <StackPanel.Effect>
                 <DropShadowEffect BlurRadius="18" ShadowDepth="1" Opacity="0.55" Color="Black" />
             </StackPanel.Effect>
-            <TextBlock Text="{Binding Greeting}" FontFamily="{DynamicResource Font.Primary}" FontSize="36" FontWeight="SemiBold" TextWrapping="Wrap" />
+            <StackPanel Orientation="Horizontal">
+                <!-- The Russian flag, only with the unlocked Moscow look -->
+                <Border Width="54" Height="36" CornerRadius="3" ClipToBounds="True" BorderBrush="#40000000" BorderThickness="1" VerticalAlignment="Center" Margin="0,0,16,0"
+                        Visibility="{Binding IsMoscow, Converter={StaticResource BoolToVisibility}}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Rectangle Fill="White" />
+                        <Rectangle Grid.Row="1" Fill="#0039A6" />
+                        <Rectangle Grid.Row="2" Fill="#D52B1E" />
+                    </Grid>
+                </Border>
+                <TextBlock Text="{Binding Greeting}" FontFamily="{DynamicResource Font.Primary}" FontSize="36" FontWeight="SemiBold" TextWrapping="Wrap" VerticalAlignment="Center" />
+            </StackPanel>
             <TextBlock Text="{Binding Time}" FontFamily="{DynamicResource Font.Primary}" FontSize="80" FontWeight="Bold" Margin="0,2,0,0" />
             <TextBlock Text="{Binding Date}" FontFamily="{DynamicResource Font.Primary}" FontSize="18" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding MoscowLine}" FontFamily="{DynamicResource Font.Primary}" FontSize="15" Opacity="0.9" Margin="0,4,0,0"
+                       Visibility="{Binding IsMoscow, Converter={StaticResource BoolToVisibility}}" />
         </StackPanel>
         <WrapPanel Margin="0,26,0,0">
             <Button Style="{StaticResource Button.Play}" ui:Ui.Icon="&#xE768;" Content="{DynamicResource L.Home.PlayRoblox}" MinWidth="180" Margin="0,0,10,6"

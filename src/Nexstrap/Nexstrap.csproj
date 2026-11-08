@@ -13,9 +13,9 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
 
     <!-- Version information (single source of truth for the updater) -->
-    <Version>1.21.0</Version>
-    <AssemblyVersion>1.21.0.0</AssemblyVersion>
-    <FileVersion>1.21.0.0</FileVersion>
+    <Version>1.22.0</Version>
+    <AssemblyVersion>1.22.0.0</AssemblyVersion>
+    <FileVersion>1.22.0.0</FileVersion>
     <Product>Nexstrap</Product>
     <Description>The Roblox launcher, reimagined.</Description>
     <Company>Nexstrap</Company>
@@ -26,9 +26,9 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Dev'">
     <DefineConstants>$(DefineConstants);DEV_BUILD</DefineConstants>
     <Optimize>true</Optimize>
-    <Version>1.22.0</Version>
-    <AssemblyVersion>1.22.0.0</AssemblyVersion>
-    <FileVersion>1.22.0.0</FileVersion>
+    <Version>1.23.0</Version>
+    <AssemblyVersion>1.23.0.0</AssemblyVersion>
+    <FileVersion>1.23.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

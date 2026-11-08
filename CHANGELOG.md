@@ -2,6 +2,14 @@
 
 All notable changes to Nexstrap are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.22.0] - 2026-11-08
+
+### Added
+- **Secret room** (About): a hidden page that opens with a password. Only a fingerprint of the password is stored in the code.
+
+### Changed
+- Password boxes match the rest of the app.
+
 ## [1.21.0] - 2026-11-07
 
 ### Added
@@ -227,6 +235,7 @@ First public release.
 - Quick update check on every launch with an in-app banner; release notes, progress and cancel.
 - Updates are installed only after verifying source, size, SHA-256, product name and version; failed swaps roll back.
 
+[1.22.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.22.0
 [1.21.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.21.0
 [1.20.0]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.20.0
 [1.19.1]: https://github.com/brandtmajxi-wq/nexstrap/releases/tag/v1.19.1

@@ -1023,5 +1023,14 @@
   "Studio.InstallFailed": "Studio couldn't be installed",
   "Studio.NotFound": "Studio isn't installed, or its folder has moved.",
   "Studio.DidntStart": "Studio didn't start",
-  "Studio.WindowsCouldntStart": "Windows couldn't start Studio: {0}"
+  "Studio.WindowsCouldntStart": "Windows couldn't start Studio: {0}",
+  "Secret.Title": "Secret room",
+  "Secret.Subtitle": "Locked with a password.",
+  "Secret.Locked": "This page is locked",
+  "Secret.Locked.Text": "Enter the password to open it.",
+  "Secret.Unlock": "Unlock",
+  "Secret.Password": "Password",
+  "Secret.Wrong": "That's not the password.",
+  "Appearance.MoscowScene": "Moscow welcome screen",
+  "Appearance.MoscowScene.Text": "Moscow at your time of day behind the Welcome page."
 }

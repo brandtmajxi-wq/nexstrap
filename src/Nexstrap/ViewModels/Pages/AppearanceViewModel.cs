@@ -378,6 +378,20 @@ public sealed partial class AppearanceViewModel : PageViewModel
     [ObservableProperty]
     private string? _yourNameError;
 
+    /// <summary>Only shown once the secret room has been unlocked on this PC.</summary>
+    public bool MoscowAvailable => _settings.Current.SecretRoomUnlocked;
+
+    public bool MoscowScene
+    {
+        get => _settings.Current.Welcome.MoscowScene;
+        set
+        {
+            _settings.Current.Welcome.MoscowScene = value;
+            _settings.Save();
+            OnPropertyChanged();
+        }
+    }
+
     // ===== Winter theme =====
 
     public IReadOnlyList<Choice<WinterMode>> WinterChoices { get; } =
@@ -775,6 +789,8 @@ public sealed partial class AppearanceViewModel : PageViewModel
 
     public override void OnNavigatedTo()
     {
+        OnPropertyChanged(nameof(MoscowAvailable));
+        OnPropertyChanged(nameof(MoscowScene));
         if (_fontsRequested) return;
         _fontsRequested = true;
         _ = LoadFontsAsync();

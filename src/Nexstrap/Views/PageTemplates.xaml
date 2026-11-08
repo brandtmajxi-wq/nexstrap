@@ -12,6 +12,9 @@
     <DataTemplate DataType="{x:Type vm:LogsViewModel}">
         <pages:LogsPage />
     </DataTemplate>
+    <DataTemplate DataType="{x:Type vm:MoscowViewModel}">
+        <pages:MoscowPage />
+    </DataTemplate>
     <DataTemplate DataType="{x:Type vm:LegalViewModel}">
         <pages:LegalPage />
     </DataTemplate>

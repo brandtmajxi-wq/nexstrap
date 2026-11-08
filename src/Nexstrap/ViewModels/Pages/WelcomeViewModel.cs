@@ -26,7 +26,12 @@ public sealed partial class WelcomeViewModel : PageViewModel
         _launch = launch;
         _navigation = navigation;
         _clock.Tick += (_, _) => UpdateClock();
-        settings.Saved += (_, _) => System.Windows.Application.Current?.Dispatcher.BeginInvoke(() => OnPropertyChanged(nameof(Greeting)));
+        settings.Saved += (_, _) => System.Windows.Application.Current?.Dispatcher.BeginInvoke(() =>
+        {
+            OnPropertyChanged(nameof(Greeting));
+            OnPropertyChanged(nameof(Backdrop));
+            OnPropertyChanged(nameof(IsMoscow));
+        });
         UpdateClock();
     }
 
@@ -36,7 +41,11 @@ public sealed partial class WelcomeViewModel : PageViewModel
 
     public override bool HasHeader => false;
 
-    public override ImageSource Backdrop => ImageFor(ImageFile(Part, Winter));
+    public override ImageSource Backdrop => ImageFor(ShowsMoscow(_settings.Current)
+        ? $"Resources/Welcome/moscow-{Part.ToString().ToLowerInvariant()}.jpg"
+        : ImageFile(Part, Winter));
+
+    internal static bool ShowsMoscow(Nexstrap.Models.AppSettings settings) => settings.SecretRoomUnlocked && settings.Welcome.MoscowScene;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(Greeting), nameof(Backdrop))]
@@ -56,7 +65,15 @@ public sealed partial class WelcomeViewModel : PageViewModel
     [ObservableProperty]
     private string _date = "";
 
-    public string Greeting => WelcomeName.Greet(GreetingFor(Part, Holiday), _settings.Current.Welcome.Name);
+    public string Greeting => IsMoscow
+        ? SecretRoom.Greeting(Part, _settings.Current.Welcome.Name)
+        : WelcomeName.Greet(GreetingFor(Part, Holiday), _settings.Current.Welcome.Name);
+
+    /// <summary>The unlocked Moscow look: skyline, flag, a Russian greeting and Moscow's time.</summary>
+    public bool IsMoscow => ShowsMoscow(_settings.Current);
+
+    [ObservableProperty]
+    private string _moscowLine = "";
 
     internal static string GreetingFor(DayPart part, Holiday holiday = Holiday.None) => (holiday, part) switch
     {
@@ -71,7 +88,7 @@ public sealed partial class WelcomeViewModel : PageViewModel
     internal static string ImageFile(DayPart part, bool winter = false) =>
         $"Resources/Welcome/{(winter ? "winter-" : "")}{part.ToString().ToLowerInvariant()}.jpg";
 
-    private static ImageSource ImageFor(string file)
+    internal static ImageSource ImageFor(string file)
     {
         if (Images.TryGetValue(file, out var image)) return image;
 
@@ -91,6 +108,7 @@ public sealed partial class WelcomeViewModel : PageViewModel
         (Winter, Holiday) = WinterSeason.Resolve(_settings.Current.Winter, now, WinterSeason.Available);
         Time = now.ToString("T");
         Date = now.ToString("D");
+        MoscowLine = "Москва · " + SecretRoom.MoscowTime(DateTime.UtcNow).ToString("HH:mm", System.Globalization.CultureInfo.GetCultureInfo("ru-RU"));
     }
 
     public override void OnNavigatedTo()

@@ -43,6 +43,9 @@ public sealed class AppSettings
     /// <summary>Language code; null follows Windows.</summary>
     public string? Language { get; set; }
 
+    /// <summary>The Moscow page has been opened with its password on this PC.</summary>
+    public bool SecretRoomUnlocked { get; set; }
+
     /// <summary>Set by "Run without installing" so setup doesn't appear on every start.</summary>
     public bool SkippedSetup { get; set; }
 }
@@ -73,6 +76,9 @@ public sealed class WelcomeSettings
 
     /// <summary>Set once the question has been shown, so it only appears one time.</summary>
     public bool NameAsked { get; set; }
+
+    /// <summary>Moscow behind the Welcome page. Only used once the secret room is unlocked, which turns it on.</summary>
+    public bool MoscowScene { get; set; }
 }
 
 public sealed class WinterSettings

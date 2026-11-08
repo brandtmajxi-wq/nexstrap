@@ -1023,5 +1023,14 @@
   "Studio.InstallFailed": "Studio konnte nicht installiert werden",
   "Studio.NotFound": "Studio ist nicht installiert oder sein Ordner wurde verschoben.",
   "Studio.DidntStart": "Studio ist nicht gestartet",
-  "Studio.WindowsCouldntStart": "Windows konnte Studio nicht starten: {0}"
+  "Studio.WindowsCouldntStart": "Windows konnte Studio nicht starten: {0}",
+  "Secret.Title": "Geheimer Raum",
+  "Secret.Subtitle": "Mit einem Passwort gesperrt.",
+  "Secret.Locked": "Diese Seite ist gesperrt",
+  "Secret.Locked.Text": "Gib das Passwort ein, um sie zu öffnen.",
+  "Secret.Unlock": "Entsperren",
+  "Secret.Password": "Passwort",
+  "Secret.Wrong": "Das ist nicht das Passwort.",
+  "Appearance.MoscowScene": "Moskau-Startbildschirm",
+  "Appearance.MoscowScene.Text": "Moskau zu deiner Tageszeit hinter der Willkommensseite."
 }

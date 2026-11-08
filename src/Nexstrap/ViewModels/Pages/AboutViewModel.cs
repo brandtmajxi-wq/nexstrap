@@ -52,5 +52,8 @@ public sealed partial class AboutViewModel(IShellService shell, FileLoggerProvid
     private void ViewLogs() => navigation.NavigateTo<LogsViewModel>();
 
     [RelayCommand]
+    private void OpenSecret() => navigation.NavigateTo<MoscowViewModel>();
+
+    [RelayCommand]
     private void Tour() => (System.Windows.Application.Current as App)?.ShowTour();
 }
