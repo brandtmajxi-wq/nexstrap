@@ -1032,5 +1032,18 @@
   "Secret.Password": "Mot de passe",
   "Secret.Wrong": "Ce n'est pas le mot de passe.",
   "Appearance.MoscowScene": "Écran d'accueil Moscou",
-  "Appearance.MoscowScene.Text": "Moscou selon ton moment de la journée derrière la page d'accueil."
+  "Appearance.MoscowScene.Text": "Moscou selon ton moment de la journée derrière la page d'accueil.",
+  "Appearance.BerlinScene": "Écran d'accueil Berlin",
+  "Appearance.BerlinScene.Text": "Berlin selon ton moment de la journée derrière la page d'accueil, avec un salut en allemand.",
+  "Appearance.MoscowWeather": "Météo à Moscou",
+  "Appearance.MoscowWeather.Text": "Météo animée sur les écrans de Moscou. Aléatoire choisit une nouvelle météo à chaque démarrage de Nexstrap.",
+  "Weather.Random": "Aléatoire",
+  "Weather.Clear": "Dégagé",
+  "Weather.PartlyCloudy": "Partiellement nuageux",
+  "Weather.Cloudy": "Nuageux",
+  "Weather.Rain": "Pluie",
+  "Weather.Storm": "Orage",
+  "Weather.Snow": "Neige",
+  "Weather.Fog": "Brouillard",
+  "Weather.Off": "Désactivé"
 }

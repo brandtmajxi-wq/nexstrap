@@ -79,6 +79,12 @@ public sealed class WelcomeSettings
 
     /// <summary>Moscow behind the Welcome page. Only used once the secret room is unlocked, which turns it on.</summary>
     public bool MoscowScene { get; set; }
+
+    /// <summary>Animated weather on the Moscow screens. Random picks one each time Nexstrap starts.</summary>
+    public Nexstrap.Core.Weather MoscowWeather { get; set; } = Nexstrap.Core.Weather.Random;
+
+    /// <summary>Dev only for now: Berlin behind the Welcome page, with a German greeting.</summary>
+    public bool BerlinScene { get; set; }
 }
 
 public sealed class WinterSettings

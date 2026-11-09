@@ -42,8 +42,10 @@ public sealed partial class MoscowViewModel : PageViewModel
 
     public override ImageSource? Backdrop => IsUnlocked ? WelcomeViewModel.ImageFor($"Resources/Welcome/moscow-{Part.ToString().ToLowerInvariant()}.jpg") : null;
 
+    public override SkyScene? Sky => WelcomeViewModel.MoscowSky(IsUnlocked, _settings.Current.Welcome.MoscowWeather, Part);
+
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(Backdrop), nameof(Greeting))]
+    [NotifyPropertyChangedFor(nameof(Backdrop), nameof(Greeting), nameof(Sky))]
     private DayPart _part;
 
     [ObservableProperty]
@@ -70,7 +72,8 @@ public sealed partial class MoscowViewModel : PageViewModel
         var moscow = SecretRoom.MoscowTime(DateTime.UtcNow);
         Part = TimeOfDay.Part(moscow.Hour);
         MoscowTime = moscow.ToString("HH:mm:ss", Russian);
-        MoscowDate = "Москва · " + moscow.ToString("dddd, d MMMM", Russian);
+        MoscowDate = "Москва · " + moscow.ToString("dddd, d MMMM", Russian)
+            + (Sky is { } sky ? " · " + MoscowWeather.RussianName(sky.Weather, sky.Part) : "");
         LocalTime = "У тебя сейчас " + DateTime.Now.ToString("HH:mm", Russian);
     }
 
@@ -87,7 +90,7 @@ public sealed partial class MoscowViewModel : PageViewModel
         _settings.Current.SecretRoomUnlocked = true;
         _settings.Current.Welcome.MoscowScene = true;
         _settings.Save();
-        foreach (var name in new[] { nameof(IsUnlocked), nameof(HasHeader), nameof(Backdrop) }) OnPropertyChanged(name);
+        foreach (var name in new[] { nameof(IsUnlocked), nameof(HasHeader), nameof(Backdrop), nameof(Sky) }) OnPropertyChanged(name);
         return true;
     }
 

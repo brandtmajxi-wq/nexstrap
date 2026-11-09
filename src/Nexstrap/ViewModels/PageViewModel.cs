@@ -21,6 +21,9 @@ public abstract class PageViewModel : ObservableObject
     /// <summary>A full-window picture for this page, shown over any custom background.</summary>
     public virtual ImageSource? Backdrop => null;
 
+    /// <summary>Animated weather drawn over the Backdrop (the Moscow screens), or null.</summary>
+    public virtual SkyScene? Sky => null;
+
     /// <summary>False for pages that draw their own heading.</summary>
     public virtual bool HasHeader => true;
 

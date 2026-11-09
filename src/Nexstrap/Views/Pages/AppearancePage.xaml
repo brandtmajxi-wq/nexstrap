@@ -227,6 +227,15 @@
                         Visibility="{Binding MoscowAvailable, Converter={StaticResource BoolToVisibility}}">
             <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding MoscowScene}" AutomationProperties.Name="{DynamicResource L.Appearance.MoscowScene}" />
         </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE9CA;" Header="{DynamicResource L.Appearance.MoscowWeather}" Description="{DynamicResource L.Appearance.MoscowWeather.Text}"
+                        Visibility="{Binding MoscowAvailable, Converter={StaticResource BoolToVisibility}}">
+            <ComboBox Width="190" ItemsSource="{Binding WeatherChoices}" DisplayMemberPath="Label" SelectedValuePath="Value"
+                      SelectedValue="{Binding MoscowWeatherChoice}" AutomationProperties.Name="{DynamicResource L.Appearance.MoscowWeather}" />
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE80F;" Header="{DynamicResource L.Appearance.BerlinScene}" Description="{DynamicResource L.Appearance.BerlinScene.Text}"
+                        Visibility="{Binding BerlinAvailable, Converter={StaticResource BoolToVisibility}}">
+            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding BerlinScene}" AutomationProperties.Name="{DynamicResource L.Appearance.BerlinScene}" />
+        </ui:SettingCard>
 
         <!-- ===== Winter theme (dev only for now) ===== -->
         <StackPanel Visibility="{Binding WinterAvailable, Converter={StaticResource BoolToVisibility}}">

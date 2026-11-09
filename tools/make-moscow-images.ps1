@@ -4,6 +4,7 @@
   Output: src/Nexstrap/Resources/Welcome/moscow-{night,morning,afternoon,evening}.jpg
   Usage: powershell -File tools/make-moscow-images.ps1
 #>
+param([ValidateSet('moscow','berlin')][string]$City = 'moscow')
 $ErrorActionPreference = 'Stop'
 $out = Join-Path $PSScriptRoot '..\src\Nexstrap\Resources\Welcome'
 New-Item -ItemType Directory -Force $out | Out-Null
@@ -21,7 +22,7 @@ public class City
     public double SunX, SunY, SunR; public string Sun; public double Glow = 1;
     public bool Moon; public double Stars;
     public string CloudLit, CloudDark; public double Clouds;
-    public string Haze, Water, Light; public double Night; public int Seed;
+    public string Haze, Water, Light; public double Night; public int Seed; public string Kind = "moscow";
 }
 
 public static class Moscow
@@ -195,57 +196,8 @@ public static class Moscow
         Block(cx - 2, cx + 2, top - (int)(half * 3.6) - 22, top - (int)(half * 3.6), "#E8C25A", fog);
     }
 
-    public static void Paint(City scene, string path)
+    static void DrawMoscow()
     {
-        s = scene;
-        px = new double[W * H * 3];
-        light = C(s.Light); haze = C(s.Haze); warm = C("#FFC27A");
-        var sun = C(s.Sun); var lit = C(s.CloudLit); var dark = C(s.CloudDark); var waterTint = C(s.Water);
-        double sx = s.SunX * W, sy = s.SunY * H, sr = s.SunR * H;
-
-        // Sky with stars, clouds and the sun or moon
-        for (int y = 0; y < WL; y++)
-        {
-            double t = (double)y / WL;
-            double[] baseSky = null;
-            for (int i = 0; i < s.Stops.Length - 1 && baseSky == null; i++)
-                if (t <= s.Stops[i + 1]) baseSky = Mix(C(s.Sky[i]), C(s.Sky[i + 1]), Smooth(s.Stops[i], s.Stops[i + 1], t));
-            if (baseSky == null) baseSky = C(s.Sky[s.Sky.Length - 1]);
-            for (int x = 0; x < W; x++)
-            {
-                var c = (double[])baseSky.Clone();
-                double d = Math.Sqrt((x - sx) * (x - sx) + (y - sy) * (y - sy)) / H;
-                double glow = (Math.Exp(-d * d * 70) * 0.65 + Math.Exp(-d * 4.5) * 0.32) * s.Glow;
-                if (s.Stars > 0 && x % 3 == 1 && y % 3 == 1)
-                {
-                    double h = Hash(x / 3, y / 3, s.Seed);
-                    if (h > 0.9965) { double b = (0.35 + 0.65 * Hash(x / 3, y / 3, s.Seed + 1)) * Math.Pow(1 - t, 1.4) * s.Stars; for (int k = 0; k < 3; k++) c[k] = Math.Max(c[k], b); }
-                }
-                double pd = d * H;
-                if (s.Moon)
-                {
-                    double edge = Smooth(sr + 1.5, sr - 1.5, pd);
-                    if (edge > 0) c = Mix(c, Mix(sun, new[] { 0.62, 0.64, 0.72 }, Smooth(0.46, 0.66, Fbm(x * 0.018, y * 0.018, 5, s.Seed + 3)) * 0.6), edge);
-                }
-                double n = Fbm(x * 0.0011 + 0.6 * Fbm(x * 0.0012, y * 0.003, 3, s.Seed + 5), y * 0.0052, 6, s.Seed + 7);
-                double cover = Smooth(0.47, 0.68, n) * s.Clouds * (0.45 + 0.55 * Smooth(0.05, 0.75, t));
-                double l = Clamp(Smooth(0.5, 0.72, n) * 0.35 + glow * 1.4 + (1 - t) * 0.2);
-                c = Mix(c, Mix(dark, lit, l), cover);
-                for (int k = 0; k < 3; k++) c[k] = 1 - (1 - c[k]) * (1 - sun[k] * glow);
-                if (!s.Moon) c = Mix(c, new[] { 1.0, 1.0, 0.98 }, Smooth(sr + 2.5, sr - 2.5, pd));
-                Set(x, y, c);
-            }
-        }
-
-        // Distant city, fading into the haze
-        var rand = new Random(s.Seed);
-        for (int x = -20; x < W;)
-        {
-            int w = 40 + rand.Next(80), h = 50 + rand.Next(150);
-            Block(x, x + w - 4, Bank - h, Bank, rand.NextDouble() < 0.5 ? "#6E7488" : "#7C7A86", 0.62, 0.5, s.Seed + x);
-            x += w;
-        }
-
         // A stepped high-rise with a spire and star
         int hx = 330;
         Block(hx - 190, hx + 190, 960, Bank, "#C9B99A", 0.36, 0.55, s.Seed + 90);
@@ -340,6 +292,183 @@ public static class Moscow
             Onion(dx, bottom, h, r, (string)d[4], (string)d[5], (double)d[6], 0.02);
         }
 
+    }
+
+    static void Flag(int x, int y, int w, int h, string[] stripes)
+    {
+        for (int i = 0; i < stripes.Length; i++)
+        {
+            var c = C(stripes[i]);
+            for (int yy = y + h * i / stripes.Length; yy < y + h * (i + 1) / stripes.Length; yy++)
+                for (int xx = x; xx < x + w; xx++)
+                {
+                    double wave = Math.Sin((xx - x) * 0.09 + i) * 0.07;
+                    double shade = 1 - wave - 0.1 * (1 - s.Night * 0.0);
+                    var lit = new double[3];
+                    for (int k = 0; k < 3; k++) lit[k] = Clamp(c[k] * shade * (0.45 + 0.55 * light[k]) + (s.Night > 0 ? c[k] * warm[k] * 0.35 * s.Night : 0));
+                    Set(xx, yy + (int)(Math.Sin((xx - x) * 0.09) * 3), lit);
+                }
+        }
+    }
+
+    static void Disc(double cx, double cy, double r, string color, double fog, string band = null)
+    {
+        var baseColor = C(color);
+        for (int y = (int)(cy - r); y <= cy + r; y++)
+            for (int x = (int)(cx - r); x <= cx + r; x++)
+            {
+                double dx = (x - cx) / r, dy = (y - cy) / r, d = dx * dx + dy * dy;
+                if (d > 1) continue;
+                double nz = Math.Sqrt(1 - d);
+                double lightDir = (s.SunX < 0.5 ? -1 : 1);
+                double shade = 0.55 + 0.45 * Clamp(nz * 0.7 + dx * lightDir * 0.5 - dy * 0.3);
+                var c = Lit(new[] { baseColor[0] * shade, baseColor[1] * shade, baseColor[2] * shade }, fog, 0, 0.6);
+                if (band != null && Math.Abs(dy) < 0.12) c = s.Night > 0.3 ? Mix(C("#FFD38A"), c, 0.3) : Lit(C(band), fog, 0, 0.6);
+                double spec = Math.Exp(-Math.Pow((dx + 0.35 * lightDir * -1) / 0.25, 2) - Math.Pow((dy + 0.4) / 0.25, 2)) * 0.45 * (1 - s.Night * 0.6);
+                for (int k = 0; k < 3; k++) c[k] = Clamp(c[k] + spec);
+                Set(x, y, c);
+            }
+    }
+
+    static void DrawBerlin()
+    {
+        // The TV tower: a tapering shaft, the silver sphere and the red and white antenna
+        int tx = 640;
+        for (int y = 500; y < Bank; y++)
+        {
+            double t = (double)(y - 500) / (Bank - 500);
+            int half = (int)(14 + 22 * t * t);
+            Block(tx - half, tx + half, y, y + 1, "#C9CCD2", 0.18);
+        }
+        Disc(tx, 455, 62, "#B9BFC9", 0.18, "#5B6474");
+        Block(tx - 9, tx + 9, 360, 400, "#C9CCD2", 0.18);
+        for (int y = 220; y < 360; y++)
+            Block(tx - 3, tx + 3, y, y + 1, ((y - 220) / 18) % 2 == 0 ? "#D23A2E" : "#EDEDED", 0.18);
+        if (s.Night > 0.2) { Glow(tx, 222, 30, C("#FF2A2A"), 0.9 * s.Night); Glow(tx, 400, 22, C("#FF2A2A"), 0.6 * s.Night); }
+
+        // The cathedral: a green copper dome and two small corner domes
+        int dx = 2350;
+        Block(dx - 150, dx + 150, 930, Bank, "#9A8F7C", 0.1, 0.25, s.Seed + 70);
+        Block(dx - 70, dx + 70, 880, 930, "#A39885", 0.1);
+        Disc(dx, 880, 82, "#5E9C86", 0.1);
+        Block(dx - 90, dx + 90, 878, Bank, "#9A8F7C", 0.1);
+        Block(dx - 10, dx + 10, 770, 805, "#5E9C86", 0.1);
+        Disc(dx, 768, 12, "#D9B653", 0.1);
+        foreach (int cx in new[] { dx - 130, dx + 130 })
+        {
+            Block(cx - 20, cx + 20, 880, 930, "#A39885", 0.1);
+            Disc(cx, 878, 24, "#5E9C86", 0.1);
+            Block(cx - 24, cx + 24, 878, 930, "#A39885", 0.1);
+        }
+
+        // The parliament: a long sandstone front, corner towers and the glass dome with a flag
+        int rx = 1880;
+        Block(rx - 280, rx + 280, 970, Bank, "#CFC2A2", 0.06, 0.35, s.Seed + 71);
+        Block(rx - 290, rx - 200, 925, Bank, "#D3C6A6", 0.06);
+        Block(rx + 200, rx + 290, 925, Bank, "#D3C6A6", 0.06);
+        Block(rx - 120, rx + 120, 945, 975, "#D8CBAB", 0.06);
+        for (int y = 830; y < 945; y++)
+        {
+            double t = (double)(945 - y) / 115;
+            int half = (int)(120 * Math.Sqrt(Math.Max(0, 1 - t * t)));
+            for (int x = rx - half; x <= rx + half; x++)
+            {
+                bool rib = ((x - rx + 400) % 22) < 3 || ((y - 830) % 20) < 2;
+                var glass = Mix(C(s.Sky[1]), C("#AFC4D6"), 0.5);
+                var c = rib ? Lit(C("#8C939C"), 0.06, 0, 0.5) : Mix(glass, light, 0.2);
+                if (s.Night > 0.3) c = rib ? Mix(C("#FFE2AA"), c, 0.4) : Mix(C("#FFD38A"), c, 0.35 + 0.4 * t);
+                Set(x, y, c);
+            }
+        }
+        if (s.Night > 0.3) Glow(rx, 900, 170, warm, 0.45 * s.Night);
+        Block(rx + 246, rx + 250, 840, 925, "#55575E", 0.06);
+        Flag(rx + 250, 842, 66, 40, new[] { "#111111", "#DD0000", "#FFCE00" });
+
+        // The gate: six columns, the attic and the chariot on top
+        int gx = 1240;
+        Block(gx - 230, gx + 230, 1012, Bank, "#D8C7A0", 0.03);
+        for (int c = 0; c < 6; c++)
+        {
+            int cx = gx - 205 + c * 82;
+            Block(cx, cx + 30, 1012, Bank, "#E2D3AE", 0.03);
+        }
+        for (int c = 0; c < 5; c++)
+        {
+            int ox = gx - 175 + c * 82;
+            Block(ox, ox + 52, 1018, Bank, "#2B2622", 0.03);
+        }
+        Block(gx - 240, gx + 240, 980, 1012, "#D8C7A0", 0.03);
+        for (int m = gx - 230; m < gx + 230; m += 24) Block(m, m + 12, 990, 1002, "#C4B48D", 0.03);
+        Block(gx - 160, gx + 160, 945, 980, "#DCCBA6", 0.03);
+        Block(gx - 120, gx + 120, 930, 945, "#D8C7A0", 0.03);
+        // Quadriga: four horses and the goddess, in green bronze
+        for (int h = 0; h < 4; h++)
+        {
+            int hx = gx - 78 + h * 40;
+            Block(hx, hx + 34, 900, 918, "#3E6B5C", 0.03);
+            Block(hx + 26, hx + 36, 884, 904, "#3E6B5C", 0.03);
+            Block(hx + 2, hx + 6, 918, 930, "#3E6B5C", 0.03);
+            Block(hx + 26, hx + 30, 918, 930, "#3E6B5C", 0.03);
+        }
+        Block(gx - 8, gx + 10, 862, 905, "#3E6B5C", 0.03);
+        Block(gx + 6, gx + 34, 868, 874, "#3E6B5C", 0.03);
+        Block(gx + 30, gx + 34, 846, 874, "#3E6B5C", 0.03);
+        if (s.Night > 0.2) for (int c = 0; c < 6; c++) Glow(gx - 190 + c * 82, Bank - 6, 70, warm, 0.55 * s.Night);
+    }
+
+    public static void Paint(City scene, string path)
+    {
+        s = scene;
+        px = new double[W * H * 3];
+        light = C(s.Light); haze = C(s.Haze); warm = C("#FFC27A");
+        var sun = C(s.Sun); var lit = C(s.CloudLit); var dark = C(s.CloudDark); var waterTint = C(s.Water);
+        double sx = s.SunX * W, sy = s.SunY * H, sr = s.SunR * H;
+
+        // Sky with stars, clouds and the sun or moon
+        for (int y = 0; y < WL; y++)
+        {
+            double t = (double)y / WL;
+            double[] baseSky = null;
+            for (int i = 0; i < s.Stops.Length - 1 && baseSky == null; i++)
+                if (t <= s.Stops[i + 1]) baseSky = Mix(C(s.Sky[i]), C(s.Sky[i + 1]), Smooth(s.Stops[i], s.Stops[i + 1], t));
+            if (baseSky == null) baseSky = C(s.Sky[s.Sky.Length - 1]);
+            for (int x = 0; x < W; x++)
+            {
+                var c = (double[])baseSky.Clone();
+                double d = Math.Sqrt((x - sx) * (x - sx) + (y - sy) * (y - sy)) / H;
+                double glow = (Math.Exp(-d * d * 70) * 0.65 + Math.Exp(-d * 4.5) * 0.32) * s.Glow;
+                if (s.Stars > 0 && x % 3 == 1 && y % 3 == 1)
+                {
+                    double h = Hash(x / 3, y / 3, s.Seed);
+                    if (h > 0.9965) { double b = (0.35 + 0.65 * Hash(x / 3, y / 3, s.Seed + 1)) * Math.Pow(1 - t, 1.4) * s.Stars; for (int k = 0; k < 3; k++) c[k] = Math.Max(c[k], b); }
+                }
+                double pd = d * H;
+                if (s.Moon)
+                {
+                    double edge = Smooth(sr + 1.5, sr - 1.5, pd);
+                    if (edge > 0) c = Mix(c, Mix(sun, new[] { 0.62, 0.64, 0.72 }, Smooth(0.46, 0.66, Fbm(x * 0.018, y * 0.018, 5, s.Seed + 3)) * 0.6), edge);
+                }
+                double n = Fbm(x * 0.0011 + 0.6 * Fbm(x * 0.0012, y * 0.003, 3, s.Seed + 5), y * 0.0052, 6, s.Seed + 7);
+                double cover = Smooth(0.47, 0.68, n) * s.Clouds * (0.45 + 0.55 * Smooth(0.05, 0.75, t));
+                double l = Clamp(Smooth(0.5, 0.72, n) * 0.35 + glow * 1.4 + (1 - t) * 0.2);
+                c = Mix(c, Mix(dark, lit, l), cover);
+                for (int k = 0; k < 3; k++) c[k] = 1 - (1 - c[k]) * (1 - sun[k] * glow);
+                if (!s.Moon) c = Mix(c, new[] { 1.0, 1.0, 0.98 }, Smooth(sr + 2.5, sr - 2.5, pd));
+                Set(x, y, c);
+            }
+        }
+
+        // Distant city, fading into the haze
+        var rand = new Random(s.Seed);
+        for (int x = -20; x < W;)
+        {
+            int w = 40 + rand.Next(80), h = 50 + rand.Next(150);
+            Block(x, x + w - 4, Bank - h, Bank, rand.NextDouble() < 0.5 ? "#6E7488" : "#7C7A86", 0.62, 0.5, s.Seed + x);
+            x += w;
+        }
+
+        if (s.Kind == "berlin") DrawBerlin(); else DrawMoscow();
+
         // Embankment and street lights
         Block(0, W, Bank, WL, "#4B4A52", 0);
         for (int x = 40; x < W; x += 150)
@@ -407,7 +536,8 @@ $scenes = @{
     CloudLit = '#FFB184'; CloudDark = '#4A2160'; Clouds = 0.8; Haze = '#B8577A'; Water = '#4A1E55'; Light = '#E8A08E'; Night = 0.45; Seed = 41 }
 }
 foreach ($name in $scenes.Keys) {
-  $file = [IO.Path]::GetFullPath((Join-Path $out "moscow-$name.jpg"))
+  $scenes[$name].Kind = $City
+  $file = [IO.Path]::GetFullPath((Join-Path $out "$City-$name.jpg"))
   [Moscow]::Paint($scenes[$name], $file)
   "{0}: {1} KB" -f $name, [math]::Round((Get-Item $file).Length / 1KB)
 }

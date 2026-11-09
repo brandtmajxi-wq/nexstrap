@@ -7,8 +7,23 @@
 <meta name="description" content="Nexstrap is a free Windows launcher for the official Roblox client: themes, a server browser, play stats, Discord Rich Presence and verified updates.">
 <meta property="og:title" content="Nexstrap: the Roblox launcher, reimagined">
 <meta property="og:description" content="A free Windows launcher for the official Roblox client.">
-<meta property="og:image" content="img/welcome.png">
+<meta property="og:image" content="https://nexstrap.org/img/welcome.png">
+<meta property="og:url" content="https://nexstrap.org/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0E0F13">
 <link rel="icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="img/logo.png">
+<script>
+  // Phones and tablets can't run Nexstrap, so the page offers to send the link instead.
+  (function () {
+    var ua = navigator.userAgent;
+    var mobile = (navigator.userAgentData && navigator.userAgentData.mobile) ||
+      /Android|iPhone|iPad|iPod|Mobile/i.test(ua) ||
+      (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+    if (mobile) document.documentElement.classList.add("is-mobile");
+  })();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -43,7 +58,7 @@
   /* Navigation */
   nav { position: sticky; top: 0; z-index: 10; background: rgba(14, 15, 19, 0.78); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.06); }
   nav .wrap { display: flex; align-items: center; gap: 24px; height: 64px; }
-  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; text-decoration: none; font-size: 18px; }
+  .brand { display: flex; align-items: center; gap: 10px; min-height: 44px; font-weight: 700; text-decoration: none; font-size: 18px; }
   .brand img { width: 30px; height: 30px; }
   nav .links { display: flex; gap: 22px; margin-left: auto; font-size: 15px; color: var(--muted); }
   nav .links a { text-decoration: none; }
@@ -72,6 +87,7 @@
 
   /* Sections */
   section { padding: 72px 0; }
+  section[id] { scroll-margin-top: 40px; }
   .eyebrow { color: var(--accent); font-weight: 600; font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 10px; }
   h2 { font-size: clamp(28px, 4vw, 40px); letter-spacing: -0.02em; line-height: 1.15; margin: 0 0 14px; }
   .sub { color: var(--muted); max-width: 640px; margin: 0 0 40px; }
@@ -112,14 +128,77 @@
   footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 32px 0 48px; color: var(--faint); font-size: 14px; }
   footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 28px; justify-content: space-between; }
   footer a { color: var(--muted); }
+
+  /* Menu button and phone note (only shown on small screens / phones) */
+  .menu-btn { display: none; margin-left: auto; width: 44px; height: 44px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); align-items: center; justify-content: center; cursor: pointer; }
+  .menu-btn svg { width: 22px; height: 22px; }
+  .phone-note { display: none; background: rgba(22,23,29,0.85); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; margin: 0 0 16px; max-width: 560px; }
+  .phone-note b { display: block; margin-bottom: 4px; }
+  .phone-note p { margin: 0 0 14px; color: var(--muted); font-size: 15px; }
+  .is-mobile .phone-note { display: block; }
+  .is-mobile .btn.download { display: none; }
+  .phone-only { display: none !important; }
+  .is-mobile .phone-only { display: inline-flex !important; }
+  .btn.share { cursor: pointer; font: inherit; color: inherit; }
+
+  /* Touch screens: no hover lift, no grey tap flash */
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  a, button, summary { -webkit-tap-highlight-color: transparent; }
+  @media (hover: none) { .btn:hover { transform: none; background: var(--surface-2); } .btn.primary:hover { background: linear-gradient(135deg, var(--accent), #9B8CFF); } }
+
+  @media (max-width: 720px) {
+    body { font-size: 15.5px; }
+    nav .wrap { height: 58px; }
+    .menu-btn { display: inline-flex; }
+    nav .links { display: none; position: absolute; top: 58px; left: 0; right: 0; flex-direction: column; gap: 0; margin: 0; padding: 6px 16px 14px; background: rgba(14,15,19,0.97); border-bottom: 1px solid var(--border); font-size: 17px; }
+    nav.open .links { display: flex; }
+    nav .links a, nav .links a.hide-sm { display: block; padding: 13px 4px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    nav .links a:last-child { border-bottom: 0; }
+
+    .hero { padding: 48px 0 40px; }
+    .hero::before { background-image: url(img/evening-sm.jpg); }
+    .hero-logo { width: 64px; height: 64px; margin-bottom: 16px; }
+    h1 { font-size: clamp(34px, 10vw, 44px); }
+    .lead { margin-bottom: 24px; }
+    .actions { flex-direction: column; align-items: stretch; }
+    .actions .btn { justify-content: center; min-height: 50px; }
+    .cta .actions { max-width: 420px; margin: 0 auto; }
+    .shot { margin-top: 36px; border-radius: 12px; }
+
+    section { padding: 48px 0; }
+    .sub { margin-bottom: 28px; }
+    .grid { grid-template-columns: 1fr; gap: 12px; }
+    .card { padding: 18px; display: grid; grid-template-columns: auto 1fr; column-gap: 14px; }
+    .card .icon { grid-row: span 2; width: 38px; height: 38px; }
+    .card h3 { margin: 6px 0 4px; font-size: 17px; }
+    .card > :not(.icon) { grid-column: 2; }
+    #safety .card { display: block; }
+    #safety .card h3 { margin-top: 0; }
+    .split .frame { border-radius: 10px; }
+    .times { gap: 8px; }
+    .times figcaption { font-size: 13px; left: 10px; bottom: 8px; }
+
+    details { padding: 0; }
+    summary { padding: 16px 18px; min-height: 52px; align-items: center; }
+    details p { margin: 0; padding: 0 18px 16px; }
+    code { word-break: break-all; }
+
+    .cta { padding: 56px 0; }
+    footer { padding: 28px 0 calc(36px + env(safe-area-inset-bottom)); }
+    footer .wrap { flex-direction: column; gap: 10px; }
+    footer a { display: inline-block; padding: 4px 0; }
+  }
 </style>
 </head>
 <body>
 
 <nav>
   <div class="wrap">
-    <a class="brand" href="#"><img src="img/logo.png" alt="">Nexstrap</a>
-    <div class="links">
+    <a class="brand" href="#"><img src="img/logo.png" alt="" width="30" height="30">Nexstrap</a>
+    <button class="menu-btn" type="button" aria-label="Menu" aria-expanded="false" aria-controls="nav-links">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <div class="links" id="nav-links">
       <a href="#features" class="hide-sm">Features</a>
       <a href="#safety" class="hide-sm">Safety</a>
       <a href="#faq">FAQ</a>
@@ -133,15 +212,20 @@
     <img class="hero-logo" src="img/logo.png" alt="Nexstrap logo">
     <h1>The Roblox launcher,<br><span>reimagined.</span></h1>
     <p class="lead">A free Windows launcher for the official Roblox client. Make it look the way you like, find the right server, see your play stats and keep Roblox up to date, all without touching your account.</p>
+    <div class="phone-note">
+      <b>Nexstrap runs on Windows PCs</b>
+      <p>It can't be installed on a phone. Send yourself the link and download it on your PC.</p>
+      <div class="actions"><button class="btn primary share" type="button">Send me the link</button></div>
+    </div>
     <div class="actions">
-      <a class="btn primary" href="https://github.com/brandtmajxi-wq/nexstrap/releases/latest/download/Nexstrap.exe">
+      <a class="btn primary download" href="https://github.com/brandtmajxi-wq/nexstrap/releases/latest/download/Nexstrap.exe">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
         Download for Windows
       </a>
       <a class="btn" href="https://github.com/brandtmajxi-wq/nexstrap/releases/latest">Release notes</a>
     </div>
     <p class="meta"><span id="version">Latest version</span> · Windows 10 and 11 · Free and open source (MIT)</p>
-    <img class="shot" src="img/welcome.png" alt="Nexstrap's Welcome page with an evening landscape, the time and a Play Roblox button" width="1120" height="720">
+    <img class="shot" src="img/welcome.jpg" srcset="img/welcome-sm.jpg 720w, img/welcome.jpg 1120w" sizes="(max-width: 1152px) calc(100vw - 32px), 1120px" alt="Nexstrap's Welcome page with an evening landscape, the time and a Play Roblox button" width="1120" height="720" fetchpriority="high">
   </div>
 </header>
 
@@ -209,10 +293,10 @@
         <p class="sub" style="margin-bottom:0">Nexstrap greets you by the time of day with a landscape for morning, afternoon, evening and night. It only reads your PC's clock, so no location is used.</p>
       </div>
       <div class="times">
-        <figure><img src="img/morning.jpg" alt="Morning landscape" loading="lazy"><figcaption>Morning</figcaption></figure>
-        <figure><img src="img/afternoon.jpg" alt="Afternoon landscape" loading="lazy"><figcaption>Afternoon</figcaption></figure>
-        <figure><img src="img/evening.jpg" alt="Evening landscape" loading="lazy"><figcaption>Evening</figcaption></figure>
-        <figure><img src="img/night.jpg" alt="Night landscape" loading="lazy"><figcaption>Night</figcaption></figure>
+        <figure><img src="img/morning-sm.jpg" alt="Morning landscape" loading="lazy" width="720" height="405"><figcaption>Morning</figcaption></figure>
+        <figure><img src="img/afternoon-sm.jpg" alt="Afternoon landscape" loading="lazy" width="720" height="405"><figcaption>Afternoon</figcaption></figure>
+        <figure><img src="img/evening-sm.jpg" alt="Evening landscape" loading="lazy" width="720" height="405"><figcaption>Evening</figcaption></figure>
+        <figure><img src="img/night-sm.jpg" alt="Night landscape" loading="lazy" width="720" height="405"><figcaption>Night</figcaption></figure>
       </div>
     </div>
   </div>
@@ -231,7 +315,7 @@
           <li>Save themes and share them as a file</li>
         </ul>
       </div>
-      <div class="frame"><img src="img/appearance.png" alt="The Appearance page with themes and presets" loading="lazy" width="1120" height="720"></div>
+      <div class="frame"><img src="img/appearance.jpg" srcset="img/appearance-sm.jpg 720w, img/appearance.jpg 1120w" sizes="(max-width: 860px) calc(100vw - 32px), 600px" alt="The Appearance page with themes and presets" loading="lazy" width="1120" height="720"></div>
     </div>
   </div>
 </section>
@@ -248,7 +332,7 @@
           <li>Try to land in a region, like Frankfurt (experimental)</li>
         </ul>
       </div>
-      <div class="frame"><img src="img/servers.png" alt="The Servers page with filters and region search" loading="lazy" width="1120" height="720"></div>
+      <div class="frame"><img src="img/servers.jpg" srcset="img/servers-sm.jpg 720w, img/servers.jpg 1120w" sizes="(max-width: 860px) calc(100vw - 32px), 600px" alt="The Servers page with filters and region search" loading="lazy" width="1120" height="720"></div>
     </div>
   </div>
 </section>
@@ -265,7 +349,7 @@
           <li>Size, position, corners and a fade</li>
         </ul>
       </div>
-      <div class="frame"><img src="img/loadingscreen.png" alt="The Loading Screen settings page" loading="lazy" width="1120" height="720"></div>
+      <div class="frame"><img src="img/loadingscreen.jpg" srcset="img/loadingscreen-sm.jpg 720w, img/loadingscreen.jpg 1120w" sizes="(max-width: 860px) calc(100vw - 32px), 600px" alt="The Loading Screen settings page" loading="lazy" width="1120" height="720"></div>
     </div>
   </div>
 </section>
@@ -324,7 +408,8 @@
     <h2>Give Roblox a better launcher</h2>
     <p class="sub" style="margin:0 auto 28px">One small download. No admin rights needed.</p>
     <div class="actions">
-      <a class="btn primary" href="https://github.com/brandtmajxi-wq/nexstrap/releases/latest/download/Nexstrap.exe">
+      <button class="btn primary share phone-only" type="button">Send me the link</button>
+      <a class="btn primary download" href="https://github.com/brandtmajxi-wq/nexstrap/releases/latest/download/Nexstrap.exe">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
         Download for Windows
       </a>
@@ -346,6 +431,29 @@
     .then(r => r.ok ? r.json() : null)
     .then(r => { if (r && r.tag_name) document.getElementById("version").textContent = "Version " + r.tag_name.replace(/^v/, ""); })
     .catch(() => {});
+
+  // Phone menu.
+  const nav = document.querySelector("nav");
+  const menu = nav.querySelector(".menu-btn");
+  const setMenu = open => { nav.classList.toggle("open", open); menu.setAttribute("aria-expanded", open); };
+  menu.addEventListener("click", () => setMenu(!nav.classList.contains("open")));
+  nav.querySelectorAll(".links a").forEach(a => a.addEventListener("click", () => setMenu(false)));
+  document.addEventListener("click", e => { if (!nav.contains(e.target)) setMenu(false); });
+
+  // "Send me the link": the phone's share sheet, or copy the link if there isn't one.
+  const link = "https://nexstrap.org/";
+  document.querySelectorAll(".share").forEach(b => b.addEventListener("click", async () => {
+    const label = b.textContent;
+    try {
+      if (navigator.share) { await navigator.share({ title: "Nexstrap", text: "Download Nexstrap on my PC:", url: link }); return; }
+      await navigator.clipboard.writeText(link);
+      b.textContent = "Link copied";
+    } catch (e) {
+      if (e && e.name === "AbortError") return;
+      b.textContent = link;
+    }
+    setTimeout(() => b.textContent = label, 2500);
+  }));
 </script>
 </body>
 </html>

@@ -2,6 +2,11 @@
 
 All notable changes to Nexstrap are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.23.0] - 2026-11-09
+
+### Added
+- **Secret room**: animated weather. Drifting clouds, sun rays, birds, twinkling stars, rain, thunderstorms, snow and fog, picked at random by the season or chosen in Appearance once the room is open. It's made up and nothing is fetched online. It pauses while the window isn't in front.
+
 ## [1.22.0] - 2026-11-08
 
 ### Added

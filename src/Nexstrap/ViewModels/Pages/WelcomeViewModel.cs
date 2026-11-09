@@ -30,7 +30,9 @@ public sealed partial class WelcomeViewModel : PageViewModel
         {
             OnPropertyChanged(nameof(Greeting));
             OnPropertyChanged(nameof(Backdrop));
-            OnPropertyChanged(nameof(IsMoscow));
+            foreach (var name in new[] { nameof(IsMoscow), nameof(IsBerlin), nameof(HasFlag), nameof(FlagTop), nameof(FlagMiddle), nameof(FlagBottom), nameof(Sky) })
+                OnPropertyChanged(name);
+            UpdateClock();
         });
         UpdateClock();
     }
@@ -41,14 +43,57 @@ public sealed partial class WelcomeViewModel : PageViewModel
 
     public override bool HasHeader => false;
 
-    public override ImageSource Backdrop => ImageFor(ShowsMoscow(_settings.Current)
-        ? $"Resources/Welcome/moscow-{Part.ToString().ToLowerInvariant()}.jpg"
+    public override ImageSource Backdrop => ImageFor(City is { } city
+        ? $"Resources/Welcome/{city}-{Part.ToString().ToLowerInvariant()}.jpg"
         : ImageFile(Part, Winter));
+
+    /// <summary>Moscow's animated weather, unless it's switched off.</summary>
+    public override SkyScene? Sky => MoscowSky(City == "moscow", _settings.Current.Welcome.MoscowWeather, Part);
+
+    internal static SkyScene? MoscowSky(bool moscow, Weather setting, DayPart part) =>
+        moscow && MoscowWeather.Resolve(setting, DateTime.Now) is var weather && weather != Weather.Off ? new SkyScene(weather, part) : null;
 
     internal static bool ShowsMoscow(Nexstrap.Models.AppSettings settings) => settings.SecretRoomUnlocked && settings.Welcome.MoscowScene;
 
+    /// <summary>Berlin is dev only for now: public builds don't have its pictures.</summary>
+    public static bool BerlinAvailable => AppInfo.IsDev;
+
+    internal static bool ShowsBerlin(Nexstrap.Models.AppSettings settings, bool available) => available && settings.Welcome.BerlinScene;
+
+    /// <summary>"berlin", "moscow" or null for the normal landscapes.</summary>
+    private string? City => ShowsBerlin(_settings.Current, BerlinAvailable) ? "berlin" : IsMoscow ? "moscow" : null;
+
+    public bool IsBerlin => City == "berlin";
+
+    public bool HasFlag => City is not null;
+
+    public Brush FlagTop => IsBerlin ? FlagBrush("#111111") : Brushes.White;
+
+    public Brush FlagMiddle => FlagBrush(IsBerlin ? "#DD0000" : "#0039A6");
+
+    public Brush FlagBottom => FlagBrush(IsBerlin ? "#FFCE00" : "#D52B1E");
+
+    private static Brush FlagBrush(string hex)
+    {
+        var brush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(hex));
+        brush.Freeze();
+        return brush;
+    }
+
+    internal static string GermanGreeting(DayPart part, string? name)
+    {
+        var hello = part switch
+        {
+            DayPart.Morning => "Guten Morgen",
+            DayPart.Afternoon => "Guten Tag",
+            DayPart.Evening => "Guten Abend",
+            _ => "Gute Nacht"
+        };
+        return string.IsNullOrWhiteSpace(name) ? hello + "!" : $"{hello}, {name}!";
+    }
+
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(Greeting), nameof(Backdrop))]
+    [NotifyPropertyChangedFor(nameof(Greeting), nameof(Backdrop), nameof(Sky))]
     private DayPart _part;
 
     [ObservableProperty]
@@ -65,7 +110,9 @@ public sealed partial class WelcomeViewModel : PageViewModel
     [ObservableProperty]
     private string _date = "";
 
-    public string Greeting => IsMoscow
+    public string Greeting => IsBerlin
+        ? GermanGreeting(Part, _settings.Current.Welcome.Name)
+        : IsMoscow
         ? SecretRoom.Greeting(Part, _settings.Current.Welcome.Name)
         : WelcomeName.Greet(GreetingFor(Part, Holiday), _settings.Current.Welcome.Name);
 
@@ -108,7 +155,8 @@ public sealed partial class WelcomeViewModel : PageViewModel
         (Winter, Holiday) = WinterSeason.Resolve(_settings.Current.Winter, now, WinterSeason.Available);
         Time = now.ToString("T");
         Date = now.ToString("D");
-        MoscowLine = "Москва · " + SecretRoom.MoscowTime(DateTime.UtcNow).ToString("HH:mm", System.Globalization.CultureInfo.GetCultureInfo("ru-RU"));
+        MoscowLine = !IsMoscow || IsBerlin ? "" : "Москва · " + SecretRoom.MoscowTime(DateTime.UtcNow).ToString("HH:mm", System.Globalization.CultureInfo.GetCultureInfo("ru-RU"))
+            + (Sky is { } sky ? " · " + MoscowWeather.RussianName(sky.Weather, sky.Part) : "");
     }
 
     public override void OnNavigatedTo()

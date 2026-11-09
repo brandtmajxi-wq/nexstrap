@@ -387,8 +387,50 @@ public sealed partial class AppearanceViewModel : PageViewModel
         set
         {
             _settings.Current.Welcome.MoscowScene = value;
+            if (value) _settings.Current.Welcome.BerlinScene = false;
             _settings.Save();
             OnPropertyChanged();
+            OnPropertyChanged(nameof(BerlinScene));
+        }
+    }
+
+    public IReadOnlyList<Choice<Weather>> WeatherChoices { get; } =
+    [
+        new(Weather.Random, () => Loc.Get("Weather.Random")),
+        new(Weather.Clear, () => Loc.Get("Weather.Clear")),
+        new(Weather.PartlyCloudy, () => Loc.Get("Weather.PartlyCloudy")),
+        new(Weather.Cloudy, () => Loc.Get("Weather.Cloudy")),
+        new(Weather.Rain, () => Loc.Get("Weather.Rain")),
+        new(Weather.Storm, () => Loc.Get("Weather.Storm")),
+        new(Weather.Snow, () => Loc.Get("Weather.Snow")),
+        new(Weather.Fog, () => Loc.Get("Weather.Fog")),
+        new(Weather.Off, () => Loc.Get("Weather.Off"))
+    ];
+
+    public Weather MoscowWeatherChoice
+    {
+        get => _settings.Current.Welcome.MoscowWeather;
+        set
+        {
+            _settings.Current.Welcome.MoscowWeather = value;
+            _settings.Save();
+            OnPropertyChanged();
+        }
+    }
+
+    public bool BerlinAvailable => WelcomeViewModel.BerlinAvailable;
+
+    /// <summary>One city at a time, so turning one on turns the other off.</summary>
+    public bool BerlinScene
+    {
+        get => _settings.Current.Welcome.BerlinScene;
+        set
+        {
+            _settings.Current.Welcome.BerlinScene = value;
+            if (value) _settings.Current.Welcome.MoscowScene = false;
+            _settings.Save();
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(MoscowScene));
         }
     }
 

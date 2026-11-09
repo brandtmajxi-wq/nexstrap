@@ -1032,5 +1032,18 @@
   "Secret.Password": "Senha",
   "Secret.Wrong": "Essa não é a senha.",
   "Appearance.MoscowScene": "Tela de boas-vindas de Moscou",
-  "Appearance.MoscowScene.Text": "Moscou na sua hora do dia atrás da página de boas-vindas."
+  "Appearance.MoscowScene.Text": "Moscou na sua hora do dia atrás da página de boas-vindas.",
+  "Appearance.BerlinScene": "Tela de boas-vindas de Berlim",
+  "Appearance.BerlinScene.Text": "Berlim na sua hora do dia atrás da página de boas-vindas, com uma saudação em alemão.",
+  "Appearance.MoscowWeather": "Clima em Moscou",
+  "Appearance.MoscowWeather.Text": "Clima animado nas telas de Moscou. Aleatório escolhe um clima novo sempre que você abre o Nexstrap.",
+  "Weather.Random": "Aleatório",
+  "Weather.Clear": "Céu limpo",
+  "Weather.PartlyCloudy": "Parcialmente nublado",
+  "Weather.Cloudy": "Nublado",
+  "Weather.Rain": "Chuva",
+  "Weather.Storm": "Tempestade",
+  "Weather.Snow": "Neve",
+  "Weather.Fog": "Neblina",
+  "Weather.Off": "Desligado"
 }

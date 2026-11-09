@@ -1032,5 +1032,18 @@
   "Secret.Password": "Пароль",
   "Secret.Wrong": "Это не тот пароль.",
   "Appearance.MoscowScene": "Экран приветствия «Москва»",
-  "Appearance.MoscowScene.Text": "Москва в твоё время суток на странице приветствия."
+  "Appearance.MoscowScene.Text": "Москва в твоё время суток на странице приветствия.",
+  "Appearance.BerlinScene": "Экран приветствия «Берлин»",
+  "Appearance.BerlinScene.Text": "Берлин в твоё время суток на странице приветствия, с приветствием на немецком.",
+  "Appearance.MoscowWeather": "Погода в Москве",
+  "Appearance.MoscowWeather.Text": "Анимированная погода на экранах «Москва». «Случайная» выбирает новую погоду при каждом запуске Nexstrap.",
+  "Weather.Random": "Случайная",
+  "Weather.Clear": "Ясно",
+  "Weather.PartlyCloudy": "Переменная облачность",
+  "Weather.Cloudy": "Облачно",
+  "Weather.Rain": "Дождь",
+  "Weather.Storm": "Гроза",
+  "Weather.Snow": "Снег",
+  "Weather.Fog": "Туман",
+  "Weather.Off": "Выключена"
 }

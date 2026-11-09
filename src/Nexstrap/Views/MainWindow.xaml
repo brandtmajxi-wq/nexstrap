@@ -44,6 +44,8 @@
 
         <!-- A page's own picture (Welcome) covers the custom background while that page is open -->
         <Image Grid.ColumnSpan="2" Source="{Binding Navigation.CurrentPage.Backdrop}" Stretch="UniformToFill" IsHitTestVisible="False" />
+        <!-- Animated weather over the Moscow picture -->
+        <ui:WeatherOverlay Grid.ColumnSpan="2" Scene="{Binding Navigation.CurrentPage.Sky}" />
         <Border Grid.Column="1" IsHitTestVisible="False" Visibility="{Binding Navigation.CurrentPage.Backdrop, Converter={StaticResource NullToVisibility}}">
             <Border.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">

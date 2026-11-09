@@ -1032,5 +1032,18 @@
   "Secret.Password": "Password",
   "Secret.Wrong": "That's not the password.",
   "Appearance.MoscowScene": "Moscow welcome screen",
-  "Appearance.MoscowScene.Text": "Moscow at your time of day behind the Welcome page."
+  "Appearance.MoscowScene.Text": "Moscow at your time of day behind the Welcome page.",
+  "Appearance.BerlinScene": "Berlin welcome screen",
+  "Appearance.BerlinScene.Text": "Berlin at your time of day behind the Welcome page, with a German greeting.",
+  "Appearance.MoscowWeather": "Moscow weather",
+  "Appearance.MoscowWeather.Text": "Animated weather on the Moscow screens. Random picks new weather each time Nexstrap starts.",
+  "Weather.Random": "Random",
+  "Weather.Clear": "Clear",
+  "Weather.PartlyCloudy": "Partly cloudy",
+  "Weather.Cloudy": "Cloudy",
+  "Weather.Rain": "Rain",
+  "Weather.Storm": "Thunderstorm",
+  "Weather.Snow": "Snow",
+  "Weather.Fog": "Fog",
+  "Weather.Off": "Off"
 }
