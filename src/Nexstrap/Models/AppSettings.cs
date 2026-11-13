@@ -83,6 +83,8 @@ public sealed class WelcomeSettings
     /// <summary>Animated weather on the Moscow screens. Random picks one each time Nexstrap starts.</summary>
     public Nexstrap.Core.Weather MoscowWeather { get; set; } = Nexstrap.Core.Weather.Random;
 
+    /// <summary>Dev only for now: a jet flies over Moscow now and then on fair days.</summary>
+    public bool MoscowJets { get; set; } = true;
     /// <summary>Dev only for now: Berlin behind the Welcome page, with a German greeting.</summary>
     public bool BerlinScene { get; set; }
 }
@@ -154,6 +156,15 @@ public sealed class NotificationSettings
 
     /// <summary>A note over Roblox each time this much play time has passed; 0 is off.</summary>
     public int PlayReminderMinutes { get; set; }
+
+    /// <summary>A note in the corner when Roblox closes, with how long you played and which games.</summary>
+    public bool SessionSummary { get; set; } = true;
+
+    /// <summary>A note once today's play time reaches this many minutes; 0 is off.</summary>
+    public int DailyLimitMinutes { get; set; }
+
+    /// <summary>The day (yyyy-MM-dd) the daily limit note was last shown, so it appears once a day.</summary>
+    public string? DailyLimitShownOn { get; set; }
 
     /// <summary>Keys of dismissed notifications. Keys include the version or count, so new ones show again.</summary>
     public List<string> Dismissed { get; set; } = [];
@@ -257,6 +268,9 @@ public sealed class DiscordSettings
     /// <summary>Add a "View game" button linking to the game page.</summary>
     public bool ShowExperienceButton { get; set; } = true;
 
+    /// <summary>Add a "Get Nexstrap" button linking to Nexstrap's GitHub page.</summary>
+    public bool ShowNexstrapButton { get; set; }
+
     /// <summary>Show your avatar headshot and username in the corner of the game icon.</summary>
     public bool ShowAvatar { get; set; } = true;
 
@@ -276,6 +290,12 @@ public sealed class LauncherSettings
     public bool CheckForUpdatesOnStartup { get; set; } = true;
 
     public bool GlobalHotkeys { get; set; }
+
+    /// <summary>Stop the PC from going to sleep while Roblox (started from Nexstrap) is open.</summary>
+    public bool KeepAwakeWhilePlaying { get; set; }
+
+    /// <summary>Mute Roblox in the Windows volume mixer while another window is in front.</summary>
+    public bool MuteRobloxInBackground { get; set; }
 
     public bool AutoUpdateRoblox { get; set; } = true;
 
@@ -308,6 +328,23 @@ public sealed class LauncherSettings
 
     /// <summary>Most recently launched experiences, newest first.</summary>
     public List<RecentExperience> RecentExperiences { get; set; } = [];
+
+    /// <summary>Dev only for now: keep the last 1:30 of Roblox so Ctrl+Alt+C can save it as a clip.</summary>
+    public bool RecordClips { get; set; }
+
+    /// <summary>How much a saved clip goes back: 30, 60 or 90 seconds.</summary>
+    public int ClipSeconds { get; set; } = 60;
+
+    /// <summary>The key that saves a clip, as Windows hotkey modifiers (1 Alt, 2 Ctrl, 4 Shift) and a virtual key. Ctrl+Alt+C by default.</summary>
+    public uint ClipHotkeyModifiers { get; set; } = 0x0001 | 0x0002;
+
+    public uint ClipHotkeyKey { get; set; } = 0x43;
+
+    /// <summary>Low-end PC mode: no animations, weather, snow, page transitions or background blur in Nexstrap.</summary>
+    public bool LowEndMode { get; set; }
+
+    /// <summary>Your own notes on games (place ID → note), shown on the Games page.</summary>
+    public Dictionary<long, string> GameNotes { get; set; } = [];
 
     /// <summary>URL handler commands that were registered before Nexstrap took over (scheme → command).</summary>
     public Dictionary<string, string> PreviousProtocolHandlers { get; set; } = [];

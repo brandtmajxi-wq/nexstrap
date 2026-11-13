@@ -98,6 +98,12 @@
         <ui:SettingCard Icon="&#xE765;" Header="{DynamicResource L.RobloxSettings.Hotkeys}" Description="{DynamicResource L.RobloxSettings.Hotkeys.Text}">
             <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding GlobalHotkeys}" AutomationProperties.Name="{DynamicResource L.RobloxSettings.Hotkeys}" />
         </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE708;" Header="{DynamicResource L.RobloxSettings.KeepAwake}" Description="{DynamicResource L.RobloxSettings.KeepAwake.Text}">
+            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding KeepAwakeWhilePlaying}" AutomationProperties.Name="{DynamicResource L.RobloxSettings.KeepAwake}" />
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE74F;" Header="{DynamicResource L.RobloxSettings.BackgroundMute}" Description="{DynamicResource L.RobloxSettings.BackgroundMute.Text}">
+            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding MuteRobloxInBackground}" AutomationProperties.Name="{DynamicResource L.RobloxSettings.BackgroundMute}" />
+        </ui:SettingCard>
         <ui:SettingCard Icon="&#xE950;" Header="{DynamicResource L.RobloxSettings.CpuPriority}" Description="{DynamicResource L.RobloxSettings.CpuPriority.Text}">
             <ComboBox Width="190" ItemsSource="{Binding PriorityChoices}" DisplayMemberPath="Label" SelectedValuePath="Value"
                       SelectedValue="{Binding RobloxPriority}" AutomationProperties.Name="{DynamicResource L.RobloxSettings.CpuPriority}" />

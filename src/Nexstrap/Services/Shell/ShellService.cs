@@ -14,6 +14,9 @@ public interface IShellService
     void OpenFolder(string path);
 
     void CopyToClipboard(string text);
+
+    /// <summary>Opens Explorer with the file selected, or its folder if the file is gone.</summary>
+    void ShowInFolder(string file);
 }
 
 /// <summary>Opens links and folders through Explorer, reporting failures to the user.</summary>
@@ -39,6 +42,24 @@ public sealed class ShellService(IDialogService dialogs, ILogger<ShellService> l
     {
         try { Clipboard.SetText(text); }
         catch (Exception ex) { logger.LogWarning(ex, "Clipboard is busy"); }
+    }
+
+    public void ShowInFolder(string file)
+    {
+        if (!File.Exists(file))
+        {
+            if (Path.GetDirectoryName(file) is { Length: > 0 } folder) OpenFolder(folder);
+            return;
+        }
+        try
+        {
+            Process.Start(new ProcessStartInfo("explorer.exe", $"/select,\"{file}\"") { UseShellExecute = true });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Windows could not show {File}", file);
+            dialogs.Show(Loc.Get("Shell.OpenFolder"), Loc.Format("Shell.Failed", file), DialogKind.Warning, ex.Message);
+        }
     }
 
     private void Start(string target, string titleKey)

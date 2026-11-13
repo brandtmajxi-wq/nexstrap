@@ -17,6 +17,14 @@ A page-by-page guide. Everything Nexstrap stores lives in `%LocalAppData%\Nexstr
 
 The first page in the sidebar, so it's what opens by default. It greets you by the time of day, shows a live clock and the date in your Windows format, and fills the window with a landscape for morning, afternoon, evening or night. The landscapes are drawn by `tools/make-welcome-images.ps1` and cover your custom background on this page only. It only reads your PC's clock, so no location is used or sent. Nexstrap asks once, after updating or installing, how it should welcome you. A name is optional, up to 32 characters, stays in `Settings.json` on this PC and isn't part of exports; change or clear it under Appearance. A word filter refuses hateful and obscene names, and works on this PC only. No word list is complete, so some may get through. **Play Roblox** and **Go to Home** are underneath. If you've already changed your sidebar order, Welcome starts at the bottom of it, and you can move or hide it under Appearance.
 
+## New look
+
+- **Screenshots and Servers** (1.43.0): screenshot tiles lift with an accent edge on hover; each server row gets a ping dot (green under 100 ms, yellow under 200 ms, red above, grey when unknown) and a hover highlight.
+- **Stats** (1.42.0): icons on the totals, average session, longest session and different games (from the saved sessions), the best day, busiest hour and busiest weekday shown brighter in the charts, gold/silver/bronze ranks in Top games, and the busiest time as a pill.
+- **Games** (1.41.0): favorites, recent games and search results as picture cards, three to a row, with Play and the favorite star on the picture and the other buttons along the bottom; Play history rows get a bar comparing each game with the most played one.
+- **Home dashboard** (1.40.0): today's play time, current streak and all-time play time from the play history, and "Jump back in" with the four most recent games as picture tiles (pictures from Roblox's public API, a placeholder when offline). Clicking a tile joins that game, like the Recent buttons.
+- **Style and sidebar** (1.39.0): bigger page titles and section headings with a soft shadow that follows the theme, accent bars on section headings, setting cards with accent icons that lift on hover, sidebar icon chips, and a Play card at the bottom of the sidebar that starts Roblox or shows the game and minutes while Roblox started from Nexstrap is open.
+
 ## Home
 
 | Feature | Details |
@@ -26,6 +34,7 @@ The first page in the sidebar, so it's what opens by default. It greets you by t
 | **Join an experience** | Paste a place ID, `roblox.com/games/<id>/…` link or `…/games/start?placeId=…` link. Nexstrap looks up the name via Roblox's public API, then launches `roblox://placeId=<id>`. If Roblox is already open you're asked first, since Roblox runs one game at a time. |
 | **Rejoin last server** | Shown for 24 hours after leaving a game Nexstrap followed. Uses Roblox's `gameInstanceId` link, so it only works if that server is still running and has room, and may not work for private servers. Also in the tray menu. |
 | **Installations** | Every build found on the PC. *Choose automatically* uses the one matching Roblox's live version (Nexstrap's own first). If none matches, it stays on Nexstrap's own build. Builds from other launchers can be used but are never modified or deleted. |
+| **Repair Roblox** | The wrench on a Nexstrap build downloads the same Roblox version again (about 100 MB) with the same MD5 checks, builds it in a separate folder and only then swaps it in, so the current build stays as it is if anything fails or you cancel. Needs Roblox to be closed. FastFlags, mods and the Roblox font are put back on the next launch. Other launchers' builds are never changed. |
 | **Quick settings** | Light theme, close Nexstrap after launch, check for updates on launch. |
 | **Nexstrap updates** | Current version, latest release, release notes, *Download & install*. If a newer version is out when Nexstrap opens, it asks once per run, with **Update now** and **Later**. This follows *Check for updates on launch*. |
 
@@ -33,15 +42,27 @@ The first page in the sidebar, so it's what opens by default. It greets you by t
 
 Favorites and recently played experiences (newest 20) with thumbnails from Roblox's public API. Each game has **Play**, a servers button, a desktop-shortcut button (a `.url` file that opens `roblox://placeId=<id>` through whichever program handles Roblox links; existing files are never overwritten) and a favorite star.
 
+**Notes**: the note button on any game opens a box for up to 200 characters (one line). It's saved when the box closes (Enter, the button again, or leaving the page), shows under every tile of that game, and is kept in `Settings.json` on this PC, not in setup exports.
+
+**Surprise me** picks a random game from your favorites and recent games and asks before playing it; **Another one** picks again, never the same game twice in a row.
+
 **Find a game** searches Roblox by name without signing in, using the search behind roblox.com, and shows up to 20 results with sponsored ones left out. Roblox doesn't document this search, so if it changes, Nexstrap says it couldn't search and place IDs and links still work.
 
-**Play history** counts time in games while Nexstrap follows Roblox, which means Roblox was started from Nexstrap or through a link it handles. Time in the Roblox menu isn't counted, and visits under 15 seconds are ignored. Each place or server counts as a separate session. Totals, session counts, the last 7 days and last played dates are stored in `History.json` on this PC. It can be turned off or cleared on the Games page.
+**Play history** counts time in games while Nexstrap follows Roblox, which means Roblox was started from Nexstrap or through a link it handles. Time in the Roblox menu isn't counted, and visits under 15 seconds are ignored. Each place or server counts as a separate session. Totals, session counts, the last 7 days and last played dates are stored in `History.json` on this PC. It can be turned off or cleared on the Games page. **Export** saves two CSV files for Excel or Google Sheets: every saved session (date, start time, game, place ID, minutes) and a total per game (hours, sessions, last played). They use the region's list separator and decimal mark, and a value starting with =, +, - or @ is written so a spreadsheet doesn't run it as a formula.
 
 **Game profiles** give a game its own FPS cap and graphics quality, set in Roblox's own settings when you join it from Nexstrap, whichever build you use. Your previous values are saved first and go back when Roblox closes, or the next time Nexstrap opens if it closed first. Profiles don't apply to website links, or while Roblox is already open.
 
 ## Stats
 
 Total play time, sessions, current and best streak, the last 14 days and your top five games, from the history on the Games page. Streaks and daily bars use the newest 500 sessions. A streak survives until a whole day is missed.
+
+**When you play**: play time by hour of the day and by weekday (by your PC's local time), with your busiest hour and day. Sessions that run past an hour are split across the hours they cover.
+
+**Achievements**: 15 local milestones (total hours, sessions, different games, streaks, a 2-hour session, 10 hours in one game, and starting a game late at night or early in the morning), with progress for the locked ones. They're worked out from the play history each time, so clearing it resets them, and nothing is sent anywhere.
+
+## Screenshots
+
+The pictures Roblox saves to `Pictures\Roblox` (PNG and JPG, newest first, up to 300), with small previews that load in the background. Click a picture to open it in your default viewer. Each one can be copied to the clipboard, shown in its folder, or moved to the Recycle Bin after a question. Nexstrap never deletes them permanently. **Refresh** reads the folder again and **Open folder** opens it.
 
 ## Tray icon
 
@@ -80,6 +101,8 @@ A small window shown when you start Roblox from Nexstrap. It closes when Roblox'
 
 These settings change limits and quality; they can't make your PC faster.
 
+- **Low-end PC mode** (off by default): Nexstrap stops its own moving effects (weather and snow animation, page transitions) and background blur, without changing your Appearance settings, which come back when it's turned off. Turning it on offers to apply the Power saver preset and the Low-end PC FastFlags to Roblox as well.
+
 - **FPS status**: your primary display's refresh rate, whether your cap suits it, and warnings such as Roblox being open or the ignored `DFIntTaskSchedulerTargetFps` flag being present.
 - **Presets**: Balanced, Smoothest, Best looking and Power saver set Roblox's frame-rate cap and graphics quality together. All except Power saver use the highest standard cap your display can show. Roblox must be closed.
 - **Maximum frame rate**: 60, 120, 144 or 240, stored in Roblox's own settings.
@@ -114,11 +137,13 @@ maximum frame rate (60/120/144/240), automatic or fixed graphics quality (1–10
 - **Roblox window title** changes the title of Roblox's window once it opens.
 - **Update Roblox automatically** (on by default): checks when Nexstrap opens, when Roblox closes and every 30 minutes, then installs new versions in the background with the same checks as the Update button. It only runs while Roblox is closed and stops if you start Roblox. It needs a Nexstrap-installed build, and leaves a build pinned with *Use for Play* alone.
 - **Global hotkeys** (off by default): Ctrl+Alt+N opens Nexstrap and Ctrl+Alt+J rejoins your last server, from any app while Nexstrap is running.
+- **Keep PC awake while playing** (off by default): while Roblox started from Nexstrap is open, Nexstrap asks Windows not to sleep (the same request video players use). The screen can still turn off, and normal sleep comes back when Roblox closes or Nexstrap exits.
+- **Mute Roblox in the background** (off by default): while another window is in front, Roblox's entry in the Windows volume mixer is muted, and it's unmuted when Roblox is in front again, when the option is turned off, or when Nexstrap exits. It works for any Roblox Player window. Only Nexstrap's own mute is undone, so a mute you set in the mixer yourself stays.
 - **Clean up old files** deletes files older than 7 days from Roblox's logs folder, Roblox's temp folder and Nexstrap's Downloads folder, and waits if Roblox is open. Settings, games and Roblox builds aren't touched.
 
 ## Integrations
 
-- **Discord Rich Presence** (needs the Discord desktop app). Menu: "Inside Nexstrap · Browsing Roblox" by default, and you can write your own text for both lines and choose the card icon (an uploaded image, a direct https image link or an Art Asset name). **Upload image** takes a PNG, JPG or GIF up to 10 MB. Discord only shows images from a public link, so after you agree the file goes to catbox.moe, a free host Nexstrap has no connection to. Anyone with the link can see it and it can't be deleted later. Nexstrap sends it as `image.png` (or similar) rather than your file's name, and saves JPGs again without their metadata. In game: experience name, creator, icon, your avatar headshot and a *View game* button. Each part can be switched off. *Show server location* (off by default) adds your server's city to the second line, and can be wrong. Nexstrap reads Roblox's own log lines to tell menu from game and stays running in the background until Roblox closes.
+- **Discord Rich Presence** (needs the Discord desktop app). Menu: "Inside Nexstrap · Browsing Roblox" by default, and you can write your own text for both lines and choose the card icon (an uploaded image, a direct https image link or an Art Asset name). **Upload image** takes a PNG, JPG or GIF up to 10 MB. Discord only shows images from a public link, so after you agree the file goes to catbox.moe, a free host Nexstrap has no connection to. Anyone with the link can see it and it can't be deleted later. Nexstrap sends it as `image.png` (or similar) rather than your file's name, and saves JPGs again without their metadata. In game: experience name, creator, icon, your avatar headshot and a *View game* button. Each part can be switched off. *Show server location* (off by default) adds your server's city to the second line, and can be wrong. *"Get Nexstrap" button* (off by default) adds a button that opens Nexstrap's GitHub page, in the menu and in games; Discord shows two buttons at most, so it comes after *View game*. Nexstrap reads Roblox's own log lines to tell menu from game and stays running in the background until Roblox closes.
 - **Start with Roblox**: programs launched when a Nexstrap-started Roblox session begins; optionally asked to close (never force-killed) when it ends.
 - **Move your setup**: one JSON file with appearance, launch and Discord settings, FastFlags, saved themes and companion apps. Machine-specific items (window size, background files, chosen build, URL-handler backup) are not exported. Importing backs up the current setup first.
 - **Multiple Roblox windows**: not offered. Roblox allows one game at a time and Nexstrap doesn't get around that.
@@ -131,13 +156,19 @@ An inbox with a count in the sidebar. It covers new Nexstrap releases, Roblox bu
 
 **Crash alerts** (on by default): if Roblox stops without closing normally, Nexstrap offers to rejoin the same server or open the logs. It looks at how Roblox's log ends and at its exit code, and only for Roblox started through Nexstrap once it has reached the menu. Ending Roblox in Task Manager looks the same as a crash.
 
+**Recent crashes**: the last 20 crashes found by the same check, with the game, time and exit code, also when crash alerts are off and not during a region search. **Show log** selects that session's Roblox log in Explorer. Stored in `Crashes.json`; **Clear** empties the list and leaves Roblox's logs alone.
+
 **Play time reminder** (off by default): a small note in the corner over Roblox every 30 minutes to 3 hours of a session. Clicks pass through it, it doesn't take focus and it disappears after 8 seconds. It counts from when Roblox was opened through Nexstrap, and **Preview** shows it right away.
+
+**Session summary** (on by default): when Roblox closes, the same kind of corner note shows how long you played, the most played game and how many others, and today's total. It needs at least 2 minutes in games and play history turned on, and doesn't appear after a crash or during a region search. **Preview** shows today's summary.
+
+**Daily play limit** (off by default): 1, 2, 3, 4 or 6 hours. Once today's saved games plus the one in progress reach it, a corner note appears over Roblox, once a day (the day is remembered across restarts). It counts games Nexstrap follows, and only the current game if play history is off.
 
 **Game ready alerts** are the one exception: a Windows pop-up from the tray icon when a game finishes loading while another app is in front. They need the tray icon, so they don't appear for games started from a website link while Nexstrap isn't open. Windows' Do Not Disturb can hide them.
 
 ## About
 
-Version and runtime details, *Copy diagnostics*, data and log folders, a **log viewer** for Nexstrap's and Roblox's logs (the last 3,000 lines, with search), a replayable tour, open-source credits, and **Privacy and terms**, which explains what stays on your PC, what goes online and the terms for using Nexstrap.
+Version and runtime details, the keyboard shortcuts (Ctrl+1–9 for the sidebar's pages in their current order, Ctrl+P Play Roblox, Ctrl+J rejoin the last server, Ctrl+K find a setting, Ctrl+N notifications; they work while the window is active), *Copy diagnostics*, data and log folders, a **log viewer** for Nexstrap's and Roblox's logs (the last 3,000 lines, with search), a replayable tour, open-source credits, and **Privacy and terms**, which explains what stays on your PC, what goes online and the terms for using Nexstrap.
 
 ## Files and folders
 
@@ -146,6 +177,7 @@ Version and runtime details, *Copy diagnostics*, data and log folders, a **log v
 | `Settings.json` | All app settings |
 | `FastFlags.json` | Your flag list |
 | `History.json` | Play time per game |
+| `Crashes.json` | The last 20 Roblox crashes |
 | `Mods\` | Copies of your death sound and cursor |
 | `Themes\*.json` | Saved themes |
 | `Backgrounds\` | Copies of background images |

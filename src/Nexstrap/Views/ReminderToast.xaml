@@ -16,7 +16,7 @@
             </Border>
             <StackPanel>
                 <TextBlock x:Name="TitleText" Style="{StaticResource Text.Base}" FontWeight="SemiBold" TextWrapping="Wrap" />
-                <TextBlock x:Name="MessageText" Style="{StaticResource Text.Secondary}" Margin="0,3,0,0" />
+                <TextBlock x:Name="MessageText" Style="{StaticResource Text.Secondary}" Margin="0,3,0,0" TextWrapping="Wrap" />
             </StackPanel>
         </DockPanel>
     </Border>

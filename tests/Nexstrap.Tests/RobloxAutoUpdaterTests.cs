@@ -23,6 +23,8 @@ public class RobloxAutoUpdaterTests
         public Task RefreshAsync(bool checkLatest = true, CancellationToken ct = default) => Task.CompletedTask;
         public void SetPreferred(RobloxInstallation? installation) { }
         public void Remove(RobloxInstallation installation) { }
+        public Task<RobloxInstallation> RepairAsync(RobloxInstallation installation, IProgress<InstallProgress>? progress, CancellationToken ct = default) =>
+            Task.FromResult(installation);
         public Task<RobloxInstallation> InstallLatestAsync(IProgress<InstallProgress>? progress, CancellationToken ct = default)
         {
             Installs++;

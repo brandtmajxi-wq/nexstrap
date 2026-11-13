@@ -41,6 +41,39 @@ public class LiveRobloxTests
 
     /// <summary>About 600 MB. Also compares the folder layout with Roblox's own Studio install, if there is one.</summary>
     [Fact]
+    public async Task Repairs_a_broken_live_build()
+    {
+        if (!Enabled) return;
+
+        using var dir = new TempDir();
+        using var http = new HttpClient { Timeout = TimeSpan.FromMinutes(10) };
+        var deployment = new RobloxDeployment(http, NullLogger<RobloxDeployment>.Instance, dir.File("Versions"), dir.File("Downloads"));
+        var latest = await deployment.GetLatestVersionAsync();
+        var installDir = await deployment.InstallAsync(latest, null);
+
+        // Break it the way crashes do: a missing program file and a damaged content file, plus a mod backup left inside.
+        var exe = Path.Combine(installDir, RobloxLocator.PlayerExecutable);
+        var exeSize = new FileInfo(exe).Length;
+        File.Delete(exe);
+        var content = Directory.EnumerateFiles(Path.Combine(installDir, "content"), "*", SearchOption.AllDirectories).First();
+        var contentBytes = await File.ReadAllBytesAsync(content);
+        await File.WriteAllTextAsync(content, "broken");
+        var fileCount = Directory.EnumerateFiles(installDir, "*", SearchOption.AllDirectories).Count();
+
+        // Without repair, installing the same version again does nothing: it's marked complete.
+        await deployment.InstallAsync(latest, null);
+        Assert.False(File.Exists(exe));
+
+        var repaired = await deployment.RepairAsync(latest, null);
+        Assert.Equal(installDir, repaired);
+        Assert.Equal(exeSize, new FileInfo(exe).Length);
+        Assert.Equal(contentBytes, await File.ReadAllBytesAsync(content));
+        Assert.Equal(fileCount + 1, Directory.EnumerateFiles(installDir, "*", SearchOption.AllDirectories).Count());
+        Assert.Empty(Directory.GetDirectories(dir.File("Versions"), "_*"));
+        Console.WriteLine($"LIVE REPAIR: {latest.Version} restored in {installDir}");
+    }
+
+    [Fact]
     public async Task Installs_the_current_live_studio()
     {
         if (!Enabled) return;

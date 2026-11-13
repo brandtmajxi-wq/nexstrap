@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.IO;
 using System.Net.Http;
 using System.Windows;
@@ -32,10 +32,31 @@ public sealed partial class GameItem(long placeId, string name, bool isFavorite)
 
     [ObservableProperty]
     private string? _playedText;
+
+    /// <summary>Your own note on this game, saved in Settings.json.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowsNote))]
+    private string _note = "";
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowsNote))]
+    private bool _isEditingNote;
+
+    public bool ShowsNote => Note.Length > 0 && !IsEditingNote;
+
+    /// <summary>Set once the saved note is filled in, so loading it doesn't count as a change.</summary>
+    public Action<long, string>? SaveNote { get; set; }
+
+    /// <summary>A note is saved when its box closes (or the page is left), not on every key.</summary>
+    partial void OnIsEditingNoteChanged(bool value)
+    {
+        if (!value) SaveNote?.Invoke(PlaceId, Note);
+    }
 }
 
 /// <summary>One line of the play history list.</summary>
-public sealed record HistoryRow(string Name, string TimeText, string LastPlayedText);
+/// <summary>A row in Play history. Share is this game's time next to the most played one (0 to 1), for the bar.</summary>
+public sealed record HistoryRow(string Name, string TimeText, string LastPlayedText, double Share = 0);
 
 /// <summary>One game profile; changes save straight away.</summary>
 public sealed class GameProfileRow(GameProfile profile, IGameProfileService service)
@@ -109,9 +130,13 @@ public sealed partial class GamesViewModel : PageViewModel
     private readonly IPlayHistoryService _history;
     private readonly IGameSearchService _search;
 
+    private readonly IFileDialogService _files;
+
     public GamesViewModel(ISettingsService settings, ILaunchCoordinator launch, IExperienceInfoService experiences,
-        IGameShortcutService shortcuts, IDialogService dialogs, INavigationService navigation, ServersViewModel servers, IPlayHistoryService history, IGameSearchService search, IGameProfileService profiles)
+        IGameShortcutService shortcuts, IDialogService dialogs, INavigationService navigation, ServersViewModel servers, IPlayHistoryService history, IGameSearchService search, IGameProfileService profiles,
+        IFileDialogService files)
     {
+        _files = files;
         _profiles = profiles;
         profiles.Changed += (_, _) => Application.Current?.Dispatcher.BeginInvoke(RebuildProfiles);
         RebuildProfiles();
@@ -174,10 +199,8 @@ public sealed partial class GamesViewModel : PageViewModel
         var favorites = StoredFavorites.Select(f => f.PlaceId).ToHashSet();
         foreach (var result in results)
         {
-            var game = new GameItem(result.PlaceId, result.Name, favorites.Contains(result.PlaceId))
-            {
-                Creator = result.CreatorName.Length > 0 ? result.CreatorName : null
-            };
+            var game = Tile(result.PlaceId, result.Name, favorites.Contains(result.PlaceId));
+            game.Creator = result.CreatorName.Length > 0 ? result.CreatorName : null;
             ShowPlayTime(game);
             game.PlayedText ??= Loc.Format("Format.Playing", result.Playing);
             SearchResults.Add(game);
@@ -228,14 +251,45 @@ public sealed partial class GamesViewModel : PageViewModel
             _history.Clear();
     }
 
+    /// <summary>Saves the sessions and the per-game totals as two CSV files side by side.</summary>
+    [RelayCommand]
+    private void ExportHistory()
+    {
+        var path = _files.SaveFile(Loc.Get("Games.ExportHistory.Title"), "CSV (*.csv)|*.csv", Loc.Get("Games.ExportHistory.FileName") + ".csv");
+        if (path is null) return;
+
+        var gamesPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path) ?? "",
+            System.IO.Path.GetFileNameWithoutExtension(path) + Loc.Get("Games.ExportHistory.GamesSuffix") + ".csv");
+        var games = _history.Games;
+        var names = games.Where(g => g.Name.Length > 0).GroupBy(g => g.PlaceId).ToDictionary(g => g.Key, g => g.First().Name);
+        var culture = System.Globalization.CultureInfo.CurrentCulture;
+        var utf8 = new System.Text.UTF8Encoding(true); // the BOM tells Excel it's UTF-8, so names keep their letters
+        try
+        {
+            System.IO.File.WriteAllText(path, HistoryExport.Sessions(_history.Sessions, names, culture), utf8);
+            System.IO.File.WriteAllText(gamesPath, HistoryExport.Games(games, culture), utf8);
+            _dialogs.Show(Loc.Get("Games.ExportHistory.Done"), Loc.Get("Games.ExportHistory.DoneText"), DialogKind.Info,
+                path + Environment.NewLine + gamesPath);
+        }
+        catch (Exception ex) when (ex is System.IO.IOException or UnauthorizedAccessException)
+        {
+            _dialogs.Show(Loc.Get("Games.ExportHistory.Failed"), ex.Message, DialogKind.Error);
+        }
+    }
+
+    /// <summary>The new look: games as a grid of picture cards and bars in Play history. DEV only for now.</summary>
+    public bool UseNewLook => NewLook.Games;
+
     private void RebuildHistory()
     {
         History.Clear();
-        foreach (var game in PlayStats.MergeByName(_history.Games).Take(HistoryRows))
+        var games = PlayStats.MergeByName(_history.Games).Take(HistoryRows).ToList();
+        var most = Math.Max(games.FirstOrDefault()?.Seconds ?? 1, 1);
+        foreach (var game in games)
         {
             var name = game.Name.Length > 0 ? game.Name : Loc.Format("Launch.Place", game.PlaceId);
             History.Add(new HistoryRow(name, PlayHistoryService.FormatDuration(game.Seconds),
-                Loc.Format("Games.LastPlayed", game.LastPlayedUtc.ToLocalTime())));
+                Loc.Format("Games.LastPlayed", game.LastPlayedUtc.ToLocalTime()), Math.Clamp(game.Seconds / most, 0, 1)));
         }
         OnPropertyChanged(nameof(HasHistory));
         OnPropertyChanged(nameof(HistorySummary));
@@ -298,6 +352,88 @@ public sealed partial class GamesViewModel : PageViewModel
         if (await _launch.JoinAsync(game.PlaceId, game.Name) is { Success: true }) Status = Loc.Format("Games.Starting", game.Name);
     }
 
+    // ===== Notes =====
+
+    internal const int NoteLength = 200;
+
+    private GameItem Tile(long placeId, string name, bool favorite)
+    {
+        var game = new GameItem(placeId, name, favorite)
+        {
+            Note = _settings.Current.Launcher.GameNotes.GetValueOrDefault(placeId) ?? ""
+        };
+        game.SaveNote = SaveNote;
+        return game;
+    }
+
+    /// <summary>Saves a note, trimmed and at most 200 characters; an empty note is removed. Every tile of that game shows it.</summary>
+    private void SaveNote(long placeId, string note)
+    {
+        note = Tidy(note);
+        var notes = _settings.Current.Launcher.GameNotes;
+        if (notes.GetValueOrDefault(placeId) == (note.Length > 0 ? note : null)) return;
+        if (note.Length > 0) notes[placeId] = note;
+        else notes.Remove(placeId);
+        _settings.Save();
+        foreach (var other in Favorites.Concat(Recent).Concat(SearchResults).Where(g => g.PlaceId == placeId && g.Note != note))
+            other.Note = note;
+    }
+
+    public override void OnNavigatedFrom()
+    {
+        foreach (var game in Favorites.Concat(Recent).Concat(SearchResults).Where(g => g.IsEditingNote))
+            game.IsEditingNote = false;
+    }
+
+    internal static string Tidy(string note)
+    {
+        note = string.Join(' ', note.Split(['\r', '\n', '\t'], StringSplitOptions.RemoveEmptyEntries)).Trim();
+        return note.Length > NoteLength ? note[..NoteLength].TrimEnd() : note;
+    }
+
+    [RelayCommand]
+    private void EditNote(GameItem game) => game.IsEditingNote = !game.IsEditingNote;
+
+    // ===== Surprise me =====
+
+    public bool CanSurprise => HasFavorites || HasRecent;
+
+    /// <summary>Picks a game from the favorites and recent games, never the same one twice in a row when there's a choice.</summary>
+    internal static long Pick(IReadOnlyList<long> places, long? avoid, Random random)
+    {
+        var choices = places.Count > 1 && avoid is { } skip ? places.Where(p => p != skip).ToList() : places.ToList();
+        return choices[random.Next(choices.Count)];
+    }
+
+    private long? _lastSurprise;
+
+    [RelayCommand]
+    private async Task SurpriseAsync()
+    {
+        var games = Favorites.Concat(Recent).GroupBy(g => g.PlaceId).Select(g => g.First()).ToList();
+        if (games.Count == 0)
+        {
+            Status = Loc.Get("Games.Surprise.Empty");
+            return;
+        }
+
+        var places = games.Select(g => g.PlaceId).ToList();
+        while (true)
+        {
+            var place = Pick(places, _lastSurprise, Random.Shared);
+            _lastSurprise = place;
+            var game = games.First(g => g.PlaceId == place);
+            var choice = _dialogs.Choose(Loc.Get("Games.Surprise.Title"), Loc.Format("Games.Surprise.Text", game.Name),
+                Loc.Get("Games.Play"), places.Count > 1 ? Loc.Get("Games.Surprise.Another") : null, Loc.Get("Common.Cancel"));
+            if (choice == DialogChoice.Confirm)
+            {
+                await PlayAsync(game);
+                return;
+            }
+            if (choice != DialogChoice.Extra) return;
+        }
+    }
+
     [RelayCommand]
     private void ViewServers(GameItem game)
     {
@@ -334,11 +470,11 @@ public sealed partial class GamesViewModel : PageViewModel
         var favorites = StoredFavorites.Select(f => f.PlaceId).ToHashSet();
 
         Favorites.Clear();
-        foreach (var f in StoredFavorites) Favorites.Add(new GameItem(f.PlaceId, f.Name, true));
+        foreach (var f in StoredFavorites) Favorites.Add(Tile(f.PlaceId, f.Name, true));
 
         Recent.Clear();
         foreach (var r in _settings.Current.Launcher.RecentExperiences)
-            Recent.Add(new GameItem(r.PlaceId, r.Name, favorites.Contains(r.PlaceId)));
+            Recent.Add(Tile(r.PlaceId, r.Name, favorites.Contains(r.PlaceId)));
 
         foreach (var game in Favorites.Concat(Recent)) ShowPlayTime(game);
         foreach (var game in SearchResults) game.IsFavorite = favorites.Contains(game.PlaceId);
@@ -346,6 +482,7 @@ public sealed partial class GamesViewModel : PageViewModel
 
         OnPropertyChanged(nameof(HasFavorites));
         OnPropertyChanged(nameof(HasRecent));
+        OnPropertyChanged(nameof(CanSurprise));
         _ = FillDetailsAsync(Favorites.Concat(Recent).ToList());
     }
 

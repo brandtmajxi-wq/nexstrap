@@ -57,14 +57,17 @@ public sealed class RichPresenceService : IRichPresenceService, IDisposable
     private readonly IExperienceInfoService _experiences;
     private readonly ISettingsService _settings;
     private readonly ILogger<RichPresenceService> _logger;
+    private readonly Clips.IClipService? _clips;
     private readonly SemaphoreSlim _gate = new(1, 1);
     private readonly Timer _retry;
     private DateTime _previewSince;
     private string? _lastActivityJson;
 
     public RichPresenceService(IDiscordIpcClient discord, IRobloxSessionService session, IExperienceInfoService experiences,
-        ISettingsService settings, ILogger<RichPresenceService> logger)
+        ISettingsService settings, ILogger<RichPresenceService> logger, Clips.IClipService? clips = null)
     {
+        _clips = clips;
+        if (clips is not null) clips.Changed += (_, _) => _ = RefreshAsync();
         _discord = discord;
         _session = session;
         _experiences = experiences;
@@ -183,6 +186,40 @@ public sealed class RichPresenceService : IRichPresenceService, IDisposable
 
     private async Task<JsonObject?> BuildCurrentAsync()
     {
+        var activity = await BuildBaseAsync();
+        return activity is not null && AppInfo.IsDev && _session.IsActive
+            ? DevActivity(activity, _clips?.IsRecording == true)
+            : activity;
+    }
+
+    /// <summary>
+    /// Roblox started from the DEV Launcher gets its own look on Discord: a "DEV" tag, the build in the corner,
+    /// a live "Clipping" mark while clips are being kept, and a button to Nexstrap's page.
+    /// </summary>
+    internal static JsonObject DevActivity(JsonObject activity, bool clipping)
+    {
+        var state = activity["state"]?.GetValue<string>()?.Trim() ?? "";
+        activity["state"] = Fit(clipping ? $"🔴 Clipping · {state}" : $"{state} · 🧪 DEV");
+
+        if (activity["assets"] is JsonObject assets)
+        {
+            var large = assets["large_text"]?.GetValue<string>() ?? AppInfo.Name;
+            assets["large_text"] = Fit($"{large} · DEV build");
+            if (assets["small_image"] is null) assets["small_image"] = AppInfo.DiscordLogoAsset;
+            assets["small_text"] = Fit($"{AppInfo.Name} {AppInfo.DevLabel} {AppInfo.VersionString} · trying new features first");
+        }
+
+        var buttons = activity["buttons"] as JsonArray ?? [];
+        var nexstrap = buttons.OfType<JsonObject>().FirstOrDefault(b => b["url"]?.GetValue<string>() == AppInfo.RepositoryUrl);
+        if (nexstrap is not null) nexstrap["label"] = "Nexstrap DEV";
+        else if (buttons.Count < 2)
+            buttons.Add(new JsonObject { ["label"] = "Nexstrap DEV", ["url"] = AppInfo.RepositoryUrl });
+        activity["buttons"] = buttons;
+        return activity;
+    }
+
+    private async Task<JsonObject?> BuildBaseAsync()
+    {
         if (_session.Current is { } activity && Options.RichPresence)
         {
             if (activity.Kind != RobloxActivityKind.InGame || activity.PlaceId is not { } placeId)
@@ -212,13 +249,13 @@ public sealed class RichPresenceService : IRichPresenceService, IDisposable
         return IsPreviewing ? BuildMenu(_previewSince, Options) : null;
     }
 
-    internal static JsonObject BuildMenu(DateTime sinceUtc, DiscordSettings? options = null) => new()
+    internal static JsonObject BuildMenu(DateTime sinceUtc, DiscordSettings? options = null) => WithNexstrapButton(new()
     {
         ["details"] = FitOr(options?.MenuTopLine, DiscordSettings.DefaultMenuTopLine),
         ["state"] = FitOr(options?.MenuBottomLine, DiscordSettings.DefaultMenuBottomLine),
         ["timestamps"] = new JsonObject { ["start"] = new DateTimeOffset(sinceUtc, TimeSpan.Zero).ToUnixTimeSeconds() },
         ["assets"] = new JsonObject { ["large_image"] = CardImage(options), ["large_text"] = AppInfo.Name }
-    };
+    }, options);
 
     /// <summary>True for an https link or a Discord Art Asset name (letters, digits, _ and -).</summary>
     internal static bool IsValidImage(string? image)
@@ -274,6 +311,19 @@ public sealed class RichPresenceService : IRichPresenceService, IDisposable
                 ["url"] = $"https://www.roblox.com/games/{placeId}"
             });
 
+        return WithNexstrapButton(activity, options);
+    }
+
+    internal const string NexstrapButtonLabel = "Get Nexstrap";
+
+    /// <summary>Adds the optional "Get Nexstrap" button (Discord shows at most two).</summary>
+    internal static JsonObject WithNexstrapButton(JsonObject activity, DiscordSettings? options)
+    {
+        if (options?.ShowNexstrapButton != true) return activity;
+        var buttons = activity["buttons"] as JsonArray ?? [];
+        if (buttons.Count < 2)
+            buttons.Add(new JsonObject { ["label"] = NexstrapButtonLabel, ["url"] = AppInfo.RepositoryUrl });
+        activity["buttons"] = buttons;
         return activity;
     }
 

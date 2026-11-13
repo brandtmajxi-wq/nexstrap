@@ -8,15 +8,30 @@ using Nexstrap.Services.Notifications;
 
 namespace Nexstrap.ViewModels.Pages;
 
+public sealed record CrashRow(string Game, string Detail, string LogPath);
+
 public sealed partial class NotificationsViewModel : PageViewModel
 {
     private readonly INotificationCenter _center;
     private readonly ISettingsService _settings;
     private readonly INavigationService _navigation;
     private readonly IPlayReminder _reminder;
+    private readonly ISessionSummary _summary;
+    private readonly IDailyLimit _limit;
+    private readonly ICrashHistory _crashes;
+    private readonly Nexstrap.Services.Shell.IShellService _shell;
+    private readonly Nexstrap.Services.Dialogs.IDialogService _dialogs;
 
-    public NotificationsViewModel(INotificationCenter center, ISettingsService settings, INavigationService navigation, IPlayReminder reminder)
+    public NotificationsViewModel(INotificationCenter center, ISettingsService settings, INavigationService navigation, IPlayReminder reminder,
+        ISessionSummary summary, IDailyLimit limit, ICrashHistory crashes, Nexstrap.Services.Shell.IShellService shell,
+        Nexstrap.Services.Dialogs.IDialogService dialogs)
     {
+        _summary = summary;
+        _limit = limit;
+        _crashes = crashes;
+        _shell = shell;
+        _dialogs = dialogs;
+        crashes.Changed += (_, _) => Application.Current?.Dispatcher.BeginInvoke(RebuildCrashes);
         _center = center;
         _settings = settings;
         _navigation = navigation;
@@ -93,6 +108,27 @@ public sealed partial class NotificationsViewModel : PageViewModel
     [RelayCommand]
     private void PreviewReminder() => _reminder.Preview();
 
+    public bool SessionSummary
+    {
+        get => _settings.Current.Notifications.SessionSummary;
+        set => Change(() => _settings.Current.Notifications.SessionSummary = value);
+    }
+
+    [RelayCommand]
+    private void PreviewSummary() => _summary.Preview();
+
+    public IReadOnlyList<Choice<int>> DailyLimitChoices { get; } =
+        DailyLimit.Choices.Select(m => new Choice<int>(m, () => PlayReminder.Label(m))).ToList();
+
+    public int DailyLimitMinutes
+    {
+        get => _settings.Current.Notifications.DailyLimitMinutes;
+        set => Change(() => _settings.Current.Notifications.DailyLimitMinutes = value);
+    }
+
+    [RelayCommand]
+    private void PreviewLimit() => _limit.Preview();
+
     [RelayCommand]
     private void Dismiss(AppNotification item) => _center.Dismiss(item);
 
@@ -102,7 +138,42 @@ public sealed partial class NotificationsViewModel : PageViewModel
     [RelayCommand]
     private void RestoreDismissed() => _center.RestoreDismissed();
 
-    public override void OnNavigatedTo() => _center.Refresh();
+    // ===== Recent crashes =====
+
+    public ObservableCollection<CrashRow> Crashes { get; } = [];
+
+    public bool HasCrashes => Crashes.Count > 0;
+
+    [RelayCommand]
+    private void ShowCrashLog(CrashRow row) => _shell.ShowInFolder(row.LogPath);
+
+    [RelayCommand]
+    private void ClearCrashes()
+    {
+        if (_dialogs.Confirm(Loc.Get("Crashes.Clear.Title"), Loc.Get("Crashes.Clear.Text"), Loc.Get("Crashes.Clear")))
+            _crashes.Clear();
+    }
+
+    private void RebuildCrashes()
+    {
+        Crashes.Clear();
+        foreach (var crash in _crashes.Recent)
+        {
+            var game = crash.Name.Length > 0 ? crash.Name
+                : crash.PlaceId is { } place ? Loc.Format("Launch.Place", place)
+                : Loc.Get("Crashes.Menu");
+            var when = DateTime.SpecifyKind(crash.TimeUtc, DateTimeKind.Utc).ToLocalTime().ToString("g");
+            var detail = crash.ExitCode is { } code ? $"{when} · {Loc.Format("Crashes.ExitCode", code)}" : when;
+            Crashes.Add(new CrashRow(game, detail, crash.LogPath));
+        }
+        OnPropertyChanged(nameof(HasCrashes));
+    }
+
+    public override void OnNavigatedTo()
+    {
+        _center.Refresh();
+        RebuildCrashes();
+    }
 
     private void Change(Action change)
     {

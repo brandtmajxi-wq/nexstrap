@@ -15,6 +15,15 @@ public sealed record GameServer(string Id, int Playing, int MaxPlayers, double F
     public bool IsFull => FreeSlots == 0;
     public double Fill => MaxPlayers <= 0 ? 0 : Math.Clamp((double)Playing / MaxPlayers, 0, 1);
 
+    /// <summary>For the coloured dot: Good under 100 ms, Ok under 200 ms, Bad above, Unknown without a ping.</summary>
+    public string PingQuality => Ping switch
+    {
+        null => "Unknown",
+        < 100 => "Good",
+        < 200 => "Ok",
+        _ => "Bad",
+    };
+
     /// <summary>Set when you've been on this server, since the list itself has no locations.</summary>
     public string? Region { get; set; }
 

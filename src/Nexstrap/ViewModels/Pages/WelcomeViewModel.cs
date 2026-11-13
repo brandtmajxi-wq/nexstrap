@@ -48,10 +48,14 @@ public sealed partial class WelcomeViewModel : PageViewModel
         : ImageFile(Part, Winter));
 
     /// <summary>Moscow's animated weather, unless it's switched off.</summary>
-    public override SkyScene? Sky => MoscowSky(City == "moscow", _settings.Current.Welcome.MoscowWeather, Part);
+    public override SkyScene? Sky => MoscowSky(City == "moscow", _settings.Current, Part);
 
-    internal static SkyScene? MoscowSky(bool moscow, Weather setting, DayPart part) =>
-        moscow && MoscowWeather.Resolve(setting, DateTime.Now) is var weather && weather != Weather.Off ? new SkyScene(weather, part) : null;
+    internal static SkyScene? MoscowSky(bool moscow, Weather setting, DayPart part, bool jets = false) =>
+        moscow && MoscowWeather.Resolve(setting, DateTime.Now) is var weather && weather != Weather.Off ? new SkyScene(weather, part, jets) : null;
+
+    /// <summary>The scene from the settings, with the dev-only jet flyovers.</summary>
+    internal static SkyScene? MoscowSky(bool moscow, Nexstrap.Models.AppSettings settings, DayPart part) =>
+        MoscowSky(moscow, settings.Welcome.MoscowWeather, part, MoscowWeather.ExtrasAvailable && settings.Welcome.MoscowJets);
 
     internal static bool ShowsMoscow(Nexstrap.Models.AppSettings settings) => settings.SecretRoomUnlocked && settings.Welcome.MoscowScene;
 

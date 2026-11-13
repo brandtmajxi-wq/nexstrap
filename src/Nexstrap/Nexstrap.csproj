@@ -2,7 +2,9 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net10.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows10.0.22621.0</TargetFramework>
+    <!-- Still runs on Windows 10; newer screen-capture options are used only where Windows has them. -->
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
@@ -13,9 +15,9 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
 
     <!-- Version information (single source of truth for the updater) -->
-    <Version>1.23.0</Version>
-    <AssemblyVersion>1.23.0.0</AssemblyVersion>
-    <FileVersion>1.23.0.0</FileVersion>
+    <Version>1.43.0</Version>
+    <AssemblyVersion>1.43.0.0</AssemblyVersion>
+    <FileVersion>1.43.0.0</FileVersion>
     <Product>Nexstrap</Product>
     <Description>The Roblox launcher, reimagined.</Description>
     <Company>Nexstrap</Company>
@@ -26,9 +28,9 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Dev'">
     <DefineConstants>$(DefineConstants);DEV_BUILD</DefineConstants>
     <Optimize>true</Optimize>
-    <Version>1.24.0</Version>
-    <AssemblyVersion>1.24.0.0</AssemblyVersion>
-    <FileVersion>1.24.0.0</FileVersion>
+    <Version>1.44.0</Version>
+    <AssemblyVersion>1.44.0.0</AssemblyVersion>
+    <FileVersion>1.44.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

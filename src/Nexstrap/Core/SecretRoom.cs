@@ -37,5 +37,4 @@ public static class SecretRoom
             _ => "Доброй ночи"
         };
         return string.IsNullOrWhiteSpace(name) ? hello + "!" : $"{hello}, {name}!";
-    }
-}
+    }}

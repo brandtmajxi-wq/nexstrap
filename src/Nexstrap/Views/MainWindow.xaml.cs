@@ -28,15 +28,33 @@ public partial class MainWindow : Window
 
         ApplyBackgroundBlur();
         appearance.Changed += (_, _) => ApplyBackgroundBlur();
+        LowEndMode.Changed += (_, _) => Dispatcher.BeginInvoke(ApplyBackgroundBlur);
         RestoreWindowPlacement();
+        if (App.Options.CapturePath is not null)
+        {
+            // Screenshots for checking pages render off-screen, so they never pop up over a game.
+            WindowStartupLocation = WindowStartupLocation.Manual;
+            Left = SystemParameters.VirtualScreenLeft - Width - 200;
+            Top = SystemParameters.VirtualScreenTop;
+            ShowActivated = false;
+            ShowInTaskbar = false;
+        }
         StateChanged += (_, _) => UpdateMaximizedState();
         navigation.Navigated += (_, _) => PlayPageTransition();
         viewModel.ScrollToSetting += (_, label) => Dispatcher.BeginInvoke(() => FindCard(PageScroller, label)?.BringIntoView(),
             System.Windows.Threading.DispatcherPriority.ContextIdle);
         PreviewKeyDown += (_, e) =>
         {
-            if (e.Key != System.Windows.Input.Key.K || System.Windows.Input.Keyboard.Modifiers != System.Windows.Input.ModifierKeys.Control) return;
-            SettingsSearch.Focus();
+            var (action, page) = Shortcuts.Match(e.Key, System.Windows.Input.Keyboard.Modifiers);
+            switch (action)
+            {
+                case ShortcutAction.Search: SettingsSearch.Focus(); break;
+                case ShortcutAction.Page: if (!viewModel.OpenSidebarPage(page)) return; break;
+                case ShortcutAction.Play: viewModel.PlayFromShortcut(); break;
+                case ShortcutAction.Rejoin: viewModel.RejoinFromShortcut(); break;
+                case ShortcutAction.Notifications: navigation.NavigateTo<Nexstrap.ViewModels.Pages.NotificationsViewModel>(); break;
+                default: return;
+            }
             e.Handled = true;
         };
         ContentRendered += OnContentRendered;
@@ -45,7 +63,8 @@ public partial class MainWindow : Window
     /// <summary>The layer is made larger than the window so the blur doesn't soften its edges into the window colour.</summary>
     private void ApplyBackgroundBlur()
     {
-        var radius = _settings.Current.Appearance.BackgroundBlur;
+        // Blur is one of the most expensive effects, so low-end mode turns it off.
+        var radius = LowEndMode.On ? 0 : _settings.Current.Appearance.BackgroundBlur;
         BackgroundLayer.Effect = radius > 0 ? new System.Windows.Media.Effects.BlurEffect { Radius = radius } : null;
         BackgroundLayer.Margin = new Thickness(-radius * 2);
     }
@@ -82,7 +101,7 @@ public partial class MainWindow : Window
     {
         PageScroller.ScrollToTop();
         var style = _settings.Current.Appearance.PageTransition;
-        if (style == PageTransition.None) return;
+        if (style == PageTransition.None || LowEndMode.On) return;
 
         var fade = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(220)) { EasingFunction = new CubicEase() };
         PageHost.BeginAnimation(OpacityProperty, fade);

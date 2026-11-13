@@ -50,6 +50,31 @@ public static class PlayStats
             .OrderByDescending(g => g.Seconds)
             .ToList();
 
+    /// <summary>
+    /// Seconds played in each hour of the day (index 0–23) and each day of the week (index = DayOfWeek, Sunday = 0),
+    /// by the PC's local time. A session that runs past the hour is split across the hours it covers.
+    /// </summary>
+    public static (double[] Hours, double[] Weekdays) Rhythm(IEnumerable<PlaySession> sessions)
+    {
+        var hours = new double[24];
+        var days = new double[7];
+        foreach (var session in sessions)
+        {
+            var start = DateTime.SpecifyKind(session.StartedUtc, DateTimeKind.Utc).ToLocalTime();
+            var end = start.AddSeconds(Math.Max(0, session.Seconds));
+            for (var t = start; t < end;)
+            {
+                var next = new DateTime(t.Year, t.Month, t.Day, t.Hour, 0, 0, t.Kind).AddHours(1);
+                if (next > end) next = end;
+                var seconds = (next - t).TotalSeconds;
+                hours[t.Hour] += seconds;
+                days[(int)t.DayOfWeek] += seconds;
+                t = next;
+            }
+        }
+        return (hours, days);
+    }
+
     private static DateOnly LocalDay(PlaySession session) =>
         DateOnly.FromDateTime(DateTime.SpecifyKind(session.StartedUtc, DateTimeKind.Utc).ToLocalTime());
 }

@@ -32,9 +32,19 @@ public sealed class SnowOverlay : FrameworkElement
         Focusable = false;
         _timer.Tick += (_, _) => Advance();
         IsVisibleChanged += (_, _) => UpdateRunning();
-        Loaded += (_, _) => UpdateRunning();
-        Unloaded += (_, _) => _timer.Stop();
+        Loaded += (_, _) =>
+        {
+            Nexstrap.Core.LowEndMode.Changed += OnLowEndChanged;
+            UpdateRunning();
+        };
+        Unloaded += (_, _) =>
+        {
+            Nexstrap.Core.LowEndMode.Changed -= OnLowEndChanged;
+            _timer.Stop();
+        };
     }
+
+    private void OnLowEndChanged(object? sender, EventArgs e) => Dispatcher.BeginInvoke(UpdateRunning);
 
     private static Brush Shade(byte alpha)
     {
@@ -46,7 +56,7 @@ public sealed class SnowOverlay : FrameworkElement
     private void UpdateRunning()
     {
         // Windows' "animation effects" switch: leave the snow still for people who turned it off.
-        if (IsVisible && SystemParameters.ClientAreaAnimation) { _clock.Restart(); _timer.Start(); }
+        if (IsVisible && Nexstrap.Core.LowEndMode.Animate) { _clock.Restart(); _timer.Start(); }
         else _timer.Stop();
         InvalidateVisual();
     }

@@ -19,9 +19,41 @@ public sealed partial class PerformanceViewModel(
     IFastFlagService flags,
     IDisplayInfo display,
     IDialogService dialogs,
-    INavigationService navigation) : PageViewModel
+    INavigationService navigation,
+    Nexstrap.Services.Configuration.ISettingsService settings) : PageViewModel
 {
     private bool _loading;
+
+    // ===== Low-end PC mode =====
+
+    public bool LowEndMode
+    {
+        get => settings.Current.Launcher.LowEndMode;
+        set
+        {
+            if (value == settings.Current.Launcher.LowEndMode) return;
+            settings.Current.Launcher.LowEndMode = value;
+            settings.Save();
+            Nexstrap.Core.LowEndMode.Set(value);
+            OnPropertyChanged();
+            Message = value ? Loc.Get("Performance.LowEnd.On") : Loc.Get("Performance.LowEnd.Off");
+            if (value) OfferLighterRoblox();
+        }
+    }
+
+    /// <summary>Asks once, when the mode is switched on, whether Roblox should get lighter settings too.</summary>
+    private void OfferLighterRoblox()
+    {
+        var saver = PerformancePlanner.Presets.First(p => p.Key == "Performance.Preset.PowerSaver");
+        var lowEnd = FastFlagPresets.All.First(p => p.Key == "FastFlags.Preset.LowEnd");
+        if (!dialogs.Confirm(Loc.Get("Performance.LowEnd.AskTitle"), Loc.Format("Performance.LowEnd.AskText", saver.Name, lowEnd.Name),
+                Loc.Get("Performance.LowEnd.AskYes"), Loc.Get("Performance.LowEnd.AskNo")))
+            return;
+
+        var flagProblem = FastFlagPresets.Apply(flags, lowEnd);
+        ApplyPreset(saver);
+        if (flagProblem is not null) Message = flagProblem;
+    }
 
     public override string Title => Loc.Get("Nav.Performance");
 

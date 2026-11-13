@@ -62,6 +62,33 @@
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
+        <!-- ===== Recent crashes ===== -->
+        <StackPanel Visibility="{Binding HasCrashes, Converter={StaticResource BoolToVisibility}}">
+            <DockPanel Margin="2,18,0,10">
+                <Button DockPanel.Dock="Right" Style="{StaticResource Button.Ghost}" Content="{DynamicResource L.Crashes.Clear}" ui:Ui.Icon="&#xE74D;" Padding="10,4"
+                        Command="{Binding ClearCrashesCommand}" />
+                <TextBlock Text="{DynamicResource L.Crashes.Title}" Style="{StaticResource Text.Section}" VerticalAlignment="Center" />
+            </DockPanel>
+            <Border Style="{StaticResource Card}" Padding="18,8">
+                <ItemsControl ItemsSource="{Binding Crashes}" Focusable="False">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type vm:CrashRow}">
+                            <DockPanel Margin="0,6">
+                                <Button DockPanel.Dock="Right" Content="{DynamicResource L.Crashes.ShowLog}" Padding="10,4" VerticalAlignment="Center"
+                                        Command="{Binding DataContext.ShowCrashLogCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" />
+                                <TextBlock DockPanel.Dock="Left" Text="&#xE783;" Style="{StaticResource Text.Icon}" Foreground="{DynamicResource Brush.Danger}" Margin="0,2,12,0" VerticalAlignment="Top" />
+                                <StackPanel Margin="0,0,12,0">
+                                    <TextBlock Text="{Binding Game}" Style="{StaticResource Text.Base}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="{Binding Detail}" Style="{StaticResource Text.Caption}" Margin="0,2,0,0" />
+                                </StackPanel>
+                            </DockPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Border>
+            <TextBlock Text="{DynamicResource L.Crashes.Note}" Style="{StaticResource Text.Caption}" TextWrapping="Wrap" Margin="2,6,0,0" />
+        </StackPanel>
+
         <TextBlock Text="{DynamicResource L.Notifications.Preferences}" Style="{StaticResource SectionHeader}" />
         <ui:SettingCard Icon="&#xE895;" Header="{DynamicResource L.Home.NexstrapUpdates}" Description="{DynamicResource L.Notifications.WhenANewerNexstrapIsPublished}">
             <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding NexstrapUpdates}" AutomationProperties.Name="Notify Nexstrap updates" />
@@ -83,6 +110,19 @@
                 <Button Content="{DynamicResource L.Notifications.PlayReminder.Preview}" Padding="10,5" Margin="0,0,8,0" Command="{Binding PreviewReminderCommand}" />
                 <ComboBox Width="120" ItemsSource="{Binding PlayReminderChoices}" DisplayMemberPath="Label" SelectedValuePath="Value"
                           SelectedValue="{Binding PlayReminderMinutes}" AutomationProperties.Name="{DynamicResource L.Notifications.PlayReminder}" />
+            </StackPanel>
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE9D9;" Header="{DynamicResource L.Notifications.SessionSummary}" Description="{DynamicResource L.Notifications.SessionSummary.Text}">
+            <StackPanel Orientation="Horizontal">
+                <Button Content="{DynamicResource L.Notifications.PlayReminder.Preview}" Padding="10,5" Margin="0,0,12,0" Command="{Binding PreviewSummaryCommand}" />
+                <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding SessionSummary}" AutomationProperties.Name="{DynamicResource L.Notifications.SessionSummary}" VerticalAlignment="Center" />
+            </StackPanel>
+        </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE916;" Header="{DynamicResource L.Notifications.DailyLimit}" Description="{DynamicResource L.Notifications.DailyLimit.Text}">
+            <StackPanel Orientation="Horizontal">
+                <Button Content="{DynamicResource L.Notifications.PlayReminder.Preview}" Padding="10,5" Margin="0,0,8,0" Command="{Binding PreviewLimitCommand}" />
+                <ComboBox Width="120" ItemsSource="{Binding DailyLimitChoices}" DisplayMemberPath="Label" SelectedValuePath="Value"
+                          SelectedValue="{Binding DailyLimitMinutes}" AutomationProperties.Name="{DynamicResource L.Notifications.DailyLimit}" />
             </StackPanel>
         </ui:SettingCard>
         <TextBlock Style="{StaticResource Text.Caption}" Margin="2,10,0,0"

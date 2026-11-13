@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -23,8 +23,21 @@ public sealed partial class MainWindowViewModel : ObservableObject
     /// <summary>Every page, including hidden ones: links inside the app can still open them.</summary>
     private readonly IReadOnlyList<NavItem> _pages;
 
-    public MainWindowViewModel(INavigationService navigation, IUpdateService updates, ISettingsService settings, INotificationCenter notifications)
+    private readonly Nexstrap.Services.Roblox.ILaunchCoordinator? _launch;
+    private readonly Nexstrap.Services.Roblox.ILastServerService? _lastServer;
+
+    public MainWindowViewModel(INavigationService navigation, IUpdateService updates, ISettingsService settings, INotificationCenter notifications,
+        Nexstrap.Services.Roblox.ILaunchCoordinator? launch = null, Nexstrap.Services.Roblox.ILastServerService? lastServer = null,
+        Nexstrap.Services.Roblox.IRobloxSessionService? session = null)
     {
+        _session = session;
+        if (session is not null && NewLook.Styles)
+        {
+            session.Changed += (_, _) => Application.Current?.Dispatcher.BeginInvoke(UpdateNowPlaying);
+            _nowPlayingClock.Tick += (_, _) => UpdateNowPlaying();
+        }
+        _launch = launch;
+        _lastServer = lastServer;
         Navigation = navigation;
         _updates = updates;
         _settings = settings;
@@ -35,6 +48,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
             new("Home", "", typeof(HomeViewModel)),
             new("Games", "", typeof(GamesViewModel)),
             new("Stats", char.ConvertFromUtf32(0xE9D2), typeof(StatsViewModel)),
+            new("Screenshots", char.ConvertFromUtf32(0xE722), typeof(ScreenshotsViewModel)),
             new("Servers", "", typeof(ServersViewModel)),
             new("Appearance", "", typeof(AppearanceViewModel)),
             new("Loading Screen", "", typeof(LaunchScreenViewModel)),
@@ -135,6 +149,64 @@ public sealed partial class MainWindowViewModel : ObservableObject
 
         NavItems.Clear();
         foreach (var title in wanted) NavItems.Add(_pages.Single(p => p.Title == title));
+    }
+
+    // ===== Keyboard shortcuts =====
+
+    /// <summary>Ctrl+1–9: the sidebar's pages in the order shown. False when there's no page at that number.</summary>
+    public bool OpenSidebarPage(int number)
+    {
+        if (number < 1 || number > NavItems.Count) return false;
+        Navigation.NavigateTo(NavItems[number - 1].PageType);
+        return true;
+    }
+
+    /// <summary>Ctrl+P: the same as Play Roblox on Home, including its question if Roblox is already open.</summary>
+    public void PlayFromShortcut() => _ = _launch?.LaunchAppAsync();
+
+    // ===== Sidebar play card (the new DEV look) =====
+
+    private readonly Nexstrap.Services.Roblox.IRobloxSessionService? _session;
+    private readonly System.Windows.Threading.DispatcherTimer _nowPlayingClock = new() { Interval = TimeSpan.FromSeconds(30) };
+
+    /// <summary>The play card at the bottom of the sidebar is DEV only for now.</summary>
+    public bool ShowSidebarPlay => NewLook.Styles && _launch is not null;
+
+    [ObservableProperty]
+    private bool _isPlaying;
+
+    /// <summary>"Guts & Blackpowder · 12 min" while Roblox is open.</summary>
+    [ObservableProperty]
+    private string _nowPlaying = "";
+
+    private void UpdateNowPlaying()
+    {
+        var current = _session?.Current;
+        IsPlaying = current is not null;
+        if (current is null)
+        {
+            _nowPlayingClock.Stop();
+            NowPlaying = "";
+            return;
+        }
+        _nowPlayingClock.Start();
+        var name = current.PlaceId is { } place
+            ? _settings.Current.Launcher.RecentExperiences.FirstOrDefault(r => r.PlaceId == place)?.Name ?? Loc.Get("Sidebar.InAGame")
+            : Loc.Get("Sidebar.InTheMenu");
+        var minutes = (int)(DateTime.UtcNow - (_session!.StartedUtc ?? current.SinceUtc)).TotalMinutes;
+        NowPlaying = $"{name} · {Loc.Format("Sidebar.Minutes", minutes)}";
+    }
+
+    [RelayCommand]
+    private void SidebarPlay()
+    {
+        if (!IsPlaying) PlayFromShortcut();
+    }
+
+    /// <summary>Ctrl+J: only when there's a server to go back to, like the button on Home.</summary>
+    public void RejoinFromShortcut()
+    {
+        if (_lastServer?.Available is not null) _ = _lastServer.RejoinAsync();
     }
 
     /// <summary>Pinned to the bottom of the sidebar.</summary>

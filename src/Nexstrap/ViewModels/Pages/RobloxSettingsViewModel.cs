@@ -35,10 +35,27 @@ public sealed partial class RobloxSettingsViewModel : PageViewModel
     private RobloxUserSettings _loaded = new();
     private bool _loading;
 
+    private readonly ISessionComforts _comforts;
+    private readonly IBackgroundMute _backgroundMute;
+
+    public bool MuteRobloxInBackground
+    {
+        get => _settings.Current.Launcher.MuteRobloxInBackground;
+        set
+        {
+            _settings.Current.Launcher.MuteRobloxInBackground = value;
+            _settings.Save();
+            _backgroundMute.Refresh();
+            OnPropertyChanged();
+        }
+    }
+
     public RobloxSettingsViewModel(IRobloxUserSettingsService robloxSettings, IRobloxLauncher launcher, IRobloxClientService client,
         IProtocolRegistration protocol, ISettingsService settings, IDialogService dialogs, IShellService shell, INavigationService navigation,
-        IWindowsStartup startup, ICleanupService cleanup, IHotkeyService hotkeys)
+        IWindowsStartup startup, ICleanupService cleanup, IHotkeyService hotkeys, ISessionComforts comforts, IBackgroundMute backgroundMute)
     {
+        _comforts = comforts;
+        _backgroundMute = backgroundMute;
         _hotkeys = hotkeys;
         _robloxSettings = robloxSettings;
         _launcher = launcher;
@@ -242,6 +259,18 @@ public sealed partial class RobloxSettingsViewModel : PageViewModel
             _settings.Save();
             OnPropertyChanged();
             if (value) _ = _client.RefreshAsync();
+        }
+    }
+
+    public bool KeepAwakeWhilePlaying
+    {
+        get => _settings.Current.Launcher.KeepAwakeWhilePlaying;
+        set
+        {
+            _settings.Current.Launcher.KeepAwakeWhilePlaying = value;
+            _settings.Save();
+            _comforts.Refresh();
+            OnPropertyChanged();
         }
     }
 

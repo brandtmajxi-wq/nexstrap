@@ -8,9 +8,10 @@ using Nexstrap.Core;
 namespace Nexstrap.Controls;
 
 /// <summary>
-/// Animated weather over the Moscow pictures: drifting clouds, a glowing sun with turning rays,
-/// birds, twinkling stars, rain, thunderstorms, snow and fog. Like the snow overlay it only moves
-/// while the window is in front, follows Windows' "animation effects" switch and lets clicks through.
+/// Animated weather over the Moscow pictures: drifting clouds, a glowing sun with turning rays, birds,
+/// twinkling stars, rain and downpours, thunderstorms, wind with blowing leaves, snow, blizzards and fog.
+/// A gusting wind drives the clouds, the angle of the rain and the snow. Like the snow overlay it only
+/// moves while the window is in front, follows Windows' "animation effects" switch and lets clicks through.
 /// </summary>
 public sealed class WeatherOverlay : FrameworkElement
 {
@@ -25,12 +26,25 @@ public sealed class WeatherOverlay : FrameworkElement
         set => SetValue(SceneProperty, value);
     }
 
+    public static readonly DependencyProperty BackdropProperty = DependencyProperty.Register(
+        nameof(Backdrop), typeof(ImageSource), typeof(WeatherOverlay), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
+
+    /// <summary>The picture underneath, so the river part of it can be redrawn with moving ripples.</summary>
+    public ImageSource? Backdrop
+    {
+        get => (ImageSource?)GetValue(BackdropProperty);
+        set => SetValue(BackdropProperty, value);
+    }
+
     // The backdrop pictures are 16:9 and drawn UniformToFill, so this layer maps its positions the same way.
     private const double PictureAspect = 16.0 / 9.0;
     private const double Horizon = 0.79;
     private const double CloudFloor = 0.5;
     private const int CloudWidth = 512, CloudHeight = 220;
     private const double CloudAspect = (double)CloudHeight / CloudWidth;
+    private const double SplashLife = 0.35;
+    /// <summary>Where the river starts in the pictures (WL in tools/make-moscow-images.ps1: 1152 of 1440).</summary>
+    private const double WaterTop = 0.8;
 
     private struct Cloud { public double U, V, Speed, Size; public int Shape; }
     private struct RainDrop { public double X, Y, Speed, Length; public bool Near; }
@@ -38,6 +52,16 @@ public sealed class WeatherOverlay : FrameworkElement
     private struct Star { public double U, V, Size, Phase, Rate; }
     private struct Bird { public double U, V, Size, Phase; }
     private struct Band { public double U, V, Width, Height, Speed, Alpha; }
+    private struct Streak { public double X, Y, Length, Speed, Phase, Alpha; }
+    private struct Leaf { public double X, Y, Size, Angle, Spin, Speed, Fall, Phase; public int Colour; }
+    private struct Splash { public double U, V, Age; }
+    private struct Glint { public double Offset, V, Phase, Rate, Length; }
+
+    /// <summary>The jet on a flyover: where it is and its size.</summary>
+    private sealed class Jet
+    {
+        public double U, V, Size;
+    }
 
     private readonly Random _random = new();
     private readonly Stopwatch _clock = new();
@@ -45,7 +69,7 @@ public sealed class WeatherOverlay : FrameworkElement
 
     private Weather _weather = Weather.Off;
     private DayPart _part;
-    private double _time;
+    private double _time, _gust;
     private bool _seeded;
 
     private BitmapSource[] _cloudShapes = [];
@@ -54,17 +78,33 @@ public sealed class WeatherOverlay : FrameworkElement
     private Flake[] _flakes = [];
     private Star[] _stars = [];
     private Band[] _fog = [];
+    private Band[] _curtains = [];
     private Bird[] _birds = [];
+    private Streak[] _streaks = [];
+    private Leaf[] _leaves = [];
+    private readonly List<Splash> _splashes = [];
+    private Glint[] _glints = [];
+    private Pen? _glintPen;
+
+    // Jet flyovers (dev only for now).
+    private bool _jetsOn;
+    private readonly List<Jet> _jets = [];
+    private double _jetDirection = 1, _jetSpeed, _jetSlope, _nextJets;
+    private Brush? _jetBody, _jetWing;
+    private double _splashRate, _splashBudget;
     private double _birdSpeed, _nextFlock;
     private double _shootingAge = 99, _nextShooting;
     private Point _shootingFrom, _shootingDir;
     private double _flashAge = 99, _nextFlash;
-    private Point[] _bolt = [];
+    private Point[][] _bolt = [];
+    private double _sheetAge = 99, _nextSheet;
+    private Point _sheetAt;
 
     private double _cloudOpacity;
-    private Brush? _veil, _dim, _glow, _rays, _fogBrush;
-    private Pen? _rainFar, _rainNear, _birdPen;
+    private Brush? _veil, _dim, _glow, _rays, _fogBrush, _curtainBrush, _flashBrush, _sheetBrush, _streakBrush;
+    private Pen? _rainFar, _rainNear, _birdPen, _splashPen;
     private Brush[] _flakeShades = [];
+    private Brush[] _leafBrushes = [];
 
     public WeatherOverlay()
     {
@@ -72,9 +112,19 @@ public sealed class WeatherOverlay : FrameworkElement
         Focusable = false;
         _timer.Tick += (_, _) => Advance();
         IsVisibleChanged += (_, _) => UpdateRunning();
-        Loaded += (_, _) => UpdateRunning();
-        Unloaded += (_, _) => _timer.Stop();
+        Loaded += (_, _) =>
+        {
+            LowEndMode.Changed += OnLowEndChanged;
+            UpdateRunning();
+        };
+        Unloaded += (_, _) =>
+        {
+            LowEndMode.Changed -= OnLowEndChanged;
+            _timer.Stop();
+        };
     }
+
+    private void OnLowEndChanged(object? sender, EventArgs e) => Dispatcher.BeginInvoke(UpdateRunning);
 
     private bool Active => _weather is not (Weather.Off or Weather.Random);
 
@@ -82,13 +132,14 @@ public sealed class WeatherOverlay : FrameworkElement
     {
         _weather = Scene?.Weather ?? Weather.Off;
         _part = Scene?.Part ?? DayPart.Afternoon;
+        _jetsOn = Scene?.Jets ?? false;
         _seeded = false;
         UpdateRunning();
     }
 
     private void UpdateRunning()
     {
-        if (IsVisible && Active && SystemParameters.ClientAreaAnimation) { _clock.Restart(); _timer.Start(); }
+        if (IsVisible && Active && LowEndMode.Animate) { _clock.Restart(); _timer.Start(); }
         else _timer.Stop();
         InvalidateVisual();
     }
@@ -123,6 +174,30 @@ public sealed class WeatherOverlay : FrameworkElement
         _ => (0.18, 0.58, 0.04)
     };
 
+    // ===== Wind =====
+
+    /// <summary>How windy each weather is on average: 0 is still air, 1 a thunderstorm.</summary>
+    internal static double BaseWind(Weather weather) => weather switch
+    {
+        Weather.Clear => 0.2, Weather.PartlyCloudy => 0.3, Weather.Cloudy => 0.4, Weather.Rain => 0.5,
+        Weather.HeavyRain => 0.8, Weather.Storm => 1.0, Weather.Wind => 1.4, Weather.Snow => 0.3,
+        Weather.Blizzard => 1.6, _ => 0.1
+    };
+
+    internal static bool Gusty(Weather weather) => weather is Weather.HeavyRain or Weather.Storm or Weather.Wind or Weather.Blizzard;
+
+    /// <summary>The wind at a moment: its average plus slow gusts from a few mixed waves, so it never quite repeats.</summary>
+    internal static double Gust(Weather weather, double time)
+    {
+        var wave = 0.5 * Math.Sin(time * 0.37) + 0.3 * Math.Sin(time * 1.13 + 1) + 0.2 * Math.Sin(time * 2.9 + 2);
+        return Math.Max(0.05, BaseWind(weather) * (1 + (Gusty(weather) ? 0.45 : 0.1) * wave));
+    }
+
+    /// <summary>How far rain leans: more wind, more slant.</summary>
+    private double Slant => 0.06 + _gust * 0.3;
+
+    private double CloudPace => 0.5 + _gust * 1.5;
+
     // ===== Setting up a scene =====
 
     private void Seed()
@@ -132,7 +207,10 @@ public sealed class WeatherOverlay : FrameworkElement
         if (!Active || ActualWidth <= 0 || ActualHeight <= 0) return;
 
         var w = _weather;
-        bool overcast = w is Weather.Cloudy or Weather.Rain or Weather.Storm or Weather.Snow or Weather.Fog;
+        _gust = Gust(w, 0);
+        var overcast = w is Weather.Cloudy or Weather.Rain or Weather.HeavyRain or Weather.Storm or Weather.Snow or Weather.Blizzard or Weather.Fog;
+        var hazy = w is Weather.Fog or Weather.Blizzard;
+        var winter = DateTime.Now.Month is 12 or 1 or 2;
 
         // Cloud colours start from the picture's light and turn greyer and darker with the weather.
         var (lit, shade) = _part switch
@@ -147,8 +225,11 @@ public sealed class WeatherOverlay : FrameworkElement
             Weather.Cloudy => (0.45, 0.9),
             Weather.Fog => (0.6, 1.0),
             Weather.Snow => (0.5, 0.86),
+            Weather.Blizzard => (0.6, 0.92),
             Weather.Rain => (0.62, 0.7),
+            Weather.HeavyRain => (0.68, 0.58),
             Weather.Storm => (0.72, 0.48),
+            Weather.Wind => (0.12, 0.97),
             _ => (0.0, 1.0)
         };
         var greyTone = _part == DayPart.Night ? Hex("#3A3F4E") : Hex("#A9AFB8");
@@ -156,13 +237,12 @@ public sealed class WeatherOverlay : FrameworkElement
         shade = Darken(Mix(shade, greyTone, grey * 0.6), dark);
         _cloudShapes = Enumerable.Range(0, 5).Select(_ => MakeCloud(lit, shade)).ToArray();
 
-        _cloudOpacity = w switch { Weather.Clear => 0.5, Weather.PartlyCloudy => 0.85, Weather.Fog => 0.5, _ => 0.95 };
+        _cloudOpacity = w switch { Weather.Clear => 0.5, Weather.PartlyCloudy or Weather.Wind => 0.85, Weather.Fog => 0.5, _ => 0.95 };
         var count = w switch
         {
-            Weather.Clear => 3, Weather.PartlyCloudy => 7, Weather.Cloudy => 18, Weather.Rain => 20,
-            Weather.Storm => 22, Weather.Snow => 16, _ => 5
+            Weather.Clear => 3, Weather.PartlyCloudy => 7, Weather.Wind => 11, Weather.Cloudy => 18, Weather.Rain => 20,
+            Weather.HeavyRain => 22, Weather.Storm => 22, Weather.Snow => 16, Weather.Blizzard => 18, _ => 5
         };
-        var wind = w == Weather.Storm ? 2.2 : 1.0;
         // Clouds stay in the sky: their bottom edge never reaches the Kremlin walls.
         _clouds = Enumerable.Range(0, count).Select(_ =>
         {
@@ -175,14 +255,18 @@ public sealed class WeatherOverlay : FrameworkElement
                 U = _random.NextDouble() * 1.3 - 0.3,
                 V = highest + _random.NextDouble() * Math.Max(0.02, lowest - highest),
                 Size = size,
-                Speed = (0.004 + _random.NextDouble() * 0.008) * wind,
+                Speed = 0.004 + _random.NextDouble() * 0.008,
                 Shape = _random.Next(5)
             };
         }).OrderBy(c => c.Size).ToArray();
 
         // A grey sky over the picture's own sky for cloudy weather. It thins out over the buildings so they stay readable.
-        var veilAlpha = w switch { Weather.Cloudy => 0.62, Weather.Fog => 0.7, Weather.Snow => 0.7, Weather.Rain => 0.8, Weather.Storm => 0.88, _ => 0.0 };
-        var veilColour = w == Weather.Fog
+        var veilAlpha = w switch
+        {
+            Weather.Cloudy => 0.62, Weather.Fog => 0.7, Weather.Snow => 0.7, Weather.Blizzard => 0.8,
+            Weather.Rain => 0.8, Weather.HeavyRain => 0.86, Weather.Storm => 0.88, _ => 0.0
+        };
+        var veilColour = hazy
             ? _part == DayPart.Night ? Hex("#2E3442") : Hex("#C9CDD3")
             : _part switch
             {
@@ -190,15 +274,16 @@ public sealed class WeatherOverlay : FrameworkElement
                 DayPart.Evening => Hex("#4D4058"), _ => Hex("#0D111B")
             };
         if (w == Weather.Storm) veilColour = Darken(veilColour, 0.62);
+        if (w == Weather.HeavyRain) veilColour = Darken(veilColour, 0.8);
         _veil = veilAlpha > 0 ? Freeze(new LinearGradientBrush(new GradientStopCollection
         {
             new(WithAlpha(veilColour, veilAlpha), 0),
             new(WithAlpha(veilColour, veilAlpha * 0.95), 0.42),
-            new(WithAlpha(veilColour, veilAlpha * (w == Weather.Fog ? 0.75 : 0.45)), Horizon - 0.05),
-            new(WithAlpha(veilColour, veilAlpha * (w == Weather.Fog ? 0.6 : 0.25)), Horizon + 0.03),
-            new(WithAlpha(veilColour, veilAlpha * (w == Weather.Fog ? 0.45 : 0.18)), 1)
+            new(WithAlpha(veilColour, veilAlpha * (hazy ? 0.75 : 0.45)), Horizon - 0.05),
+            new(WithAlpha(veilColour, veilAlpha * (hazy ? 0.6 : 0.25)), Horizon + 0.03),
+            new(WithAlpha(veilColour, veilAlpha * (hazy ? 0.45 : 0.18)), 1)
         }, 90)) : null;
-        var dimAlpha = w switch { Weather.Storm => 0.22, Weather.Rain => 0.1, _ => 0.0 };
+        var dimAlpha = w switch { Weather.Storm => 0.22, Weather.HeavyRain => 0.16, Weather.Rain => 0.1, _ => 0.0 };
         _dim = dimAlpha > 0 ? Freeze(new SolidColorBrush(WithAlpha(Colors.Black, dimAlpha))) : null;
 
         // Sun or moon glow and rays.
@@ -220,9 +305,26 @@ public sealed class WeatherOverlay : FrameworkElement
             new(WithAlpha(sunColour, 0), 1)
         }));
 
+        // Glitter on the river under the sun or moon, widening towards the bottom.
+        _glints = w is Weather.Clear or Weather.PartlyCloudy or Weather.Wind
+            ? Enumerable.Range(0, _part == DayPart.Night ? 50 : 70).Select(_ =>
+              {
+                  var spread = _random.NextDouble() * 2 - 1;
+                  return new Glint
+                  {
+                      Offset = spread * Math.Abs(spread), V = WaterTop + 0.008 + _random.NextDouble() * (0.99 - WaterTop),
+                      Phase = _random.NextDouble() * 6.28, Rate = 1.5 + _random.NextDouble() * 3, Length = 6 + _random.NextDouble() * 14
+                  };
+              }).ToArray()
+            : [];
+        _glintPen = Freeze(new Pen(new SolidColorBrush(Mix(sunColour, Colors.White, 0.5)), 1.6)
+        {
+            StartLineCap = PenLineCap.Round, EndLineCap = PenLineCap.Round
+        });
+
         // Night sky: stars that twinkle, kept away from the moon.
         var sun = Sun(_part);
-        _stars = _part == DayPart.Night && w is Weather.Clear or Weather.PartlyCloudy
+        _stars = _part == DayPart.Night && w is Weather.Clear or Weather.PartlyCloudy or Weather.Wind
             ? Enumerable.Range(0, 140).Select(_ => new Star
               {
                   U = _random.NextDouble(), V = _random.NextDouble() * 0.6,
@@ -240,73 +342,204 @@ public sealed class WeatherOverlay : FrameworkElement
             StartLineCap = PenLineCap.Round, EndLineCap = PenLineCap.Round, LineJoin = PenLineJoin.Round
         });
 
-        // Rain.
-        var drops = w switch { Weather.Rain => 300, Weather.Storm => 460, _ => 0 };
+        // Rain, ripples on the river, and grey curtains of rain sweeping past in a downpour.
+        var drops = w switch { Weather.Rain => 300, Weather.Storm => 560, Weather.HeavyRain => 720, _ => 0 };
         _drops = Enumerable.Range(0, drops).Select(_ => NewDrop(true)).ToArray();
         var rain = _part == DayPart.Night ? Hex("#8EA3C4") : Hex("#D2E2F2");
-        _rainFar = Freeze(new Pen(new SolidColorBrush(WithAlpha(rain, 0.22)), 0.9));
-        _rainNear = Freeze(new Pen(new SolidColorBrush(WithAlpha(rain, 0.42)), 1.3));
+        var heavy = w is Weather.HeavyRain or Weather.Storm;
+        _rainFar = Freeze(new Pen(new SolidColorBrush(WithAlpha(rain, heavy ? 0.26 : 0.22)), heavy ? 1.0 : 0.9));
+        _rainNear = Freeze(new Pen(new SolidColorBrush(WithAlpha(rain, heavy ? 0.5 : 0.42)), heavy ? 1.5 : 1.3));
+        _splashes.Clear();
+        _splashRate = w switch { Weather.Rain => 25, Weather.Storm => 50, Weather.HeavyRain => 80, _ => 0 };
+        _splashPen = Freeze(new Pen(new SolidColorBrush(WithAlpha(rain, 0.7)), 1));
+        _curtains = heavy
+            ? Enumerable.Range(0, w == Weather.HeavyRain ? 4 : 3).Select(_ => new Band
+              {
+                  U = _random.NextDouble() * 1.4 - 0.4, Width = 0.15 + _random.NextDouble() * 0.25,
+                  Speed = 0.02 + _random.NextDouble() * 0.03, Alpha = 0.5 + _random.NextDouble() * 0.5
+              }).ToArray()
+            : [];
+        var curtain = _part == DayPart.Night ? Hex("#3A4252") : Hex("#B4BCC6");
+        _curtainBrush = Freeze(new LinearGradientBrush(new GradientStopCollection
+        {
+            new(WithAlpha(curtain, 0), 0), new(WithAlpha(curtain, 0.22), 0.5), new(WithAlpha(curtain, 0), 1)
+        }, 0));
+
+        // Lightning: close strikes with a bolt, and distant flickers inside the clouds.
         _flashAge = 99;
         _nextFlash = 1.5 + _random.NextDouble() * 4;
+        _sheetAge = 99;
+        _nextSheet = 0.8 + _random.NextDouble() * 2;
+        _flashBrush = Freeze(new LinearGradientBrush(new GradientStopCollection
+        {
+            new(Color.FromArgb(255, 225, 232, 255), 0), new(Color.FromArgb(180, 225, 232, 255), 0.6),
+            new(Color.FromArgb(90, 225, 232, 255), Horizon), new(Color.FromArgb(130, 225, 232, 255), 1)
+        }, 90));
+        _sheetBrush = Freeze(new RadialGradientBrush(new GradientStopCollection
+        {
+            new(Color.FromArgb(150, 220, 228, 255), 0), new(Color.FromArgb(50, 200, 210, 255), 0.45), new(Color.FromArgb(0, 200, 210, 255), 1)
+        }));
 
-        // Snow.
-        _flakes = w == Weather.Snow
-            ? Enumerable.Range(0, 190).Select(_ =>
-              {
-                  var depth = _random.NextDouble();
-                  return new Flake
-                  {
-                      X = _random.NextDouble() * ActualWidth, Y = _random.NextDouble() * ActualHeight,
-                      Size = 0.9 + depth * 2.0, Speed = 26 + depth * 70, Sway = 8 + _random.NextDouble() * 20, Phase = _random.NextDouble() * 6.28
-                  };
-              }).ToArray()
-            : [];
+        // Snow, a blizzard, or snow dust blown about on a windy winter day.
+        var flakes = w switch { Weather.Snow => 190, Weather.Blizzard => 420, Weather.Wind when winter => 110, _ => 0 };
+        _flakes = Enumerable.Range(0, flakes).Select(_ =>
+        {
+            var depth = _random.NextDouble();
+            return w switch
+            {
+                Weather.Blizzard => new Flake
+                {
+                    X = _random.NextDouble() * ActualWidth, Y = _random.NextDouble() * ActualHeight,
+                    Size = 0.8 + depth * 1.8, Speed = 60 + depth * 140, Sway = 10 + _random.NextDouble() * 30, Phase = _random.NextDouble() * 6.28
+                },
+                Weather.Wind => new Flake
+                {
+                    X = _random.NextDouble() * ActualWidth, Y = _random.NextDouble() * ActualHeight,
+                    Size = 0.6 + depth * 0.8, Speed = 8 + depth * 22, Sway = 20 + _random.NextDouble() * 30, Phase = _random.NextDouble() * 6.28
+                },
+                _ => new Flake
+                {
+                    X = _random.NextDouble() * ActualWidth, Y = _random.NextDouble() * ActualHeight,
+                    Size = 0.9 + depth * 2.0, Speed = 26 + depth * 70, Sway = 8 + _random.NextDouble() * 20, Phase = _random.NextDouble() * 6.28
+                }
+            };
+        }).ToArray();
         _flakeShades = [Freeze(new SolidColorBrush(WithAlpha(Colors.White, 0.5))), Freeze(new SolidColorBrush(WithAlpha(Colors.White, 0.75))), Freeze(new SolidColorBrush(WithAlpha(Colors.White, 0.95)))];
 
-        // Fog banks rolling low over the river.
-        _fog = w == Weather.Fog
-            ? Enumerable.Range(0, 7).Select(i => new Band
-              {
-                  U = _random.NextDouble() * 1.4 - 0.4, V = 0.5 + i * 0.065 + _random.NextDouble() * 0.04,
-                  Width = 0.8 + _random.NextDouble() * 0.7, Height = 0.12 + _random.NextDouble() * 0.1,
-                  Speed = 0.003 + _random.NextDouble() * 0.006, Alpha = 0.55 + _random.NextDouble() * 0.35
-              }).ToArray()
-            : [];
+        // Fog banks rolling low over the river, or gusts of snow racing past in a blizzard.
+        _fog = w switch
+        {
+            Weather.Fog => Enumerable.Range(0, 7).Select(i => new Band
+            {
+                U = _random.NextDouble() * 1.4 - 0.4, V = 0.5 + i * 0.065 + _random.NextDouble() * 0.04,
+                Width = 0.8 + _random.NextDouble() * 0.7, Height = 0.12 + _random.NextDouble() * 0.1,
+                Speed = 0.003 + _random.NextDouble() * 0.006, Alpha = 0.55 + _random.NextDouble() * 0.35
+            }).ToArray(),
+            Weather.Blizzard => Enumerable.Range(0, 6).Select(i => new Band
+            {
+                U = _random.NextDouble() * 1.4 - 0.4, V = 0.25 + i * 0.12 + _random.NextDouble() * 0.05,
+                Width = 0.5 + _random.NextDouble() * 0.5, Height = 0.12 + _random.NextDouble() * 0.12,
+                Speed = 0.03 + _random.NextDouble() * 0.03, Alpha = 0.35 + _random.NextDouble() * 0.3
+            }).ToArray(),
+            _ => []
+        };
+        var fogColour = _part == DayPart.Night ? Hex("#5A6378") : Hex("#E6E9EE");
         _fogBrush = Freeze(new RadialGradientBrush(new GradientStopCollection
         {
-            new(WithAlpha(_part == DayPart.Night ? Hex("#5A6378") : Hex("#E6E9EE"), 0.7), 0),
-            new(WithAlpha(_part == DayPart.Night ? Hex("#5A6378") : Hex("#E6E9EE"), 0.4), 0.5),
-            new(WithAlpha(_part == DayPart.Night ? Hex("#5A6378") : Hex("#E6E9EE"), 0), 1)
+            new(WithAlpha(fogColour, 0.7), 0), new(WithAlpha(fogColour, 0.4), 0.5), new(WithAlpha(fogColour, 0), 1)
         }));
+
+        // Wind streaks: thin lines of moving air.
+        var streaks = w switch { Weather.Wind => 26, Weather.Blizzard => 30, Weather.Storm => 10, Weather.HeavyRain => 6, _ => 0 };
+        _streaks = Enumerable.Range(0, streaks).Select(_ => NewStreak(true)).ToArray();
+        _streakBrush = Freeze(new LinearGradientBrush(new GradientStopCollection
+        {
+            new(Color.FromArgb(0, 255, 255, 255), 0), new(Color.FromArgb(255, 255, 255, 255), 0.5), new(Color.FromArgb(0, 255, 255, 255), 1)
+        }, 0));
+
+        // Leaves tumbling on the wind (not in winter, when there are none left).
+        _leaves = w == Weather.Wind && !winter
+            ? Enumerable.Range(0, 38).Select(_ => new Leaf
+              {
+                  X = _random.NextDouble() * ActualWidth, Y = _random.NextDouble() * ActualHeight * 0.95,
+                  Size = 4.5 + _random.NextDouble() * 4.5, Angle = _random.NextDouble() * 360, Spin = (_random.NextDouble() - 0.5) * 600,
+                  Speed = 260 + _random.NextDouble() * 280, Fall = 12 + _random.NextDouble() * 40, Phase = _random.NextDouble() * 6.28,
+                  Colour = _random.Next(4)
+              }).ToArray()
+            : [];
+        var shadeLeaves = _part switch { DayPart.Night => 0.45, DayPart.Evening => 0.75, _ => 1.0 };
+        _leafBrushes = new[] { "#C8642A", "#E0A030", "#8A3A1E", "#7C8F2E" }
+            .Select(c => (Brush)Freeze(new SolidColorBrush(Darken(Hex(c), shadeLeaves)))).ToArray();
+
+        // Jets: a single fighter every 30 seconds on fair days, the first one soon after the page opens.
+        _jets.Clear();
+        _nextJets = 5;
+        var (body, wing) = _part switch
+        {
+            DayPart.Night => (Hex("#1A1D26"), Hex("#11131A")),
+            DayPart.Evening => (Hex("#2B2233"), Hex("#1E1826")),
+            DayPart.Morning => (Hex("#4A4C5A"), Hex("#363845")),
+            _ => (Hex("#4B525E"), Hex("#363B45"))
+        };
+        _jetBody = Freeze(new SolidColorBrush(body));
+        _jetWing = Freeze(new SolidColorBrush(wing));
     }
+
+    /// <summary>Jets fly in fair weather.</summary>
+    private bool JetsFly => _jetsOn && _weather is Weather.Clear or Weather.PartlyCloudy or Weather.Wind or Weather.Cloudy;
+
+    private void LaunchJets()
+    {
+        _jets.Clear();
+        _jetDirection = _random.NextDouble() < 0.5 ? 1 : -1;
+        _jetSlope = (_random.NextDouble() - 0.5) * 0.06;
+        _jetSpeed = 0.15 + _random.NextDouble() * 0.04;
+        _jets.Add(new Jet { U = _jetDirection > 0 ? -0.08 : 1.08, V = 0.08 + _random.NextDouble() * 0.24, Size = 0.075 });
+    }
+
+    private void StepJets(double seconds)
+    {
+        if (!JetsFly) { _jets.Clear(); return; }
+
+        // A new pass every 30 seconds, counted from the start of the last one.
+        _nextJets -= seconds;
+        if (_jets.Count > 0)
+        {
+            foreach (var jet in _jets)
+            {
+                jet.U += _jetDirection * _jetSpeed * seconds;
+                jet.V += _jetSlope * _jetSpeed * seconds;
+            }
+            if (_jets.All(j => _jetDirection > 0 ? j.U > 1.12 : j.U < -0.12)) _jets.Clear();
+        }
+        else if (_nextJets <= 0)
+        {
+            LaunchJets();
+            _nextJets = JetInterval;
+        }
+    }
+
+    /// <summary>Seconds from one pass to the next. A pass takes under 10 seconds.</summary>
+    internal const double JetInterval = 30;
 
     private RainDrop NewDrop(bool anywhere)
     {
         var near = _random.NextDouble() < 0.35;
-        var storm = _weather == Weather.Storm;
+        var lean = ActualHeight * (0.06 + BaseWind(_weather) * 0.45);
+        var extra = _weather switch { Weather.Storm => 250, Weather.HeavyRain => 200, _ => 0 };
+        var longer = _weather == Weather.HeavyRain ? 1.4 : 1.0;
         return new RainDrop
         {
-            X = _random.NextDouble() * (ActualWidth + 200) - 200,
+            X = _random.NextDouble() * (ActualWidth + lean) - lean,
             Y = anywhere ? _random.NextDouble() * ActualHeight : -40 - _random.NextDouble() * 60,
-            Speed = (near ? 1150 : 820) + _random.NextDouble() * 300 + (storm ? 250 : 0),
-            Length = (near ? 22 : 13) + _random.NextDouble() * 10,
+            Speed = (near ? 1150 : 820) + _random.NextDouble() * 300 + extra,
+            Length = ((near ? 22 : 13) + _random.NextDouble() * 10) * longer,
             Near = near
         };
     }
 
-    // ===== Moving things along =====
+    private Streak NewStreak(bool anywhere) => new()
+    {
+        X = anywhere ? _random.NextDouble() * ActualWidth : -300 - _random.NextDouble() * 400,
+        Y = _random.NextDouble() * ActualHeight * 0.9,
+        Length = 120 + _random.NextDouble() * 260,
+        Speed = 500 + _random.NextDouble() * 500,
+        Phase = _random.NextDouble() * 6.28,
+        Alpha = 0.2 + _random.NextDouble() * 0.3
+    };
 
-    private double Slant => _weather == Weather.Storm ? 0.32 : 0.18;
+    // ===== Moving things along =====
 
     private void Step(double seconds)
     {
         _time += seconds;
+        _gust = Gust(_weather, _time);
         double w = ActualWidth, h = ActualHeight;
 
         for (var i = 0; i < _clouds.Length; i++)
         {
             ref var c = ref _clouds[i];
-            c.U += c.Speed * seconds;
+            c.U += c.Speed * CloudPace * seconds;
             if (c.U > 1.05) { c.U = -c.Size - _random.NextDouble() * 0.2; c.Shape = _random.Next(_cloudShapes.Length); }
         }
 
@@ -318,21 +551,63 @@ public sealed class WeatherOverlay : FrameworkElement
             if (d.Y > h + d.Length || d.X > w + 40) d = NewDrop(false);
         }
 
+        // Ripples where rain hits the river.
+        for (var i = _splashes.Count - 1; i >= 0; i--)
+        {
+            var s = _splashes[i];
+            s.Age += seconds;
+            if (s.Age > SplashLife) _splashes.RemoveAt(i);
+            else _splashes[i] = s;
+        }
+        _splashBudget += _splashRate * seconds;
+        while (_splashBudget >= 1)
+        {
+            _splashBudget--;
+            _splashes.Add(new Splash { U = _random.NextDouble(), V = Horizon + 0.015 + _random.NextDouble() * (0.99 - Horizon - 0.015) });
+        }
+
+        for (var i = 0; i < _curtains.Length; i++)
+        {
+            ref var c = ref _curtains[i];
+            c.U += c.Speed * CloudPace * seconds;
+            if (c.U > 1.2) c.U = -c.Width - 0.2 - _random.NextDouble() * 0.3;
+        }
+
+        var drift = _weather == Weather.Blizzard ? 120 + _gust * 260 : 10 + _gust * 140;
         for (var i = 0; i < _flakes.Length; i++)
         {
             ref var f = ref _flakes[i];
             f.Y += f.Speed * seconds;
             f.Phase += seconds;
-            f.X += (Math.Sin(f.Phase * 0.9) * f.Sway + 10) * seconds;
+            f.X += (Math.Sin(f.Phase * 0.9) * f.Sway + drift) * seconds;
             if (f.Y > h + f.Size) { f.Y = -f.Size; f.X = _random.NextDouble() * w; }
-            if (f.X > w + f.Size) f.X = -f.Size;
+            if (f.X > w + f.Size) { f.X = -f.Size; f.Y = _random.NextDouble() * h; }
         }
 
         for (var i = 0; i < _fog.Length; i++)
         {
             ref var b = ref _fog[i];
-            b.U += b.Speed * seconds;
+            b.U += b.Speed * (_weather == Weather.Blizzard ? CloudPace : 1) * seconds;
             if (b.U > 1.1) b.U = -b.Width - 0.1;
+        }
+
+        for (var i = 0; i < _streaks.Length; i++)
+        {
+            ref var s = ref _streaks[i];
+            s.X += s.Speed * (0.4 + _gust * 0.6) * seconds;
+            s.Phase += seconds * 2.2;
+            if (s.X > w + 20) s = NewStreak(false);
+        }
+
+        for (var i = 0; i < _leaves.Length; i++)
+        {
+            ref var l = ref _leaves[i];
+            l.Phase += seconds * 3;
+            l.X += l.Speed * (0.3 + _gust * 0.6) * seconds;
+            l.Y += (l.Fall + Math.Sin(l.Phase) * 60) * seconds;
+            l.Angle += l.Spin * (0.5 + _gust) * seconds;
+            if (l.X > w + 20) { l.X = -20 - _random.NextDouble() * 200; l.Y = _random.NextDouble() * h * 0.9; }
+            if (l.Y > h + 20) { l.Y = -20; l.X = _random.NextDouble() * w; }
         }
 
         // Birds: a small flock now and then on fair days.
@@ -368,29 +643,59 @@ public sealed class WeatherOverlay : FrameworkElement
             _nextShooting = 6 + _random.NextDouble() * 12;
         }
 
-        // Lightning in storms.
+        StepJets(seconds);
+
+        // Lightning in storms: a strike every few seconds, and flickers deep in the clouds in between.
         _flashAge += seconds;
-        if (_weather == Weather.Storm && (_nextFlash -= seconds) <= 0)
+        _sheetAge += seconds;
+        if (_weather == Weather.Storm)
         {
-            _flashAge = 0;
-            _bolt = MakeBolt();
-            _nextFlash = 4 + _random.NextDouble() * 8;
+            if ((_nextFlash -= seconds) <= 0)
+            {
+                _flashAge = 0;
+                _bolt = MakeBolt();
+                _nextFlash = 3.5 + _random.NextDouble() * 7;
+            }
+            if ((_nextSheet -= seconds) <= 0)
+            {
+                _sheetAge = 0;
+                _sheetAt = new Point(0.08 + _random.NextDouble() * 0.84, 0.04 + _random.NextDouble() * 0.3);
+                _nextSheet = 1.2 + _random.NextDouble() * 3.5;
+            }
         }
     }
 
-    private Point[] MakeBolt()
+    /// <summary>A jagged bolt from the clouds down to the skyline, with a few forks off it.</summary>
+    private Point[][] MakeBolt()
     {
-        var points = new List<Point>();
-        var u = 0.25 + _random.NextDouble() * 0.7;
+        var main = new List<Point>();
+        var u = 0.2 + _random.NextDouble() * 0.75;
         var v = -0.02;
-        points.Add(new Point(u, v));
+        main.Add(new Point(u, v));
         while (v < 0.62)
         {
-            v += 0.035 + _random.NextDouble() * 0.05;
+            v += 0.03 + _random.NextDouble() * 0.045;
             u += (_random.NextDouble() - 0.5) * 0.05;
-            points.Add(new Point(u, v));
+            main.Add(new Point(u, v));
         }
-        return points.ToArray();
+
+        var bolts = new List<Point[]> { main.ToArray() };
+        var forks = 2 + _random.Next(3);
+        for (var f = 0; f < forks; f++)
+        {
+            var from = main[1 + _random.Next(Math.Max(1, main.Count - 4))];
+            var side = _random.NextDouble() < 0.5 ? -1 : 1;
+            var fork = new List<Point> { from };
+            double fu = from.X, fv = from.Y;
+            for (var k = 0; k < 3 + _random.Next(3); k++)
+            {
+                fv += 0.025 + _random.NextDouble() * 0.035;
+                fu += side * (0.012 + _random.NextDouble() * 0.025);
+                fork.Add(new Point(fu, fv));
+            }
+            bolts.Add(fork.ToArray());
+        }
+        return bolts.ToArray();
     }
 
     /// <summary>How bright a lightning flash is, a moment after it struck: a strike, a flicker and a fade.</summary>
@@ -415,6 +720,7 @@ public sealed class WeatherOverlay : FrameworkElement
         dc.PushClip(new RectangleGeometry(bounds));
         var pic = Picture();
 
+        DrawWater(dc, pic, bounds);
         if (_dim is not null) dc.DrawRectangle(_dim, null, bounds);
         if (_veil is not null) dc.DrawRectangle(_veil, null, pic);
 
@@ -422,17 +728,80 @@ public sealed class WeatherOverlay : FrameworkElement
         DrawSun(dc, pic);
         DrawBirds(dc, pic);
         DrawClouds(dc, pic);
+        DrawJets(dc, pic);
+        DrawSheetLightning(dc, pic);
+        DrawCurtains(dc, pic);
         DrawFog(dc, pic);
         DrawLightning(dc, pic, bounds);
         DrawRain(dc);
+        DrawSplashes(dc, pic);
+        DrawStreaks(dc);
+        DrawLeaves(dc);
         DrawSnow(dc);
 
         dc.Pop();
     }
 
+    /// <summary>
+    /// The river: the picture's own water is redrawn in thin strips, each nudged sideways by a travelling wave,
+    /// so the reflections wobble. Waves are bigger near the bottom (closer to you) and in strong wind.
+    /// </summary>
+    private void DrawWater(DrawingContext dc, Rect pic, Rect bounds)
+    {
+        var image = Backdrop;
+        if (image is null) return;
+
+        var top = Math.Max(bounds.Top, pic.Y + WaterTop * pic.Height);
+        var bottom = Math.Min(bounds.Bottom, pic.Bottom);
+        if (bottom <= top) return;
+
+        var strip = Math.Max(1.5, pic.Height * 0.003);
+        var scale = pic.Height / 1080 * 1.6;
+        var wind = 0.6 + _gust * 0.7;
+        for (var y = top; y < bottom; y += strip)
+        {
+            var v = (y - pic.Y) / pic.Height;
+            var (dx, dy) = Ripple(v, _time, wind, scale);
+            dc.PushClip(new RectangleGeometry(new Rect(bounds.X, y, bounds.Width, strip + 0.6)));
+            dc.DrawImage(image, new Rect(pic.X + dx, pic.Y + dy, pic.Width, pic.Height));
+            dc.Pop();
+        }
+
+        DrawGlints(dc, pic, scale);
+    }
+
+    /// <summary>How far a strip of river at height v (0–1 in the picture) is moved, at a moment. Calm at the bank, livelier further down.</summary>
+    internal static (double Dx, double Dy) Ripple(double v, double time, double wind, double scale)
+    {
+        var depth = Math.Clamp((v - WaterTop) / (1 - WaterTop), 0, 1);
+        var amplitude = (0.5 + depth * 4) * scale * Math.Min(wind, 1.5);
+        var wave = 0.6 * Math.Sin(v * 260 - time * 1.7 * wind) + 0.4 * Math.Sin(v * 113 + time * 1.15 + depth * 3);
+        var bob = Math.Sin(v * 190 - time * 2.1);
+        return (amplitude * wave, amplitude * 0.25 * bob);
+    }
+
+    private void DrawGlints(DrawingContext dc, Rect pic, double scale)
+    {
+        if (_glints.Length == 0 || _glintPen is null) return;
+        var sunU = Sun(_part).U;
+        var strength = (_part == DayPart.Night ? 0.55 : 0.9) * (_weather == Weather.PartlyCloudy ? 0.7 : 1);
+        foreach (var g in _glints)
+        {
+            var depth = (g.V - WaterTop) / (1 - WaterTop);
+            var u = sunU + g.Offset * (0.03 + depth * 0.13) + Math.Sin(_time * 0.6 + g.Phase) * 0.004;
+            var twinkle = Math.Max(0, Math.Sin(_time * g.Rate + g.Phase));
+            if (twinkle < 0.05) continue;
+            var at = At(pic, u, g.V);
+            var half = g.Length * (0.5 + depth) * scale * 0.5 * (0.6 + 0.4 * twinkle);
+            dc.PushOpacity(strength * twinkle * twinkle * twinkle);
+            dc.DrawLine(_glintPen, new Point(at.X - half, at.Y), new Point(at.X + half, at.Y));
+            dc.Pop();
+        }
+    }
+
     private void DrawSun(DrawingContext dc, Rect pic)
     {
-        if (_weather is not (Weather.Clear or Weather.PartlyCloudy)) return;
+        if (_weather is not (Weather.Clear or Weather.PartlyCloudy or Weather.Wind)) return;
         var (u, v, r) = Sun(_part);
         var centre = At(pic, u, v);
         var radius = r * pic.Height;
@@ -546,6 +915,110 @@ public sealed class WeatherOverlay : FrameworkElement
         dc.Pop();
     }
 
+    // ===== Jets =====
+
+    /// <summary>
+    /// A side view of a modern twin-tail fighter (in the spirit of the Su-57), nose towards +x, 100 units long.
+    /// Body, the far wing and tailplane are separate so they can be shaded a little differently.
+    /// </summary>
+    private static readonly Point[] JetBody =
+    [
+        new(100, 0), new(90, -2.2), new(80, -3.6), new(74, -6.8), new(68, -7.6), new(61, -5.6), new(44, -4.6),
+        new(30, -4.8), new(19, -17), new(13, -17.5), new(10, -5), new(4, -4.4), new(0, -2.6), new(0, 2.2),
+        new(7, 3.4), new(30, 4.4), new(58, 4.6), new(70, 3.4), new(86, 2.2)
+    ];
+
+    private static readonly Point[] JetWing = [new(64, 1), new(36, 2.4), new(22, 8.6), new(31, 8.6), new(60, 3)];
+
+    private static readonly Point[] JetTail = [new(16, 1.2), new(3, 6), new(9, 6.4), new(22, 2.4)];
+
+    private static readonly Point[] Su57Canopy = [new(74, -6.4), new(68, -7.2), new(63, -5.4), new(72, -4.6)];
+
+    private void DrawJets(DrawingContext dc, Rect pic)
+    {
+        if (_jets.Count == 0 || _jetBody is null) return;
+
+        foreach (var jet in _jets)
+        {
+            var tail = At(pic, jet.U - _jetDirection * jet.Size * 0.5 / PictureAspect, jet.V + 0.004);
+            if (_part is DayPart.Morning or DayPart.Afternoon)
+            {
+                // A short, thin condensation trail behind a single jet.
+                var back = At(pic, jet.U - _jetDirection * 0.22, jet.V - _jetSlope * 0.22);
+                var brush = new LinearGradientBrush(Color.FromArgb(0, 255, 255, 255), Color.FromArgb(120, 255, 255, 255), back, tail)
+                    { MappingMode = BrushMappingMode.Absolute };
+                dc.DrawLine(new Pen(brush, 1.6 * pic.Height / 1080 * 1.4), back, tail);
+            }
+        }
+
+        foreach (var jet in _jets)
+        {
+            var centre = At(pic, jet.U, jet.V);
+            var length = jet.Size * pic.Height;
+            var scale = length / 100;
+            var angle = Math.Atan(_jetSlope) * 180 / Math.PI;
+            dc.PushTransform(new TranslateTransform(centre.X, centre.Y));
+            dc.PushTransform(new RotateTransform(_jetDirection > 0 ? angle : -angle));
+            dc.PushTransform(new ScaleTransform(_jetDirection * scale, scale));
+            dc.PushTransform(new TranslateTransform(-50, 0));
+            dc.DrawGeometry(_jetWing, null, Polygon(JetTail));
+            dc.DrawGeometry(_jetBody, null, Polygon(JetBody));
+            dc.DrawGeometry(_jetWing, null, Polygon(JetWing));
+            // Cockpit glint and the engine glow.
+            dc.DrawGeometry(new SolidColorBrush(Color.FromArgb(_part == DayPart.Night ? (byte)60 : (byte)110, 170, 200, 230)), null,
+                Polygon(Su57Canopy));
+            if (_part is DayPart.Evening or DayPart.Night)
+                dc.DrawEllipse(new SolidColorBrush(Color.FromArgb(150, 255, 150, 70)), null, new Point(-0.5, -0.2), 2.4, 1.8);
+            if (_part == DayPart.Night)
+            {
+                // Navigation lights: red, green and a white strobe that blinks once a second.
+                dc.DrawEllipse(Brushes.Red, null, new Point(26, 8.2), 1.4, 1.4);
+                dc.DrawEllipse(Brushes.LimeGreen, null, new Point(30, 7.8), 1.2, 1.2);
+                if (_time % 1.0 < 0.12) dc.DrawEllipse(Brushes.White, null, new Point(15, -17.6), 2.2, 2.2);
+            }
+            dc.Pop(); dc.Pop(); dc.Pop(); dc.Pop();
+        }
+    }
+
+    private static StreamGeometry Polygon(IReadOnlyList<Point> points)
+    {
+        var geometry = new StreamGeometry();
+        using (var g = geometry.Open())
+        {
+            g.BeginFigure(points[0], true, true);
+            for (var i = 1; i < points.Count; i++) g.LineTo(points[i], false, true);
+        }
+        geometry.Freeze();
+        return geometry;
+    }
+
+    private void DrawSheetLightning(DrawingContext dc, Rect pic)
+    {
+        var flash = Flash(_sheetAge);
+        if (flash <= 0.01) return;
+        var at = At(pic, _sheetAt.X, _sheetAt.Y);
+        var r = pic.Width * 0.22;
+        dc.PushOpacity(flash * 0.7);
+        dc.DrawEllipse(_sheetBrush, null, at, r, r * 0.6);
+        dc.Pop();
+    }
+
+    private void DrawCurtains(DrawingContext dc, Rect pic)
+    {
+        if (_curtains.Length == 0) return;
+        var lean = Math.Atan(Slant) * 180 / Math.PI;
+        foreach (var c in _curtains)
+        {
+            var left = At(pic, c.U, 0);
+            var rect = new Rect(left.X, pic.Y, c.Width * pic.Width, pic.Height);
+            dc.PushTransform(new SkewTransform(lean, 0, rect.X, rect.Y));
+            dc.PushOpacity(c.Alpha * (0.8 + 0.2 * Math.Sin(_time * 0.8 + c.Width * 10)));
+            dc.DrawRectangle(_curtainBrush, null, rect);
+            dc.Pop();
+            dc.Pop();
+        }
+    }
+
     private void DrawFog(DrawingContext dc, Rect pic)
     {
         foreach (var band in _fog)
@@ -562,23 +1035,25 @@ public sealed class WeatherOverlay : FrameworkElement
         var flash = Flash(_flashAge);
         if (flash <= 0.01) return;
 
-        dc.DrawRectangle(new SolidColorBrush(Color.FromArgb((byte)(flash * 75), 225, 232, 255)), null, bounds);
-        if (_flashAge > 0.35 || _bolt.Length < 2) return;
+        // The sky lights up most, the river catches some of it.
+        dc.PushOpacity(flash * 0.32);
+        dc.DrawRectangle(_flashBrush, null, bounds);
+        dc.Pop();
+        if (_flashAge > 0.35 || _bolt.Length == 0) return;
 
         var geometry = new StreamGeometry();
         using (var g = geometry.Open())
         {
-            g.BeginFigure(At(pic, _bolt[0].X, _bolt[0].Y), false, false);
-            foreach (var point in _bolt.Skip(1)) g.LineTo(At(pic, point.X, point.Y), true, true);
-            // One short branch off the middle.
-            var mid = _bolt[_bolt.Length / 2];
-            g.BeginFigure(At(pic, mid.X, mid.Y), false, false);
-            g.LineTo(At(pic, mid.X + 0.04, mid.Y + 0.07), true, true);
-            g.LineTo(At(pic, mid.X + 0.06, mid.Y + 0.12), true, true);
+            foreach (var line in _bolt)
+            {
+                g.BeginFigure(At(pic, line[0].X, line[0].Y), false, false);
+                foreach (var point in line.Skip(1)) g.LineTo(At(pic, point.X, point.Y), true, true);
+            }
         }
         geometry.Freeze();
         dc.PushOpacity(Math.Min(1, flash * 1.3));
-        dc.DrawGeometry(null, new Pen(new SolidColorBrush(Color.FromArgb(70, 180, 200, 255)), 9) { LineJoin = PenLineJoin.Round }, geometry);
+        dc.DrawGeometry(null, new Pen(new SolidColorBrush(Color.FromArgb(60, 170, 190, 255)), 14) { LineJoin = PenLineJoin.Round }, geometry);
+        dc.DrawGeometry(null, new Pen(new SolidColorBrush(Color.FromArgb(110, 200, 215, 255)), 6) { LineJoin = PenLineJoin.Round }, geometry);
         dc.DrawGeometry(null, new Pen(Brushes.White, 2.2) { LineJoin = PenLineJoin.Round }, geometry);
         dc.Pop();
     }
@@ -603,10 +1078,58 @@ public sealed class WeatherOverlay : FrameworkElement
         }
     }
 
+    private void DrawSplashes(DrawingContext dc, Rect pic)
+    {
+        if (_splashes.Count == 0 || _splashPen is null) return;
+        var scale = pic.Height / 1080;
+        foreach (var s in _splashes)
+        {
+            var t = s.Age / SplashLife;
+            var depth = (s.V - Horizon) / (1 - Horizon); // ripples nearer the bottom look bigger
+            var r = (2 + t * 14) * (0.6 + depth) * scale * 1.4;
+            dc.PushOpacity((1 - t) * 0.55);
+            dc.DrawEllipse(null, _splashPen, At(pic, s.U, s.V), r, r * 0.28);
+            dc.Pop();
+        }
+    }
+
+    private void DrawStreaks(DrawingContext dc)
+    {
+        foreach (var s in _streaks)
+        {
+            var bend = Math.Sin(s.Phase) * 10;
+            var geometry = new StreamGeometry();
+            using (var g = geometry.Open())
+            {
+                g.BeginFigure(new Point(s.X, s.Y), false, false);
+                g.BezierTo(new Point(s.X + s.Length * 0.33, s.Y - bend), new Point(s.X + s.Length * 0.66, s.Y + bend),
+                    new Point(s.X + s.Length, s.Y + Math.Sin(s.Phase + 1) * 6), true, true);
+            }
+            geometry.Freeze();
+            dc.PushOpacity(s.Alpha * (0.6 + _gust * 0.4));
+            dc.DrawGeometry(null, new Pen(_streakBrush, 1.8) { StartLineCap = PenLineCap.Round, EndLineCap = PenLineCap.Round }, geometry);
+            dc.Pop();
+        }
+    }
+
+    private void DrawLeaves(DrawingContext dc)
+    {
+        foreach (var l in _leaves)
+        {
+            // Squashing the width as it turns makes it look like it's tumbling.
+            var flip = 0.25 + 0.75 * Math.Abs(Math.Cos(l.Phase * 1.3));
+            dc.PushTransform(new RotateTransform(l.Angle, l.X, l.Y));
+            dc.DrawEllipse(_leafBrushes[l.Colour], null, new Point(l.X, l.Y), l.Size * 1.5 * flip, l.Size * 0.7);
+            dc.Pop();
+        }
+    }
+
     private void DrawSnow(DrawingContext dc)
     {
+        // In a blizzard the flakes smear sideways with the wind.
+        var stretch = _weather == Weather.Blizzard ? 1 + _gust * 1.4 : 1;
         foreach (var f in _flakes)
-            dc.DrawEllipse(_flakeShades[f.Size < 1.5 ? 0 : f.Size < 2.3 ? 1 : 2], null, new Point(f.X, f.Y), f.Size, f.Size);
+            dc.DrawEllipse(_flakeShades[f.Size < 1.5 ? 0 : f.Size < 2.3 ? 1 : 2], null, new Point(f.X, f.Y), f.Size * stretch, f.Size);
     }
 
     // ===== Cloud pictures =====

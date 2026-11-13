@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.IO;
 using System.Net.Http;
 using System.Windows;
@@ -25,6 +25,20 @@ public sealed class InstallationItem(RobloxInstallation installation, bool isUse
     public bool CanRemove => Installation.Source == InstallationSource.Nexstrap;
 }
 
+/// <summary>A recent game on the Home dashboard, with its picture once loaded.</summary>
+public sealed partial class HomeGameTile(long placeId, string name, string detail) : ObservableObject
+{
+    public long PlaceId { get; } = placeId;
+
+    public string Detail { get; } = detail;
+
+    [ObservableProperty]
+    private string _name = name;
+
+    [ObservableProperty]
+    private string? _iconUrl;
+}
+
 public sealed partial class HomeViewModel : PageViewModel
 {
     private const int MaxRecent = 6;
@@ -49,8 +63,9 @@ public sealed partial class HomeViewModel : PageViewModel
     public HomeViewModel(IRobloxClientService client, ILaunchCoordinator coordinator, IExperienceInfoService experiences,
         IUpdateService updates, ISettingsService settings, IAppearanceService appearance, IDialogService dialogs,
         IShellService shell, IRobloxSessionService session, IUpdateInstaller installer, ILastServerService lastServer, ILogger<HomeViewModel> logger,
-        StudioViewModel studio)
+        StudioViewModel studio, IPlayHistoryService history)
     {
+        _history = history;
         Studio = studio;
         _installer = installer;
         _lastServer = lastServer;
@@ -80,6 +95,71 @@ public sealed partial class HomeViewModel : PageViewModel
 
     public StudioViewModel Studio { get; }
 
+    // ===== Dashboard (the new DEV look) =====
+
+    private readonly IPlayHistoryService _history;
+
+    /// <summary>The new Home dashboard is DEV only for now.</summary>
+    public bool ShowDashboard => NewLook.HomeDashboard;
+
+    [ObservableProperty]
+    private string _todayText = "";
+
+    [ObservableProperty]
+    private string _streakText = "";
+
+    [ObservableProperty]
+    private string _totalText = "";
+
+    /// <summary>Recent games as picture tiles; the pictures load in the background.</summary>
+    public ObservableCollection<HomeGameTile> GameTiles { get; } = [];
+
+    public bool HasGameTiles => GameTiles.Count > 0;
+
+    private void RefreshDashboard()
+    {
+        var sessions = _history.Sessions;
+        var now = DateTime.Now;
+        var today = PlayStats.LastDays(sessions, now, 1).FirstOrDefault()?.Seconds ?? 0;
+        TodayText = PlayHistoryService.FormatDuration(today);
+        StreakText = Loc.Format("Stats.DaysValue", PlayStats.Streaks(sessions, now).Current);
+        TotalText = PlayHistoryService.FormatDuration(_history.TotalSeconds);
+
+        var wanted = _settings.Current.Launcher.RecentExperiences.Take(MaxTiles).ToList();
+        if (GameTiles.Select(t => t.PlaceId).SequenceEqual(wanted.Select(r => r.PlaceId))) return;
+        GameTiles.Clear();
+        foreach (var recent in wanted)
+        {
+            var played = _history.Games.Where(g => g.PlaceId == recent.PlaceId).Sum(g => g.Seconds);
+            GameTiles.Add(new HomeGameTile(recent.PlaceId, recent.Name,
+                played > 0 ? Loc.Format("Home.Tile.Played", PlayHistoryService.FormatDuration(played)) : Loc.Get("Home.Tile.New")));
+        }
+        OnPropertyChanged(nameof(HasGameTiles));
+        _ = LoadTilePicturesAsync(GameTiles.ToList());
+    }
+
+    private const int MaxTiles = 4;
+
+    private async Task LoadTilePicturesAsync(IReadOnlyList<HomeGameTile> tiles)
+    {
+        foreach (var tile in tiles)
+        {
+            try
+            {
+                if (await _experiences.LookupAsync(tile.PlaceId) is not { } info) continue;
+                tile.Name = info.Name;
+                tile.IconUrl = await _experiences.GetIconUrlAsync(info.UniverseId);
+            }
+            catch (Exception ex) when (ex is HttpRequestException or System.Text.Json.JsonException or TaskCanceledException)
+            {
+                return; // offline: tiles keep their saved names and a placeholder
+            }
+        }
+    }
+
+    [RelayCommand]
+    private Task PlayTileAsync(HomeGameTile tile) => JoinPlaceAsync(tile.PlaceId, tile.Name);
+
     public bool CanRejoin => _lastServer.Available is not null;
 
     public string? RejoinName => _lastServer.Available is { } server
@@ -105,12 +185,12 @@ public sealed partial class HomeViewModel : PageViewModel
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(StatusTitle), nameof(IsBusy))]
-    [NotifyCanExecuteChangedFor(nameof(PlayCommand), nameof(JoinCommand), nameof(InstallCommand), nameof(RefreshCommand))]
+    [NotifyCanExecuteChangedFor(nameof(PlayCommand), nameof(JoinCommand), nameof(InstallCommand), nameof(RefreshCommand), nameof(RepairInstallationCommand))]
     private bool _isScanning;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsBusy))]
-    [NotifyCanExecuteChangedFor(nameof(PlayCommand), nameof(JoinCommand), nameof(InstallCommand), nameof(RefreshCommand), nameof(RemoveInstallationCommand))]
+    [NotifyCanExecuteChangedFor(nameof(PlayCommand), nameof(JoinCommand), nameof(InstallCommand), nameof(RefreshCommand), nameof(RemoveInstallationCommand), nameof(RepairInstallationCommand))]
     private bool _isInstalling;
 
     [ObservableProperty]
@@ -266,6 +346,7 @@ public sealed partial class HomeViewModel : PageViewModel
     public override void OnNavigatedTo()
     {
         OnPropertyChanged(nameof(Title));
+        if (ShowDashboard) RefreshDashboard();
         if (_initialised) return;
         _initialised = true;
 
@@ -368,6 +449,57 @@ public sealed partial class HomeViewModel : PageViewModel
 
     [RelayCommand]
     private void CancelInstall() => _installCts?.Cancel();
+
+    /// <summary>Only Nexstrap's own builds can be repaired; other launchers' builds are never changed.</summary>
+    private bool CanRepairInstallation(InstallationItem? item) => item?.CanRemove == true && !IsBusy;
+
+    [RelayCommand(CanExecute = nameof(CanRepairInstallation))]
+    private async Task RepairInstallationAsync(InstallationItem item)
+    {
+        if (!_dialogs.Confirm(Loc.Get("Home.Repair.Title"), Loc.Format("Home.Repair.Text", item.Installation.DisplayVersion), Loc.Get("Home.Repair")))
+            return;
+
+        IsInstalling = true;
+        InstallFraction = 0;
+        InstallStage = Loc.Get("Home.Repairing");
+        InstallDetail = "";
+        _installCts = new CancellationTokenSource();
+        var progress = new Progress<InstallProgress>(p =>
+        {
+            InstallStage = Loc.Get("Home.Repairing");
+            InstallFraction = p.Fraction;
+            InstallDetail = p.BytesTotal > 0 ? $"{FormatBytes(p.BytesDone)} of {FormatBytes(p.BytesTotal)}" : "";
+        });
+
+        try
+        {
+            var repaired = await _client.RepairAsync(item.Installation, progress, _installCts.Token);
+            LaunchMessage = Loc.Format("Home.Repair.Done", repaired.DisplayVersion);
+        }
+        catch (OperationCanceledException)
+        {
+            LaunchMessage = Loc.Get("Home.Repair.Cancelled");
+        }
+        catch (InvalidOperationException ex)
+        {
+            _dialogs.Show(Loc.Get("Home.Repair.Failed"), ex.Message, DialogKind.Warning);
+        }
+        catch (InstallException ex)
+        {
+            _dialogs.Show(Loc.Get("Home.Repair.Failed"), ex.Message, DialogKind.Error, ex.InnerException?.ToString());
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or HttpRequestException)
+        {
+            _logger.LogError(ex, "Repair failed");
+            _dialogs.Show(Loc.Get("Home.Repair.Failed"), Loc.Get("Home.AFileOrNetworkErrorStopped") + ex.Message, DialogKind.Error, ex.ToString());
+        }
+        finally
+        {
+            _installCts?.Dispose();
+            _installCts = null;
+            IsInstalling = false;
+        }
+    }
 
     [RelayCommand]
     private void UseForPlay(InstallationItem item) => _client.SetPreferred(item.Installation);

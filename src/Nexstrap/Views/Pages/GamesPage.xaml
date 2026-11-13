@@ -21,6 +21,9 @@
                         <Button Style="{StaticResource Button.Icon}" Content="&#xE71B;" FontFamily="{StaticResource Font.Icons}" ToolTip="{DynamicResource L.Games.CreateDesktopShortcut}"
                                 AutomationProperties.Name="{Binding Name, StringFormat='Shortcut for {0}'}"
                                 Command="{Binding DataContext.CreateShortcutCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" />
+                        <Button Style="{StaticResource Button.Icon}" Content="&#xE70B;" FontFamily="{StaticResource Font.Icons}" ToolTip="{DynamicResource L.Games.Note}"
+                                AutomationProperties.Name="{Binding Name, StringFormat='Note for {0}'}"
+                                Command="{Binding DataContext.EditNoteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" />
                         <Button Style="{StaticResource Button.Icon}" Content="&#xE713;" FontFamily="{StaticResource Font.Icons}" ToolTip="{DynamicResource L.Games.Profile.Add}"
                                 AutomationProperties.Name="{Binding Name, StringFormat='Profile for {0}'}"
                                 Command="{Binding DataContext.AddProfileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" />
@@ -49,10 +52,144 @@
                                    Visibility="{Binding Creator, Converter={StaticResource NullToVisibility}}" />
                         <TextBlock Text="{Binding PlayedText}" Style="{StaticResource Text.Caption}" Margin="0,2,0,0"
                                    Visibility="{Binding PlayedText, Converter={StaticResource NullToVisibility}}" />
+                        <DockPanel Margin="0,4,0,0" Visibility="{Binding ShowsNote, Converter={StaticResource BoolToVisibility}}">
+                            <TextBlock DockPanel.Dock="Left" Text="&#xE70B;" Style="{StaticResource Text.Icon}" FontSize="11" Foreground="{DynamicResource Brush.Accent}" Margin="0,2,6,0" VerticalAlignment="Top" />
+                            <TextBlock Text="{Binding Note}" Style="{StaticResource Text.Caption}" Foreground="{DynamicResource Brush.TextSecondary}" TextWrapping="Wrap" />
+                        </DockPanel>
+                        <TextBox Margin="0,6,0,0" MaxLength="200" Text="{Binding Note, UpdateSourceTrigger=PropertyChanged}" ui:Ui.Placeholder="{DynamicResource L.Games.Note.Placeholder}"
+                                 AutomationProperties.Name="{DynamicResource L.Games.Note}"
+                                 Visibility="{Binding IsEditingNote, Converter={StaticResource BoolToVisibility}}">
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Enter" Command="{Binding DataContext.EditNoteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" />
+                            </TextBox.InputBindings>
+                        </TextBox>
                     </StackPanel>
                 </DockPanel>
             </Border>
         </DataTemplate>
+
+        <!-- The new look (DEV only for now): a picture card per game, three to a row -->
+        <DataTemplate x:Key="GameCard" DataType="{x:Type vm:GameItem}">
+            <Border x:Name="Bd" Style="{StaticResource Card}" Padding="0" Margin="5" ClipToBounds="True">
+                <Border.RenderTransform>
+                    <TranslateTransform x:Name="Lift" />
+                </Border.RenderTransform>
+                <StackPanel>
+                    <!-- Picture, with Play on top of it -->
+                    <Grid Height="132">
+                        <Border Background="{DynamicResource Brush.Hover}" CornerRadius="11,11,0,0" ClipToBounds="True">
+                            <Grid>
+                                <TextBlock Text="&#xE7FC;" Style="{StaticResource Text.Icon}" FontSize="30" Opacity="0.35" />
+                                <Image Source="{Binding IconUrl, TargetNullValue={x:Null}}" Stretch="UniformToFill" RenderOptions.BitmapScalingMode="HighQuality" />
+                                <Border VerticalAlignment="Bottom" Height="60">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                            <GradientStop Offset="0" Color="#00000000" />
+                                            <GradientStop Offset="1" Color="#99000000" />
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                </Border>
+                            </Grid>
+                        </Border>
+                        <Button Style="{StaticResource Button.Primary}" Content="{DynamicResource L.Games.Play}" ui:Ui.Icon="&#xE768;" Padding="14,6"
+                                HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10"
+                                AutomationProperties.Name="{Binding Name, StringFormat='Play {0}'}"
+                                Command="{Binding DataContext.PlayCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" />
+                        <Button FontFamily="{StaticResource Font.Icons}" ToolTip="{DynamicResource L.Games.Favorite}" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="6"
+                                AutomationProperties.Name="{Binding Name, StringFormat='Favorite {0}'}"
+                                Command="{Binding DataContext.ToggleFavoriteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource Button.Icon}">
+                                    <Setter Property="Content" Value="&#xE734;" />
+                                    <Setter Property="Foreground" Value="White" />
+                                    <Setter Property="Background" Value="#66000000" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsFavorite}" Value="True">
+                                            <Setter Property="Content" Value="&#xE735;" />
+                                            <Setter Property="Foreground" Value="#FFD54A" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </Grid>
+
+                    <!-- Name, details, note -->
+                    <StackPanel Margin="12,10,12,4">
+                        <TextBlock Text="{Binding Name}" Style="{StaticResource Text.Base}" FontWeight="SemiBold" FontSize="13.5" TextTrimming="CharacterEllipsis" ToolTip="{Binding Name}" />
+                        <TextBlock Text="{Binding Creator, Converter={StaticResource LocFormat}, ConverterParameter=Format.By}" Style="{StaticResource Text.Caption}" Margin="0,2,0,0"
+                                   TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Visibility="{Binding Creator, Converter={StaticResource NullToVisibility}}" />
+                        <TextBlock Text="{Binding PlayedText}" Style="{StaticResource Text.Caption}" Margin="0,2,0,0" Foreground="{DynamicResource Brush.Accent}"
+                                   Visibility="{Binding PlayedText, Converter={StaticResource NullToVisibility}}" />
+                        <DockPanel Margin="0,5,0,0" Visibility="{Binding ShowsNote, Converter={StaticResource BoolToVisibility}}">
+                            <TextBlock DockPanel.Dock="Left" Text="&#xE70B;" Style="{StaticResource Text.Icon}" FontSize="11" Foreground="{DynamicResource Brush.Accent}" Margin="0,2,6,0" VerticalAlignment="Top" />
+                            <TextBlock Text="{Binding Note}" Style="{StaticResource Text.Caption}" Foreground="{DynamicResource Brush.TextSecondary}" TextWrapping="Wrap" />
+                        </DockPanel>
+                        <TextBox Margin="0,6,0,0" MaxLength="200" Text="{Binding Note, UpdateSourceTrigger=PropertyChanged}" ui:Ui.Placeholder="{DynamicResource L.Games.Note.Placeholder}"
+                                 AutomationProperties.Name="{DynamicResource L.Games.Note}"
+                                 Visibility="{Binding IsEditingNote, Converter={StaticResource BoolToVisibility}}">
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Enter" Command="{Binding DataContext.EditNoteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" />
+                            </TextBox.InputBindings>
+                        </TextBox>
+                    </StackPanel>
+
+                    <!-- Other actions -->
+                    <StackPanel Orientation="Horizontal" Margin="6,0,6,6">
+                        <Button Style="{StaticResource Button.Icon}" Content="&#xE968;" FontFamily="{StaticResource Font.Icons}" ToolTip="{DynamicResource L.Games.ViewServers}"
+                                AutomationProperties.Name="{Binding Name, StringFormat='Servers for {0}'}"
+                                Command="{Binding DataContext.ViewServersCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" />
+                        <Button Style="{StaticResource Button.Icon}" Content="&#xE71B;" FontFamily="{StaticResource Font.Icons}" ToolTip="{DynamicResource L.Games.CreateDesktopShortcut}"
+                                AutomationProperties.Name="{Binding Name, StringFormat='Shortcut for {0}'}"
+                                Command="{Binding DataContext.CreateShortcutCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" />
+                        <Button Style="{StaticResource Button.Icon}" Content="&#xE70B;" FontFamily="{StaticResource Font.Icons}" ToolTip="{DynamicResource L.Games.Note}"
+                                AutomationProperties.Name="{Binding Name, StringFormat='Note for {0}'}"
+                                Command="{Binding DataContext.EditNoteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" />
+                        <Button Style="{StaticResource Button.Icon}" Content="&#xE713;" FontFamily="{StaticResource Font.Icons}" ToolTip="{DynamicResource L.Games.Profile.Add}"
+                                AutomationProperties.Name="{Binding Name, StringFormat='Profile for {0}'}"
+                                Command="{Binding DataContext.AddProfileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+            <DataTemplate.Triggers>
+                <Trigger SourceName="Bd" Property="IsMouseOver" Value="True">
+                    <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetName="Lift" Storyboard.TargetProperty="Y" To="-3" Duration="{StaticResource Motion.Fast}" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetName="Lift" Storyboard.TargetProperty="Y" To="0" Duration="{StaticResource Motion.Normal}" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                </Trigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+        <!-- Lists of games: rows normally, picture cards in the new look -->
+        <Style x:Key="GameList" TargetType="ItemsControl">
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="ItemTemplate" Value="{StaticResource GameTile}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding UseNewLook}" Value="True">
+                    <Setter Property="ItemTemplate" Value="{StaticResource GameCard}" />
+                    <Setter Property="Margin" Value="-5,0,-5,6" />
+                    <Setter Property="ItemsPanel">
+                        <Setter.Value>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="3" VerticalAlignment="Top" />
+                            </ItemsPanelTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
     </UserControl.Resources>
 
     <StackPanel>
@@ -74,7 +211,7 @@
                            Visibility="{Binding SearchStatus, Converter={StaticResource NullToVisibility}}" />
             </StackPanel>
         </Border>
-        <ItemsControl ItemsSource="{Binding SearchResults}" ItemTemplate="{StaticResource GameTile}" Focusable="False" />
+        <ItemsControl ItemsSource="{Binding SearchResults}" Style="{StaticResource GameList}" />
 
         <Border Style="{StaticResource Card}" Padding="18,14" Margin="0,8,0,0">
             <StackPanel>
@@ -93,21 +230,28 @@
             </StackPanel>
         </Border>
 
-        <TextBlock Text="{DynamicResource L.Games.Favorites}" Style="{StaticResource SectionHeader}" />
+        <DockPanel>
+            <Button DockPanel.Dock="Right" Style="{StaticResource Button.Ghost}" Content="{DynamicResource L.Games.Surprise}" ui:Ui.Icon="&#xE8B1;" Padding="10,4"
+                    VerticalAlignment="Bottom" Margin="0,0,0,8" Command="{Binding SurpriseCommand}"
+                    Visibility="{Binding CanSurprise, Converter={StaticResource BoolToVisibility}}" />
+            <TextBlock Text="{DynamicResource L.Games.Favorites}" Style="{StaticResource SectionHeader}" />
+        </DockPanel>
         <TextBlock Text="{DynamicResource L.Games.NoFavoritesYetAddOneAbove}" Style="{StaticResource Text.Caption}" Margin="2,0,0,6"
                    Visibility="{Binding HasFavorites, Converter={StaticResource InverseBoolToVisibility}}" />
-        <ItemsControl ItemsSource="{Binding Favorites}" ItemTemplate="{StaticResource GameTile}" Focusable="False" />
+        <ItemsControl ItemsSource="{Binding Favorites}" Style="{StaticResource GameList}" />
 
         <TextBlock Text="{DynamicResource L.Games.RecentlyPlayed}" Style="{StaticResource SectionHeader}" />
         <TextBlock Text="{DynamicResource L.Games.GamesYouStartFromNexstrapAppear}" Style="{StaticResource Text.Caption}" Margin="2,0,0,6"
                    Visibility="{Binding HasRecent, Converter={StaticResource InverseBoolToVisibility}}" />
-        <ItemsControl ItemsSource="{Binding Recent}" ItemTemplate="{StaticResource GameTile}" Focusable="False" />
+        <ItemsControl ItemsSource="{Binding Recent}" Style="{StaticResource GameList}" />
 
         <!-- ===== Play history ===== -->
         <DockPanel Margin="2,18,0,10">
             <Button DockPanel.Dock="Right" Style="{StaticResource Button.Ghost}" Content="{DynamicResource L.Games.ClearHistory}" ui:Ui.Icon="&#xE74D;" Padding="10,4"
                     Command="{Binding ClearHistoryCommand}" Visibility="{Binding HasHistory, Converter={StaticResource BoolToVisibility}}" />
-            <TextBlock Text="{DynamicResource L.Games.PlayHistory}" Style="{StaticResource Text.Section}" VerticalAlignment="Center" />
+            <Button DockPanel.Dock="Right" Style="{StaticResource Button.Ghost}" Content="{DynamicResource L.Games.ExportHistory}" ui:Ui.Icon="&#xEDE1;" Padding="10,4" Margin="0,0,6,0"
+                    Command="{Binding ExportHistoryCommand}" Visibility="{Binding HasHistory, Converter={StaticResource BoolToVisibility}}" />
+            <TextBlock Text="{DynamicResource L.Games.PlayHistory}" Style="{StaticResource SectionHeader}" Margin="0" VerticalAlignment="Center" />
         </DockPanel>
         <Border Style="{StaticResource Card}" Padding="18,14" Visibility="{Binding HasHistory, Converter={StaticResource BoolToVisibility}}">
             <StackPanel>
@@ -123,6 +267,9 @@
                                 <StackPanel>
                                     <TextBlock Text="{Binding Name}" Style="{StaticResource Text.Base}" TextTrimming="CharacterEllipsis" />
                                     <TextBlock Text="{Binding LastPlayedText}" Style="{StaticResource Text.Caption}" Margin="0,1,0,0" />
+                                    <!-- New look: how this game's time compares with your most played one -->
+                                    <ProgressBar Height="4" Margin="0,5,0,0" Maximum="1" Value="{Binding Share, Mode=OneWay}"
+                                                 Visibility="{Binding DataContext.UseNewLook, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BoolToVisibility}}" />
                                 </StackPanel>
                             </DockPanel>
                         </DataTemplate>

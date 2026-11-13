@@ -232,6 +232,10 @@
             <ComboBox Width="190" ItemsSource="{Binding WeatherChoices}" DisplayMemberPath="Label" SelectedValuePath="Value"
                       SelectedValue="{Binding MoscowWeatherChoice}" AutomationProperties.Name="{DynamicResource L.Appearance.MoscowWeather}" />
         </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE709;" Header="{DynamicResource L.Appearance.MoscowJets}" Description="{DynamicResource L.Appearance.MoscowJets.Text}"
+                        Visibility="{Binding MoscowExtrasAvailable, Converter={StaticResource BoolToVisibility}}">
+            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding MoscowJets}" AutomationProperties.Name="{DynamicResource L.Appearance.MoscowJets}" />
+        </ui:SettingCard>
         <ui:SettingCard Icon="&#xE80F;" Header="{DynamicResource L.Appearance.BerlinScene}" Description="{DynamicResource L.Appearance.BerlinScene.Text}"
                         Visibility="{Binding BerlinAvailable, Converter={StaticResource BoolToVisibility}}">
             <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding BerlinScene}" AutomationProperties.Name="{DynamicResource L.Appearance.BerlinScene}" />

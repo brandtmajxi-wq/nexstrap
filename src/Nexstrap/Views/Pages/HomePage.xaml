@@ -104,6 +104,63 @@
             </Grid>
         </Border>
 
+        <!-- ===== Dashboard (new look, DEV only for now) ===== -->
+        <StackPanel Visibility="{Binding ShowDashboard, Converter={StaticResource BoolToVisibility}}">
+            <UniformGrid Columns="3" Margin="-5,12,-5,0">
+                <Border Style="{DynamicResource Revamp.StatTile}">
+                    <DockPanel>
+                        <Border DockPanel.Dock="Left" Width="36" Height="36" CornerRadius="18" Background="{DynamicResource Brush.AccentSoft}" Margin="0,0,12,0">
+                            <TextBlock Text="&#xE916;" Style="{StaticResource Text.Icon}" Foreground="{DynamicResource Brush.Accent}" />
+                        </Border>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="{DynamicResource L.Home.Dash.Today}" Style="{StaticResource Text.Overline}" />
+                            <TextBlock Text="{Binding TodayText}" Style="{StaticResource Text.Section}" FontSize="17" Margin="0,2,0,0" />
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+                <Border Style="{DynamicResource Revamp.StatTile}">
+                    <DockPanel>
+                        <Border DockPanel.Dock="Left" Width="36" Height="36" CornerRadius="18" Background="{DynamicResource Brush.AccentSoft}" Margin="0,0,12,0">
+                            <TextBlock Text="&#xE945;" Style="{StaticResource Text.Icon}" Foreground="{DynamicResource Brush.Accent}" />
+                        </Border>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="{DynamicResource L.Home.Dash.Streak}" Style="{StaticResource Text.Overline}" />
+                            <TextBlock Text="{Binding StreakText}" Style="{StaticResource Text.Section}" FontSize="17" Margin="0,2,0,0" />
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+                <Border Style="{DynamicResource Revamp.StatTile}">
+                    <DockPanel>
+                        <Border DockPanel.Dock="Left" Width="36" Height="36" CornerRadius="18" Background="{DynamicResource Brush.AccentSoft}" Margin="0,0,12,0">
+                            <TextBlock Text="&#xE7FC;" Style="{StaticResource Text.Icon}" Foreground="{DynamicResource Brush.Accent}" />
+                        </Border>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="{DynamicResource L.Home.Dash.Total}" Style="{StaticResource Text.Overline}" />
+                            <TextBlock Text="{Binding TotalText}" Style="{StaticResource Text.Section}" FontSize="17" Margin="0,2,0,0" />
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+            </UniformGrid>
+
+            <StackPanel Visibility="{Binding HasGameTiles, Converter={StaticResource BoolToVisibility}}">
+                <TextBlock Text="{DynamicResource L.Home.Dash.JumpBackIn}" Style="{StaticResource SectionHeader}" Margin="2,14,0,6" />
+                <ItemsControl ItemsSource="{Binding GameTiles}" Focusable="False" Margin="-5,0">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="4" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type vm:HomeGameTile}">
+                            <Button Style="{DynamicResource Revamp.GameTile}" AutomationProperties.Name="{Binding Name}"
+                                    ToolTip="{Binding Name}"
+                                    Command="{Binding DataContext.PlayTileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </StackPanel>
+
         <!-- ===== Status tiles ===== -->
         <UniformGrid Columns="3" Margin="-5,12,-5,0">
             <Border Style="{StaticResource Card}" Margin="5" Padding="18,16">
@@ -250,6 +307,11 @@
                                         <Button Style="{StaticResource Button.Icon}" Content="&#xE838;" FontFamily="{StaticResource Font.Icons}" Margin="6,0,0,0"
                                                 ToolTip="{DynamicResource L.Home.OpenFolder}" AutomationProperties.Name="{DynamicResource L.Home.OpenFolder}"
                                                 Command="{Binding DataContext.OpenFolderOfCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}" />
+                                        <Button Style="{StaticResource Button.Icon}" Content="&#xE90F;" FontFamily="{StaticResource Font.Icons}"
+                                                ToolTip="{DynamicResource L.Home.Repair.Tip}" AutomationProperties.Name="{DynamicResource L.Home.Repair}"
+                                                Visibility="{Binding CanRemove, Converter={StaticResource BoolToVisibility}}"
+                                                Command="{Binding DataContext.RepairInstallationCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 CommandParameter="{Binding}" />
                                         <Button Style="{StaticResource Button.Icon}" Content="&#xE74D;" FontFamily="{StaticResource Font.Icons}"
                                                 ToolTip="{DynamicResource L.Home.RemoveNexstrapBuildsOnly}" AutomationProperties.Name="{DynamicResource L.Appearance.Remove}"

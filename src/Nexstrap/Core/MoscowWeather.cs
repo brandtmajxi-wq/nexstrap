@@ -1,10 +1,10 @@
 namespace Nexstrap.Core;
 
 /// <summary>The weather drawn over the Moscow welcome screen. Random is the setting, never a scene.</summary>
-public enum Weather { Random, Clear, PartlyCloudy, Cloudy, Rain, Storm, Snow, Fog, Off }
+public enum Weather { Random, Clear, PartlyCloudy, Cloudy, Rain, Storm, Snow, Fog, Off, HeavyRain, Wind, Blizzard }
 
-/// <summary>What the animated sky layer draws: the weather and which picture (time of day) it sits on.</summary>
-public sealed record SkyScene(Weather Weather, DayPart Part);
+/// <summary>What the animated sky layer draws: the weather, which picture (time of day) it sits on, and whether a jet flies over.</summary>
+public sealed record SkyScene(Weather Weather, DayPart Part, bool Jets = false);
 
 /// <summary>
 /// Made-up weather for the Moscow screen. It isn't a forecast and reads nothing online:
@@ -13,7 +13,10 @@ public sealed record SkyScene(Weather Weather, DayPart Part);
 public static class MoscowWeather
 {
     public static readonly Weather[] Scenes =
-        [Weather.Clear, Weather.PartlyCloudy, Weather.Cloudy, Weather.Rain, Weather.Storm, Weather.Snow, Weather.Fog];
+    [
+        Weather.Clear, Weather.PartlyCloudy, Weather.Cloudy, Weather.Rain, Weather.HeavyRain, Weather.Storm,
+        Weather.Wind, Weather.Snow, Weather.Blizzard, Weather.Fog
+    ];
 
     private static Weather? _rolled;
 
@@ -27,12 +30,12 @@ public static class MoscowWeather
     /// <summary>Relative chances for each weather in a month (1–12), in <see cref="Scenes"/> order.</summary>
     internal static int[] Weights(int month) => month switch
     {
-        // Clear, partly, cloudy, rain, storm, snow, fog
-        12 or 1 or 2 => [18, 18, 22, 0, 0, 32, 10],
-        3 or 11 => [18, 20, 22, 10, 0, 20, 10],
-        4 or 10 => [22, 24, 20, 20, 0, 4, 10],
-        5 or 9 => [26, 26, 14, 20, 6, 0, 8],
-        _ => [30, 28, 10, 16, 12, 0, 4]
+        // Clear, partly, cloudy, rain, heavy rain, storm, wind, snow, blizzard, fog
+        12 or 1 or 2 => [16, 16, 20, 0, 0, 0, 8, 24, 8, 8],
+        3 or 11 => [16, 18, 20, 8, 0, 0, 10, 14, 4, 10],
+        4 or 10 => [20, 22, 18, 16, 6, 0, 10, 2, 0, 6],
+        5 or 9 => [24, 24, 12, 16, 6, 6, 6, 0, 0, 6],
+        _ => [28, 26, 8, 12, 8, 10, 4, 0, 0, 4]
     };
 
     /// <summary>Picks a weather for a month from a roll between 0 and 1.</summary>
@@ -48,6 +51,9 @@ public static class MoscowWeather
         return Weather.Clear;
     }
 
+    /// <summary>The jet flyovers are dev only for now, like winter and Berlin.</summary>
+    public static bool ExtrasAvailable => AppInfo.IsDev;
+
     /// <summary>The Russian word shown next to Moscow's clock.</summary>
     public static string RussianName(Weather weather, DayPart part) => weather switch
     {
@@ -55,8 +61,11 @@ public static class MoscowWeather
         Weather.PartlyCloudy => "Переменная облачность",
         Weather.Cloudy => "Облачно",
         Weather.Rain => "Дождь",
+        Weather.HeavyRain => "Ливень",
         Weather.Storm => "Гроза",
+        Weather.Wind => "Сильный ветер",
         Weather.Snow => "Снег",
+        Weather.Blizzard => "Метель",
         Weather.Fog => "Туман",
         _ => ""
     };

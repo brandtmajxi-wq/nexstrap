@@ -401,8 +401,11 @@ public sealed partial class AppearanceViewModel : PageViewModel
         new(Weather.PartlyCloudy, () => Loc.Get("Weather.PartlyCloudy")),
         new(Weather.Cloudy, () => Loc.Get("Weather.Cloudy")),
         new(Weather.Rain, () => Loc.Get("Weather.Rain")),
+        new(Weather.HeavyRain, () => Loc.Get("Weather.HeavyRain")),
         new(Weather.Storm, () => Loc.Get("Weather.Storm")),
+        new(Weather.Wind, () => Loc.Get("Weather.Wind")),
         new(Weather.Snow, () => Loc.Get("Weather.Snow")),
+        new(Weather.Blizzard, () => Loc.Get("Weather.Blizzard")),
         new(Weather.Fog, () => Loc.Get("Weather.Fog")),
         new(Weather.Off, () => Loc.Get("Weather.Off"))
     ];
@@ -413,6 +416,20 @@ public sealed partial class AppearanceViewModel : PageViewModel
         set
         {
             _settings.Current.Welcome.MoscowWeather = value;
+            _settings.Save();
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>The jet flyovers are dev only for now, and need the room to be open.</summary>
+    public bool MoscowExtrasAvailable => MoscowAvailable && MoscowWeather.ExtrasAvailable;
+
+    public bool MoscowJets
+    {
+        get => _settings.Current.Welcome.MoscowJets;
+        set
+        {
+            _settings.Current.Welcome.MoscowJets = value;
             _settings.Save();
             OnPropertyChanged();
         }
@@ -832,6 +849,7 @@ public sealed partial class AppearanceViewModel : PageViewModel
     public override void OnNavigatedTo()
     {
         OnPropertyChanged(nameof(MoscowAvailable));
+        OnPropertyChanged(nameof(MoscowExtrasAvailable));
         OnPropertyChanged(nameof(MoscowScene));
         if (_fontsRequested) return;
         _fontsRequested = true;

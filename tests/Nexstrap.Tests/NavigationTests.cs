@@ -56,6 +56,22 @@ public class NavigationTests
         new(nav, updates ?? new FakeUpdates(), settings ?? new MemorySettings(), center ?? new FakeCenter());
 
     [Fact]
+    public void Ctrl_and_a_number_follows_the_sidebar_order_and_skips_hidden_pages()
+    {
+        var settings = new MemorySettings();
+        settings.Current.Sidebar.Hidden.Add("Welcome");
+        var nav = new FakeNavigation();
+        var vm = Create(nav, settings: settings);
+
+        Assert.True(vm.OpenSidebarPage(1));
+        Assert.IsType<Nexstrap.ViewModels.Pages.HomeViewModel>(nav.CurrentPage);
+        Assert.True(vm.OpenSidebarPage(3));
+        Assert.IsType<Nexstrap.ViewModels.Pages.StatsViewModel>(nav.CurrentPage);
+        Assert.False(vm.OpenSidebarPage(0));
+        Assert.False(vm.OpenSidebarPage(vm.NavItems.Count + 1));
+    }
+
+    [Fact]
     public void Sidebar_badge_follows_the_notification_count()
     {
         var center = new FakeCenter();

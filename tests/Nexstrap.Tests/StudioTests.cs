@@ -56,6 +56,7 @@ public class StudioTests : IDisposable
     {
         public Task<ClientVersionInfo> GetLatestVersionAsync(CancellationToken ct = default) => Task.FromResult(new ClientVersionInfo("0.746", latest));
         public Task<string> InstallAsync(ClientVersionInfo version, IProgress<InstallProgress>? progress, CancellationToken ct = default) => Task.FromResult("");
+        public Task<string> RepairAsync(ClientVersionInfo version, IProgress<InstallProgress>? progress, CancellationToken ct = default) => Task.FromResult("");
         public string DirectoryFor(string versionHash) => versionHash;
     }
 

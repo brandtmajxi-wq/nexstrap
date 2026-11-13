@@ -74,13 +74,17 @@
                 <ItemsControl ItemsSource="{Binding ServersView}" Focusable="False">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border BorderBrush="{DynamicResource Brush.Divider}" BorderThickness="0,0,0,1" Padding="0,10">
+                            <Border x:Name="Row" BorderBrush="{DynamicResource Brush.Divider}" BorderThickness="0,0,0,1" Padding="0,10" Background="Transparent">
                                 <DockPanel>
                                     <Button DockPanel.Dock="Right" Content="{DynamicResource L.Home.Join}" ui:Ui.Icon="&#xE768;" Padding="12,5" Margin="14,0,0,0" VerticalAlignment="Center"
                                             IsEnabled="{Binding IsFull, Converter={StaticResource InverseBool}}"
                                             AutomationProperties.Name="{Binding Id, StringFormat='Join {0}'}"
                                             Command="{Binding DataContext.JoinCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                             CommandParameter="{Binding}" />
+                                    <!-- New look: ping as a coloured dot -->
+                                    <Ellipse x:Name="PingDot" DockPanel.Dock="Left" Width="10" Height="10" Margin="2,0,12,0" VerticalAlignment="Center" Fill="{DynamicResource Brush.TextMuted}"
+                                             ToolTip="{Binding Ping, Mode=OneWay, Converter={StaticResource LocFormat}, ConverterParameter='Format.Ms|Format.NoPing'}"
+                                             Visibility="{Binding DataContext.UseNewLook, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BoolToVisibility}}" />
                                     <StackPanel>
                                         <DockPanel>
                                             <TextBlock DockPanel.Dock="Right" Style="{StaticResource Text.Caption}">
@@ -96,6 +100,18 @@
                                     </StackPanel>
                                 </DockPanel>
                             </Border>
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding PingQuality}" Value="Good"><Setter TargetName="PingDot" Property="Fill" Value="#3FCF7A" /></DataTrigger>
+                                <DataTrigger Binding="{Binding PingQuality}" Value="Ok"><Setter TargetName="PingDot" Property="Fill" Value="#F2C14E" /></DataTrigger>
+                                <DataTrigger Binding="{Binding PingQuality}" Value="Bad"><Setter TargetName="PingDot" Property="Fill" Value="#F05A5A" /></DataTrigger>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding IsMouseOver, ElementName=Row}" Value="True" />
+                                        <Condition Binding="{Binding DataContext.UseNewLook, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True" />
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter TargetName="Row" Property="Background" Value="{DynamicResource Brush.Hover}" />
+                                </MultiDataTrigger>
+                            </DataTemplate.Triggers>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

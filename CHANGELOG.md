@@ -2,10 +2,113 @@
 
 All notable changes to Nexstrap are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.43.0] - 2026-11-12
+
+### Added
+- **New look, part 5: Screenshots and Servers**: screenshot tiles lift with an accent edge when you point at them, and each server gets a coloured ping dot (green under 100 ms, yellow under 200 ms, red above, grey when Roblox doesn't report one) and a highlight on the row you point at. This completes the new look.
+
+## [1.42.0] - 2026-11-12
+
+### Added
+- **New look, part 4: Stats**: icons on the four totals, three new numbers (average session, longest session and different games), charts where your best day, busiest hour and busiest weekday stand out, gold, silver and bronze ranks for your top three games, and your busiest time shown as a clear pill.
+
+## [1.41.0] - 2026-11-12
+
+### Added
+- **New look, part 3: Games**: favorites, recently played and search results are now picture cards, three to a row, with **Play** on the picture, a star in the corner (gold for favorites), your play time and note, and the servers, shortcut, note and profile buttons along the bottom. Play history shows a bar for each game next to your most played one.
+
+## [1.40.0] - 2026-11-12
+
+### Added
+- **New look, part 2: Home dashboard**: under the Play card, Home now shows today's play time, your current streak and your all-time play time, and a **Jump back in** row with your four most recent games as picture tiles. Point at a tile to see a play button, and click it to join that game. The numbers come from your play history on this PC.
+
+## [1.39.0] - 2026-11-12
+
+### Added
+- **New look, part 1: style and sidebar**: page titles and section headings are bigger and get a soft shadow (a light glow in the light theme), so they stay readable over a background picture, and section headings have an accent bar. Setting cards show their icon in your accent colour and lift slightly with an accent edge when you point at them. The sidebar puts each page's icon in its own chip that fills with the accent on the open page, and has a **Play Roblox** card at the bottom that shows what you're playing and for how long while Roblox (started from Nexstrap) is open. Your theme, accent, font, background, sidebar name and logo stay as you set them.
+
+## [1.38.0] - 2026-11-12
+
+### Added
+- **"Get Nexstrap" button** (Integrations, Discord, off by default): adds a button to your Discord status that opens Nexstrap's download page, so friends can get it too. It shows in the Roblox menu and in games, after *View game*.
+
+## [1.37.0] - 2026-11-12
+
+### Added
+- **Mute Roblox in the background** (Roblox Settings, off by default): Roblox goes quiet when you switch to another window and its sound comes back when you switch back. It uses Roblox's entry in the Windows volume mixer, so nothing inside Roblox is changed, and if you muted Roblox there yourself it stays muted.
+
+## [1.36.0] - 2026-11-12
+
+### Added
+- **Keep PC awake while playing** (Roblox Settings, off by default): while Roblox started from Nexstrap is open, Windows won't put the PC to sleep, so AFK sessions and long loads keep going. The screen can still turn off, and normal sleep comes back as soon as Roblox closes.
+
+## [1.35.0] - 2026-11-11
+
+### Added
+- **Low-end PC mode** (Performance, off by default): makes Nexstrap lighter, with no animations, weather, snow, page transitions or background blur. Your Appearance settings aren't changed and come back when you turn it off. When you turn it on, Nexstrap offers to make Roblox lighter too, with the Power saver preset and the Low-end PC FastFlags.
+
+## [1.34.0] - 2026-11-11
+
+### Added
+- **Repair Roblox** (Home, Installations): the wrench button on a Nexstrap build downloads that Roblox version again from Roblox with the usual package checks and swaps it in only once everything is verified. Your current build stays untouched if anything fails or you cancel. FastFlags and mods are put back on the next launch. It helps when Roblox crashes on start or says files are missing. Other launchers' builds are never changed.
+
+### Changed
+- Installing or updating Roblox now moves the old build aside before swapping in the new one, so a file that's in use can't leave a half-deleted build.
+
+## [1.33.0] - 2026-11-10
+
+### Added
+- **Keyboard shortcuts** inside Nexstrap: Ctrl+1 to Ctrl+9 open the sidebar's pages in the order shown, Ctrl+P plays Roblox, Ctrl+J rejoins your last server, Ctrl+N opens notifications, and Ctrl+K still finds a setting. They're listed on the About page.
+
+## [1.32.0] - 2026-11-10
+
+### Added
+- **Screenshots** (new page): the pictures you take in Roblox, from `Pictures\Roblox`, newest first (up to 300). Click one to open it, or copy it, show it in its folder, or move it to the Recycle Bin after a question. Existing sidebar layouts get the page at the end; move or hide it under Appearance.
+
+## [1.31.0] - 2026-11-10
+
+### Added
+- **Game notes** (Games): the note button on a game lets you write up to 200 characters, such as a code, a friend's server or what to do next. The note shows under the game everywhere it appears and stays on this PC (it isn't part of setup exports).
+
+## [1.30.0] - 2026-11-10
+
+### Added
+- **Surprise me** (Games): picks a random game from your favorites and recently played games and asks if you want to play it, with **Another one** to pick again. It never suggests the same game twice in a row.
+
+## [1.29.0] - 2026-11-10
+
+### Added
+- **Recent crashes** (Notifications): the last 20 times Roblox stopped without closing normally, with the game, time and exit code. **Show log** opens Explorer at that session's Roblox log. Crashes are recorded even with crash alerts off, kept in `Crashes.json` on this PC, and can be cleared.
+
+## [1.28.0] - 2026-11-10
+
+### Added
+- **Daily play limit** (Notifications, off by default): choose 1 to 6 hours, and a note appears over Roblox once you've played that long in a day, counting saved games and the one in progress. It shows once a day, even if Nexstrap restarts. **Preview** shows what it looks like.
+
+## [1.27.0] - 2026-11-10
+
+### Added
+- **Session summary** (Notifications, on by default): when Roblox closes, a small note in the corner shows how long you played, which games and today's total. It only appears after at least 2 minutes in games, not after a crash (the crash alert covers that) and not during a region search. **Preview** shows today's summary.
+
+## [1.26.0] - 2026-11-10
+
+### Added
+- **Export play history** (Games): saves your sessions and a total per game as two CSV files for Excel or Google Sheets. It uses your region's list separator and decimal mark, so the columns split correctly, and keeps game names' letters intact.
+
+## [1.25.0] - 2026-11-10
+
+### Added
+- **When you play** (Stats): your play time by hour of the day and by day of the week, with your busiest hour and day. A session that runs past the hour is split across the hours it covers, and the week starts on the day Windows uses.
+
+## [1.24.0] - 2026-11-10
+
+### Added
+- **Achievements** (Stats): 15 milestones such as your first hour, 7 days in a row, 25 different games, a 2-hour marathon, Night owl and Early bird, with progress bars for the ones still to go. They're worked out from your play history on this PC, so clearing the history resets them.
+
 ## [1.23.0] - 2026-11-09
 
 ### Added
-- **Secret room**: animated weather. Drifting clouds, sun rays, birds, twinkling stars, rain, thunderstorms, snow and fog, picked at random by the season or chosen in Appearance once the room is open. It's made up and nothing is fetched online. It pauses while the window isn't in front.
+- **Secret room**: animated weather. Drifting clouds, sun rays, birds, twinkling stars, rain, downpours, thunderstorms with forked lightning, wind with blowing leaves, snow, blizzards and fog, all pushed by gusting wind, plus a rippling river that glitters under the sun and moon. It's picked at random by the season or chosen in Appearance once the room is open. It's made up and nothing is fetched online. It pauses while the window isn't in front, and turning it off is recommended on low-end PCs.
 
 ## [1.22.0] - 2026-11-08
 

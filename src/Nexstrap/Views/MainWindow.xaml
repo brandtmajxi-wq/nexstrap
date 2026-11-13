@@ -45,7 +45,7 @@
         <!-- A page's own picture (Welcome) covers the custom background while that page is open -->
         <Image Grid.ColumnSpan="2" Source="{Binding Navigation.CurrentPage.Backdrop}" Stretch="UniformToFill" IsHitTestVisible="False" />
         <!-- Animated weather over the Moscow picture -->
-        <ui:WeatherOverlay Grid.ColumnSpan="2" Scene="{Binding Navigation.CurrentPage.Sky}" />
+        <ui:WeatherOverlay Grid.ColumnSpan="2" Scene="{Binding Navigation.CurrentPage.Sky}" Backdrop="{Binding Navigation.CurrentPage.Backdrop}" />
         <Border Grid.Column="1" IsHitTestVisible="False" Visibility="{Binding Navigation.CurrentPage.Backdrop, Converter={StaticResource NullToVisibility}}">
             <Border.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
@@ -75,6 +75,11 @@
 
                 <!-- Footer -->
                 <StackPanel DockPanel.Dock="Bottom">
+                    <!-- Play card (new look, DEV only for now): Play Roblox, or what you're playing and for how long -->
+                    <Button Style="{DynamicResource Sidebar.PlayCard}" Margin="0,0,0,10" Command="{Binding SidebarPlayCommand}"
+                            AutomationProperties.Name="{DynamicResource L.Home.PlayRoblox}" ToolTip="{Binding NowPlaying}"
+                            ToolTipService.IsEnabled="{Binding IsPlaying}"
+                            Visibility="{Binding ShowSidebarPlay, Converter={StaticResource BoolToVisibility}}" />
                     <Border Style="{StaticResource Divider}" Margin="6,0,6,8" />
                     <ItemsControl ItemsSource="{Binding FooterItems}" ItemTemplate="{StaticResource Template.NavItem}" Focusable="False" />
                     <TextBlock Text="{DynamicResource L.Tagline}" Style="{StaticResource Text.Caption}" Margin="8,10,6,0" TextWrapping="Wrap"
@@ -156,8 +161,8 @@
                             <TextBlock Text="{Binding UpdateBanner}" Style="{StaticResource Text.Base}" FontWeight="SemiBold" VerticalAlignment="Center" />
                         </DockPanel>
                     </Border>
-                    <TextBlock Text="{Binding Navigation.CurrentPage.Title}" Style="{StaticResource Text.Title}" Visibility="{Binding Navigation.CurrentPage.HasHeader, Converter={StaticResource BoolToVisibility}}" />
-                    <TextBlock Text="{Binding Navigation.CurrentPage.Subtitle}" Style="{StaticResource Text.Secondary}" Margin="0,4,0,0" Visibility="{Binding Navigation.CurrentPage.HasHeader, Converter={StaticResource BoolToVisibility}}" />
+                    <TextBlock Text="{Binding Navigation.CurrentPage.Title}" Style="{StaticResource PageTitle}" Visibility="{Binding Navigation.CurrentPage.HasHeader, Converter={StaticResource BoolToVisibility}}" />
+                    <TextBlock Text="{Binding Navigation.CurrentPage.Subtitle}" Style="{StaticResource PageSubtitle}" Margin="0,4,0,0" Visibility="{Binding Navigation.CurrentPage.HasHeader, Converter={StaticResource BoolToVisibility}}" />
                 </StackPanel>
                 <ScrollViewer x:Name="PageScroller" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
                     <ContentControl Content="{Binding Navigation.CurrentPage}" Margin="36,0,36,32" Focusable="False" />

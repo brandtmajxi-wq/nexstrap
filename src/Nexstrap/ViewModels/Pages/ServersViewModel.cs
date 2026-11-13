@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Net.Http;
 using System.Windows.Data;
@@ -40,6 +40,9 @@ public sealed partial class ServersViewModel : PageViewModel
         ServersView = CollectionViewSource.GetDefaultView(Servers);
         ServersView.Filter = o => Matches((GameServer)o);
     }
+
+    /// <summary>The new look for this page (see NewLook).</summary>
+    public bool UseNewLook => NewLook.ScreenshotsAndServers;
 
     public override string Title => Loc.Get("Nav.Servers");
 

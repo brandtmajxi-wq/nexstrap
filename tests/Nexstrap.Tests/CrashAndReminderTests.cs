@@ -84,6 +84,7 @@ public class CrashAlertsTests
         public void OpenUrl(string url) { }
         public void OpenFolder(string path) => Opened = path;
         public void CopyToClipboard(string text) { }
+        public void ShowInFolder(string file) => Opened = file;
     }
 
     private static readonly LastServerInfo Server = new() { PlaceId = 123, JobId = "job", Name = "Game", SeenUtc = DateTime.UtcNow };

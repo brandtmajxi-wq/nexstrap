@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using System.Net.Http;
 using System.Windows;
 using System.Windows.Threading;
@@ -43,6 +43,9 @@ public partial class App : Application
     {
         base.OnStartup(e);
         Options = StartupOptions.Parse(e.Args);
+        // The new look (see NewLook). Added last, so its styles replace the normal ones.
+        if (NewLook.Styles)
+            Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("/Resources/Styles/Revamp.xaml", UriKind.Relative) });
 
         AppInfo.Paths.EnsureCreated();
         _services = ConfigureServices();
@@ -54,6 +57,22 @@ public partial class App : Application
             AppInfo.Name, AppInfo.VersionString, Environment.OSVersion, Environment.Version);
 
         var settings = _services.GetRequiredService<ISettingsService>();
+        LowEndMode.Set(settings.Current.Launcher.LowEndMode);
+        if (NewLook.Styles)
+        {
+            // The new look's text shadow: dark behind light text, a soft light glow behind dark text.
+            var appearance = _services.GetRequiredService<IAppearanceService>();
+            void UpdateTextShadow() => Resources["Revamp.TextShadow"] = new System.Windows.Media.Effects.DropShadowEffect
+            {
+                Color = appearance.Current.Theme == Nexstrap.Models.AppTheme.Light ? System.Windows.Media.Colors.White : System.Windows.Media.Colors.Black,
+                BlurRadius = 12,
+                ShadowDepth = 0,
+                Opacity = appearance.Current.Theme == Nexstrap.Models.AppTheme.Light ? 0.9 : 0.85,
+                RenderingBias = System.Windows.Media.Effects.RenderingBias.Performance,
+            };
+            UpdateTextShadow();
+            appearance.Changed += (_, _) => Dispatcher.BeginInvoke(UpdateTextShadow);
+        }
         _services.GetRequiredService<IThemeService>().Apply(settings.Current.Appearance);
         Loc.Apply(settings.Current.Language);
         Resources["App.Scale"] = Math.Clamp(settings.Current.Window.Scale, 0.8, 1.5);
@@ -75,9 +94,16 @@ public partial class App : Application
         _services.GetRequiredService<ILastServerService>();
         _services.GetRequiredService<IServerRegionService>();
         _services.GetRequiredService<IGameJoinAlerts>();
+        // The history first, so a crash is saved before the alert waits for an answer.
+        _services.GetRequiredService<ICrashHistory>();
         _services.GetRequiredService<ICrashAlerts>();
         _services.GetRequiredService<IPlayReminder>();
+        _services.GetRequiredService<ISessionSummary>();
+        _services.GetRequiredService<IDailyLimit>();
         _services.GetRequiredService<IGameProfileService>();
+        _services.GetRequiredService<Services.Clips.IClipService>();
+        _services.GetRequiredService<ISessionComforts>();
+        _services.GetRequiredService<IBackgroundMute>();
         // Old exe and downloaded update files from a previous self-update.
         _services.GetRequiredService<IUpdateInstaller>().CleanUpAfterUpdate();
 
@@ -348,8 +374,14 @@ public partial class App : Application
         services.AddSingleton<ILastServerService, LastServerService>();
         services.AddSingleton<IServerRegionService, ServerRegionService>();
         services.AddSingleton<IGameJoinAlerts, GameJoinAlerts>();
+        services.AddSingleton<ICrashHistory, CrashHistory>();
         services.AddSingleton<ICrashAlerts, CrashAlerts>();
         services.AddSingleton<IPlayReminder, PlayReminder>();
+        services.AddSingleton<ISessionSummary, SessionSummary>();
+        services.AddSingleton<IDailyLimit, DailyLimit>();
+        services.AddSingleton<Services.Clips.IClipService, Services.Clips.ClipService>();
+        services.AddSingleton<ISessionComforts, SessionComforts>();
+        services.AddSingleton<IBackgroundMute, BackgroundMute>();
         services.AddSingleton<IGameSearchService, GameSearchService>();
         services.AddSingleton<ICardImageUploader>(_ => new CardImageUploader(CreateHttpClient(TimeSpan.FromMinutes(2))));
         services.AddSingleton<IRobloxProcessTuner, RobloxProcessTuner>();
@@ -388,6 +420,7 @@ public partial class App : Application
         services.AddSingleton<WelcomeViewModel>();
         services.AddSingleton<LegalViewModel>();
         services.AddSingleton<StatsViewModel>();
+        services.AddSingleton<ScreenshotsViewModel>();
         services.AddSingleton<LogsViewModel>();
         services.AddSingleton<MoscowViewModel>();
         services.AddSingleton<IGameProfileService, GameProfileService>();

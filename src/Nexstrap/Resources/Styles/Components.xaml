@@ -170,4 +170,7 @@
     <Style x:Key="SectionHeader" TargetType="TextBlock" BasedOn="{StaticResource Text.Section}">
         <Setter Property="Margin" Value="2,18,0,10" />
     </Style>
-</ResourceDictionary>
+
+    <!-- The page name and line under it, above every page (the DEV look replaces these) -->
+    <Style x:Key="PageTitle" TargetType="TextBlock" BasedOn="{StaticResource Text.Title}" />
+    <Style x:Key="PageSubtitle" TargetType="TextBlock" BasedOn="{StaticResource Text.Secondary}" /></ResourceDictionary>

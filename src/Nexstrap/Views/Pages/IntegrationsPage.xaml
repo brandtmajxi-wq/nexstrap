@@ -125,6 +125,10 @@
                         Description="{DynamicResource L.Integrations.LetsFriendsOpenTheGamesPage}">
             <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding ShowExperienceButton}" AutomationProperties.Name="View game button" />
         </ui:SettingCard>
+        <ui:SettingCard Icon="&#xE896;" Header="{DynamicResource L.Integrations.NexstrapButton}"
+                        Description="{DynamicResource L.Integrations.NexstrapButton.Text}">
+            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding ShowNexstrapButton}" AutomationProperties.Name="{DynamicResource L.Integrations.NexstrapButton}" />
+        </ui:SettingCard>
         <ui:SettingCard Icon="&#xE943;" Header="{DynamicResource L.Integrations.DiscordApplicationID}"
                         Description="{DynamicResource L.Integrations.AdvancedLeaveEmptyToUseNexstraps}">
             <StackPanel>

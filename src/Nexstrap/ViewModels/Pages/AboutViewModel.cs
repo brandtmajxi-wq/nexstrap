@@ -25,6 +25,9 @@ public sealed partial class AboutViewModel(IShellService shell, FileLoggerProvid
 
     public string DataFolder => AppInfo.Paths.Root;
 
+    /// <summary>Built on each read, so it follows the language.</summary>
+    public IReadOnlyList<ShortcutInfo> ShortcutList => Shortcuts.List();
+
     public IReadOnlyList<ThirdPartyComponent> Components { get; } =
     [
         new(".NET & WPF", "MIT", "https://github.com/dotnet/wpf"),

@@ -44,6 +44,9 @@ public interface IRobloxDeployment
     /// <summary>Downloads, verifies (MD5) and extracts a build into Nexstrap's Versions folder.</summary>
     Task<string> InstallAsync(ClientVersionInfo version, IProgress<InstallProgress>? progress, CancellationToken ct = default);
 
+    /// <summary>Installs the same version again, even if it's already there, and swaps it in only once it's complete.</summary>
+    Task<string> RepairAsync(ClientVersionInfo version, IProgress<InstallProgress>? progress, CancellationToken ct = default);
+
     /// <summary>Directory a Nexstrap-managed build lives in.</summary>
     string DirectoryFor(string versionHash);
 }
@@ -192,13 +195,19 @@ public sealed class RobloxDeployment : IRobloxDeployment
         return packages;
     }
 
-    public async Task<string> InstallAsync(ClientVersionInfo version, IProgress<InstallProgress>? progress, CancellationToken ct = default)
+    public Task<string> InstallAsync(ClientVersionInfo version, IProgress<InstallProgress>? progress, CancellationToken ct = default) =>
+        InstallCoreAsync(version, progress, repair: false, ct);
+
+    public Task<string> RepairAsync(ClientVersionInfo version, IProgress<InstallProgress>? progress, CancellationToken ct = default) =>
+        InstallCoreAsync(version, progress, repair: true, ct);
+
+    private async Task<string> InstallCoreAsync(ClientVersionInfo version, IProgress<InstallProgress>? progress, bool repair, CancellationToken ct)
     {
         if (!IsValidHash(version.VersionHash))
             throw new InstallException("Invalid Roblox version identifier.");
 
         var target = DirectoryFor(version.VersionHash);
-        if (File.Exists(Path.Combine(target, CompleteMarker)))
+        if (!repair && File.Exists(Path.Combine(target, CompleteMarker)))
         {
             _logger.LogInformation("{Hash} is already installed", version.VersionHash);
             return target;
@@ -264,8 +273,7 @@ public sealed class RobloxDeployment : IRobloxDeployment
 
             await File.WriteAllTextAsync(Path.Combine(staging, CompleteMarker), $"{version.Version}\n{DateTime.UtcNow:O}\n", ct);
 
-            if (Directory.Exists(target)) Directory.Delete(target, recursive: true);
-            Directory.Move(staging, target);
+            SwapIn(staging, target);
         }
         catch
         {
@@ -276,8 +284,35 @@ public sealed class RobloxDeployment : IRobloxDeployment
         // Package zips are only needed until extraction succeeds.
         foreach (var p in packages) TryDeleteFile(Path.Combine(_downloadsRoot, p.Md5 + ".zip"));
 
-        _logger.LogInformation("Installed Roblox {Version} ({Hash}) to {Dir}", version.Version, version.VersionHash, target);
+        _logger.LogInformation(repair ? "Repaired Roblox {Version} ({Hash}) in {Dir}" : "Installed Roblox {Version} ({Hash}) to {Dir}",
+            version.Version, version.VersionHash, target);
         return target;
+    }
+
+    /// <summary>
+    /// Puts a finished build in place. An old folder is renamed aside first (which fails cleanly if a file is in use)
+    /// and only deleted once the new one is there, so a build is never left half-deleted.
+    /// </summary>
+    internal static void SwapIn(string staging, string target)
+    {
+        string? aside = null;
+        if (Directory.Exists(target))
+        {
+            aside = Path.Combine(Path.GetDirectoryName(target)!, "_old-" + Path.GetFileName(target) + "-" + DateTime.UtcNow.Ticks);
+            Directory.Move(target, aside);
+        }
+        try
+        {
+            Directory.Move(staging, target);
+        }
+        catch
+        {
+            if (aside is not null) Directory.Move(aside, target);
+            throw;
+        }
+        // A leftover "_old-" folder isn't a build (detection only looks at "version-" folders) and goes next time.
+        if (aside is not null)
+            try { Directory.Delete(aside, recursive: true); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
     }
 
     private async Task<string> DownloadVerifiedAsync(string hash, PackageEntry package, Action<long> onBytes, CancellationToken ct)

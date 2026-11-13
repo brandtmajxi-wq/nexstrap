@@ -42,7 +42,7 @@ public sealed partial class MoscowViewModel : PageViewModel
 
     public override ImageSource? Backdrop => IsUnlocked ? WelcomeViewModel.ImageFor($"Resources/Welcome/moscow-{Part.ToString().ToLowerInvariant()}.jpg") : null;
 
-    public override SkyScene? Sky => WelcomeViewModel.MoscowSky(IsUnlocked, _settings.Current.Welcome.MoscowWeather, Part);
+    public override SkyScene? Sky => WelcomeViewModel.MoscowSky(IsUnlocked, _settings.Current, Part);
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(Backdrop), nameof(Greeting), nameof(Sky))]

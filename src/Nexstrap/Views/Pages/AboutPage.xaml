@@ -37,6 +37,26 @@
             <Button Content="{DynamicResource L.About.Tour.Start}" ui:Ui.Icon="&#xE768;" Padding="10,6" Command="{Binding TourCommand}" />
         </ui:SettingCard>
 
+        <TextBlock Text="{DynamicResource L.About.Shortcuts}" Style="{StaticResource SectionHeader}" />
+        <Border Style="{StaticResource Card}" Padding="18,10">
+            <ItemsControl ItemsSource="{Binding ShortcutList}" Focusable="False">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <DockPanel Margin="0,5">
+                            <Border DockPanel.Dock="Left" MinWidth="150" Margin="0,0,16,0" HorizontalAlignment="Left">
+                                <Border HorizontalAlignment="Left" Background="{DynamicResource Brush.Raised}" BorderBrush="{DynamicResource Brush.BorderStrong}" BorderThickness="1"
+                                        CornerRadius="5" Padding="8,2">
+                                    <TextBlock Text="{Binding Keys}" Style="{StaticResource Text.Base}" FontFamily="Consolas" FontSize="12.5" />
+                                </Border>
+                            </Border>
+                            <TextBlock Text="{Binding Description}" Style="{StaticResource Text.Body}" VerticalAlignment="Center" TextWrapping="Wrap" />
+                        </DockPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Border>
+        <TextBlock Text="{DynamicResource L.Shortcut.Note}" Style="{StaticResource Text.Caption}" TextWrapping="Wrap" Margin="2,6,0,0" />
+
         <TextBlock Text="{DynamicResource L.About.Legal}" Style="{StaticResource SectionHeader}" />
         <ui:SettingCard Icon="&#xE72E;" Header="{DynamicResource L.About.Legal.Item}" Description="{DynamicResource L.About.Legal.Text}">
             <Button Content="{DynamicResource L.About.Open}" ui:Ui.Icon="&#xE8A7;" Padding="10,6" Command="{Binding OpenLegalCommand}" />

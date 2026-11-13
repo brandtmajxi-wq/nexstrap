@@ -41,6 +41,8 @@ public static class SettingsCatalog
         new("RobloxSettings.CloseToTray", "Roblox Settings"),
         new("RobloxSettings.CpuPriority", "Roblox Settings"),
         new("RobloxSettings.Hotkeys", "Roblox Settings"),
+        new("RobloxSettings.KeepAwake", "Roblox Settings"),
+        new("RobloxSettings.BackgroundMute", "Roblox Settings"),
         new("RobloxSettings.AutoUpdate", "Roblox Settings"),
         new("RobloxSettings.OpenWebsitePlayButtonsWithNexstrap", "Roblox Settings"),
         new("Integrations.CardIcon", "Integrations"),

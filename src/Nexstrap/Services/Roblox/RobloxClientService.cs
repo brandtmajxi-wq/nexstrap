@@ -41,6 +41,9 @@ public interface IRobloxClientService
 
     /// <summary>Deletes a Nexstrap-managed build. Builds from other launchers are never touched.</summary>
     void Remove(RobloxInstallation installation);
+
+    /// <summary>Downloads a Nexstrap-managed build's version again with the usual checks and swaps it in once it's complete.</summary>
+    Task<RobloxInstallation> RepairAsync(RobloxInstallation installation, IProgress<InstallProgress>? progress, CancellationToken ct = default);
 }
 
 public sealed class RobloxClientService(
@@ -127,6 +130,26 @@ public sealed class RobloxClientService(
             RemoveOutdatedNexstrapBuilds(latest.VersionHash);
 
             return State.Installations.First(i => string.Equals(i.Directory, dir, StringComparison.OrdinalIgnoreCase));
+        }
+        finally
+        {
+            _installGate.Release();
+        }
+    }
+
+    public async Task<RobloxInstallation> RepairAsync(RobloxInstallation installation, IProgress<InstallProgress>? progress, CancellationToken ct = default)
+    {
+        if (installation.Source != InstallationSource.Nexstrap)
+            throw new InvalidOperationException(Loc.Get("Launch.OnlyBuildsInstalledByNexstrapCan"));
+        if (launcher.IsRobloxRunning())
+            throw new InvalidOperationException(Loc.Get("Home.Repair.CloseRoblox"));
+        if (!await _installGate.WaitAsync(0, ct))
+            throw new InstallException(Loc.Get("Launch.AnInstallationIsAlreadyRunning"));
+        try
+        {
+            var dir = await deployment.RepairAsync(new ClientVersionInfo(installation.ClientVersion ?? "", installation.VersionHash), progress, ct);
+            await RefreshAsync(checkLatest: false, ct);
+            return State.Installations.FirstOrDefault(i => string.Equals(i.Directory, dir, StringComparison.OrdinalIgnoreCase)) ?? installation;
         }
         finally
         {
