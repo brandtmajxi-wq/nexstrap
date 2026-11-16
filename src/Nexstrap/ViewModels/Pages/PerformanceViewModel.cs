@@ -103,9 +103,22 @@ public sealed partial class PerformanceViewModel(
     private void ApplyPreset(PerformancePreset preset)
     {
         var cap = PerformancePlanner.ResolveCap(preset, display.RefreshRate);
-        SaveToRoblox(new RobloxUserSettings { FramerateCap = cap, SavedQualityLevel = preset.Quality },
-            Loc.Format("Performance.PresetApplied", preset.Name, cap,
-                preset.Quality == 0 ? Loc.Get("Performance.QualityAutomatic") : Loc.Format("Performance.QualityOutOf10", preset.Quality)));
+        var quality = preset.Quality == 0
+            ? Loc.Get("Performance.QualityAutomatic")
+            : Loc.Format("Performance.QualityOutOf10", preset.Quality);
+        var success = cap == PerformancePlanner.NoLimitCap
+            ? Loc.Format("Performance.PresetAppliedNoLimit", preset.Name, quality)
+            : Loc.Format("Performance.PresetApplied", preset.Name, cap, quality);
+
+        string? flagProblem = null;
+        if (preset.Key == "Performance.Preset.FPSBoost")
+        {
+            var lowEnd = FastFlagPresets.All.First(p => p.Key == "FastFlags.Preset.LowEnd");
+            flagProblem = FastFlagPresets.Apply(flags, lowEnd);
+        }
+
+        SaveToRoblox(new RobloxUserSettings { FramerateCap = cap, SavedQualityLevel = preset.Quality }, success);
+        if (flagProblem is not null) Message = flagProblem;
     }
 
     private void SaveToRoblox(RobloxUserSettings changes, string success)

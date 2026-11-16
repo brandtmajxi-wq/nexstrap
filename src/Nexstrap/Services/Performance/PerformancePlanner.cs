@@ -84,6 +84,7 @@ public static class PerformancePlanner
 
     public static IReadOnlyList<PerformancePreset> Presets { get; } =
     [
+        new("Performance.Preset.FPSBoost", NoLimitCap, 1),
         new("Performance.Preset.Balanced", null, 0),
         new("Performance.Preset.Smoothest", null, 3),
         new("Performance.Preset.BestLooking", null, 10),

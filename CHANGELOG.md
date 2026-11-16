@@ -2,6 +2,11 @@
 
 All notable changes to Nexstrap are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.44.0] - 2026-11-16
+
+### Added
+- **FPS boost preset** (Performance): removes the frame-rate cap, lowers Roblox quality, and disables antialiasing and grass detail. It can help when graphics settings limit performance; results depend on the PC and uncapped FPS can use more power and create more heat.
+
 ## [1.43.0] - 2026-11-12
 
 ### Added
