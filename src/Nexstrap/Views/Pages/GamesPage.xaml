@@ -292,18 +292,26 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Border Style="{StaticResource Card}" Padding="14,10" Margin="0,0,0,8">
-                        <DockPanel>
-                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                                <ComboBox Width="140" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding Fps}" AutomationProperties.Name="{Binding Name, StringFormat='FPS for {0}'}"
-                                          ItemsSource="{Binding DataContext.FpsChoices, RelativeSource={RelativeSource AncestorType=UserControl}}" />
-                                <ComboBox Width="150" Margin="8,0,0,0" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding Quality}" AutomationProperties.Name="{Binding Name, StringFormat='Quality for {0}'}"
-                                          ItemsSource="{Binding DataContext.QualityChoices, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                        <StackPanel>
+                            <DockPanel Margin="0,0,0,8">
                                 <Button Style="{StaticResource Button.Icon}" Content="&#xE74D;" FontFamily="{StaticResource Font.Icons}" Margin="6,0,0,0" ToolTip="{DynamicResource L.Appearance.Remove}"
                                         AutomationProperties.Name="{Binding Name, StringFormat='Remove profile for {0}'}" CommandParameter="{Binding}"
-                                        Command="{Binding DataContext.RemoveProfileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
-                            </StackPanel>
-                            <TextBlock Text="{Binding Name}" Style="{StaticResource Text.Base}" FontWeight="SemiBold" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,12,0" />
-                        </DockPanel>
+                                        Command="{Binding DataContext.RemoveProfileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" DockPanel.Dock="Right" />
+                                <TextBlock Text="{Binding Name}" Style="{StaticResource Text.Base}" FontWeight="SemiBold" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,12,0" />
+                            </DockPanel>
+                            <WrapPanel>
+                                <ComboBox Width="105" Margin="0,0,6,4" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding Fps}" AutomationProperties.Name="{Binding Name, StringFormat='FPS for {0}'}"
+                                          ItemsSource="{Binding DataContext.FpsChoices, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                                <ComboBox Width="105" Margin="0,0,6,4" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding Quality}" AutomationProperties.Name="{Binding Name, StringFormat='Quality for {0}'}"
+                                          ItemsSource="{Binding DataContext.QualityChoices, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                                <ComboBox Width="110" Margin="0,0,6,4" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding GraphicsApi}" AutomationProperties.Name="{Binding Name, StringFormat='Graphics API for {0}'}"
+                                          ItemsSource="{Binding DataContext.ProfileApiChoices, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                                <ComboBox Width="72" Margin="0,0,6,4" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding Msaa}" AutomationProperties.Name="{Binding Name, StringFormat='Anti-aliasing for {0}'}"
+                                          ItemsSource="{Binding DataContext.ProfileMsaaChoices, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                                <ComboBox Width="98" Margin="0,0,0,4" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding Textures}" AutomationProperties.Name="{Binding Name, StringFormat='Texture quality for {0}'}"
+                                          ItemsSource="{Binding DataContext.ProfileTextureChoices, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                            </WrapPanel>
+                        </StackPanel>
                     </Border>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

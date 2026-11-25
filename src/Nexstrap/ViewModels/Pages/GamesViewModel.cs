@@ -76,6 +76,24 @@ public sealed class GameProfileRow(GameProfile profile, IGameProfileService serv
         get => Profile.Quality ?? GamesViewModel.NormalSetting;
         set { Profile.Quality = value == GamesViewModel.NormalSetting ? null : value; service.Save(); }
     }
+
+    public int GraphicsApi
+    {
+        get => Profile.GraphicsApi is { } value ? (int)value : GamesViewModel.NormalSetting;
+        set { Profile.GraphicsApi = value < 0 ? null : (Nexstrap.Services.Performance.GraphicsApi)value; service.Save(); }
+    }
+
+    public int Msaa
+    {
+        get => Profile.Msaa ?? GamesViewModel.NormalSetting;
+        set { Profile.Msaa = value < 0 ? null : value; service.Save(); }
+    }
+
+    public int Textures
+    {
+        get => Profile.Textures ?? GamesViewModel.NormalSetting;
+        set { Profile.Textures = value < 0 ? null : value; service.Save(); }
+    }
 }
 
 public sealed partial class GamesViewModel : PageViewModel
@@ -95,6 +113,27 @@ public sealed partial class GamesViewModel : PageViewModel
     ];
 
     public IReadOnlyList<Choice<int>> QualityChoices { get; } = BuildQualityChoices();
+
+    public IReadOnlyList<Choice<int>> ProfileApiChoices { get; } =
+    [
+        new(NormalSetting, () => Loc.Get("Games.Profile.Default")),
+        new((int)Nexstrap.Services.Performance.GraphicsApi.Automatic, () => Loc.Get("Performance.Automatic")),
+        new((int)Nexstrap.Services.Performance.GraphicsApi.Direct3D11, "Direct3D 11"),
+        new((int)Nexstrap.Services.Performance.GraphicsApi.Vulkan, "Vulkan"),
+        new((int)Nexstrap.Services.Performance.GraphicsApi.OpenGL, "OpenGL")
+    ];
+
+    public IReadOnlyList<Choice<int>> ProfileMsaaChoices { get; } =
+    [
+        new(NormalSetting, () => Loc.Get("Games.Profile.Default")), new(0, () => Loc.Get("Performance.Off")),
+        new(1, "1x"), new(2, "2x"), new(4, "4x"), new(8, "8x")
+    ];
+
+    public IReadOnlyList<Choice<int>> ProfileTextureChoices { get; } =
+    [
+        new(NormalSetting, () => Loc.Get("Games.Profile.Default")), new(0, () => Loc.Get("Performance.Lowest")),
+        new(1, () => Loc.Get("Performance.Low")), new(2, () => Loc.Get("Performance.Medium")), new(3, () => Loc.Get("Performance.Highest"))
+    ];
 
     private static IReadOnlyList<Choice<int>> BuildQualityChoices()
     {

@@ -2,6 +2,12 @@
 
 All notable changes to Nexstrap are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.45.0] - 2026-11-25
+
+### Added
+- **Per-game graphics profiles**: set each game's renderer, anti-aliasing, and texture quality alongside its FPS cap and graphics slider. Temporary graphics overrides apply to Nexstrap-installed Roblox builds and are restored after Roblox closes.
+- **Performance troubleshooting**: see a live Windows sample of Roblox CPU use and memory, plus a pointer to Roblox's built-in in-game performance stats for FPS and frame details.
+
 ## [1.44.0] - 2026-11-16
 
 ### Added

@@ -987,7 +987,7 @@
   "RobloxSettings.Hotkeys.Taken.Text": "Ein anderes Programm oder eine andere Nexstrap-Kopie nutzt Strg+Alt+N oder Strg+Alt+J.",
   "RobloxSettings.Hotkeys.NothingToRejoin": "Es gibt noch keinen Server zum Beitreten.",
   "Games.Profiles": "Spielprofile",
-  "Games.Profiles.Text": "Gib einem Spiel ein eigenes FPS-Limit und eine eigene Grafikqualität. Sie gelten, wenn du es über Nexstrap startest, und deine normalen Einstellungen kommen zurück, wenn Roblox schließt.",
+  "Games.Profiles.Text": "Lege für jedes Spiel ein eigenes FPS-Limit, Grafikqualität, Grafik-API, Kantenglättung und Texturstufe fest. Die Werte gelten beim Beitritt über Nexstrap; nach dem Schließen von Roblox werden die normalen Einstellungen wiederhergestellt. Grafikoptionen benötigen einen von Nexstrap installierten Build.",
   "Games.Profiles.Empty": "Noch keine Profile. Drücke bei einem Spiel den Einstellungsknopf.",
   "Games.Profile.Add": "Spielprofil hinzufügen",
   "Games.Profile.Default": "Normale Einstellung",
@@ -1212,5 +1212,9 @@
   "Sidebar.Minutes": "{0} Min.",
   "Stats.AverageSession": "Durchschnittliche Session",
   "Stats.LongestSession": "Längste Session",
-  "Stats.DifferentGames": "Verschiedene Spiele"
+  "Stats.DifferentGames": "Verschiedene Spiele",
+  "Performance.Diagnostics.Title": "Leistungsdiagnose",
+  "Performance.Diagnostics.Text": "Windows-Messung der CPU-Auslastung und des Arbeitsspeichers von Roblox. Für FPS, Framezeit und Grafikdetails im Spiel öffne die integrierte Leistungsanzeige im Roblox-Menü.",
+  "Performance.Diagnostics.NotRunning": "Roblox läuft nicht. Starte ein Spiel, um Messwerte zu erfassen.",
+  "Performance.Diagnostics.Sample": "{0} Roblox-Prozess(e) · {1:0}% CPU · {2:0} MB Arbeitsspeicher"
 }

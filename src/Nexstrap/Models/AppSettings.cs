@@ -60,6 +60,15 @@ public sealed class GameProfile
 
     /// <summary>0 is automatic, 1-10 the graphics slider. Null keeps the normal setting.</summary>
     public int? Quality { get; set; }
+
+    /// <summary>Optional renderer preference for Nexstrap-installed Roblox builds.</summary>
+    public Nexstrap.Services.Performance.GraphicsApi? GraphicsApi { get; set; }
+
+    /// <summary>Optional anti-aliasing sample count; -1 is automatic.</summary>
+    public int? Msaa { get; set; }
+
+    /// <summary>Optional texture quality override; -1 is automatic.</summary>
+    public int? Textures { get; set; }
 }
 
 /// <summary>Roblox settings to put back once a game with a profile has ended.</summary>
@@ -67,6 +76,9 @@ public sealed class ProfileRestore
 {
     public int? FramerateCap { get; set; }
     public int? Quality { get; set; }
+    public string? FastFlagFilePath { get; set; }
+    public string? FastFlagFileBase64 { get; set; }
+    public bool FastFlagFileExisted { get; set; }
 }
 
 public sealed class WelcomeSettings

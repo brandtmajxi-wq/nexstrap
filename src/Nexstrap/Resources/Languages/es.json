@@ -987,7 +987,7 @@
   "RobloxSettings.Hotkeys.Taken.Text": "Otro programa, u otra copia de Nexstrap, usa Ctrl+Alt+N o Ctrl+Alt+J.",
   "RobloxSettings.Hotkeys.NothingToRejoin": "Aún no hay un servidor al que volver.",
   "Games.Profiles": "Perfiles de juego",
-  "Games.Profiles.Text": "Da a un juego su propio límite de FPS y calidad gráfica. Se aplican al entrar desde Nexstrap y tus ajustes normales vuelven al cerrar Roblox.",
+  "Games.Profiles.Text": "Configura para cada juego su límite de FPS, calidad, API gráfica, suavizado y nivel de texturas. Se aplican al unirte desde Nexstrap y se restauran los ajustes normales al cerrar Roblox. Las opciones gráficas requieren una versión instalada por Nexstrap.",
   "Games.Profiles.Empty": "Aún no hay perfiles. Pulsa el botón de ajustes de un juego para añadir uno.",
   "Games.Profile.Add": "Añadir perfil de juego",
   "Games.Profile.Default": "Ajuste normal",
@@ -1212,5 +1212,9 @@
   "Sidebar.Minutes": "{0} min",
   "Stats.AverageSession": "Sesión media",
   "Stats.LongestSession": "Sesión más larga",
-  "Stats.DifferentGames": "Juegos distintos"
+  "Stats.DifferentGames": "Juegos distintos",
+  "Performance.Diagnostics.Title": "Diagnóstico de rendimiento",
+  "Performance.Diagnostics.Text": "Medición de Windows del uso de CPU y memoria de Roblox. Para ver FPS, tiempo de fotograma y gráficos dentro del juego, abre las estadísticas de rendimiento integradas desde el menú de Roblox.",
+  "Performance.Diagnostics.NotRunning": "Roblox no está abierto. Inicia un juego para obtener una medición.",
+  "Performance.Diagnostics.Sample": "{0} proceso(s) de Roblox · {1:0}% CPU · {2:0} MB de memoria"
 }

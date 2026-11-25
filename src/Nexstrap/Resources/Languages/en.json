@@ -987,7 +987,7 @@
   "RobloxSettings.Hotkeys.Taken.Text": "Another program, or another copy of Nexstrap, is using Ctrl+Alt+N or Ctrl+Alt+J.",
   "RobloxSettings.Hotkeys.NothingToRejoin": "There's no server to rejoin yet.",
   "Games.Profiles": "Game profiles",
-  "Games.Profiles.Text": "Give a game its own FPS cap and graphics quality. They're set when you join it from Nexstrap, and your normal settings come back when Roblox closes.",
+  "Games.Profiles.Text": "Give games their own FPS cap, quality, renderer, anti-aliasing and texture level. Set when joining from Nexstrap; normal settings return when Roblox closes. Graphics options need a Nexstrap-installed build.",
   "Games.Profiles.Empty": "No profiles yet. Press the settings button on a game to add one.",
   "Games.Profile.Add": "Add a game profile",
   "Games.Profile.Default": "Normal setting",
@@ -1212,5 +1212,9 @@
   "Sidebar.Minutes": "{0} min",
   "Stats.AverageSession": "Average session",
   "Stats.LongestSession": "Longest session",
-  "Stats.DifferentGames": "Different games"
+  "Stats.DifferentGames": "Different games",
+  "Performance.Diagnostics.Title": "Performance troubleshooting",
+  "Performance.Diagnostics.Text": "Windows sample of Roblox CPU use and memory. For in-game FPS, frame time and graphics details, open Roblox's built-in performance stats from its in-game menu.",
+  "Performance.Diagnostics.NotRunning": "Roblox is not running. Start a game to collect a sample.",
+  "Performance.Diagnostics.Sample": "{0} Roblox process(es) · {1:0}% CPU · {2:0} MB memory"
 }

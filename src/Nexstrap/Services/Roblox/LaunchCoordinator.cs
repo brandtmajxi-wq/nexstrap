@@ -49,7 +49,7 @@ public sealed class LaunchCoordinator(
     public Task<LaunchResult?> JoinAsync(long placeId, string? name, string? serverId = null)
     {
         var uri = serverId is null ? RobloxLinks.PlaceLaunchUri(placeId) : RobloxLinks.ServerLaunchUri(placeId, serverId);
-        return RunAsync(i => launcher.LaunchUri(i, uri), replacesGame: true, () => RememberRecent(placeId, name), beforeLaunch: () => profiles.ApplyFor(placeId));
+        return RunAsync(i => launcher.LaunchUri(i, uri, profiles.ApplyFor(placeId, i)), replacesGame: true, () => RememberRecent(placeId, name));
     }
 
     public Task<LaunchResult?> HopAsync(long placeId, string? name, string serverId)
@@ -83,6 +83,7 @@ public sealed class LaunchCoordinator(
         var result = await Task.Run(() => launch(installation));
         if (!result.Success)
         {
+            profiles.RestoreAfterFailedLaunch();
             dialogs.Show(Loc.Get("App.RobloxDidntStart"), result.Message, DialogKind.Error);
             return result;
         }

@@ -50,7 +50,7 @@ Favorites and recently played experiences (newest 20) with thumbnails from Roblo
 
 **Play history** counts time in games while Nexstrap follows Roblox, which means Roblox was started from Nexstrap or through a link it handles. Time in the Roblox menu isn't counted, and visits under 15 seconds are ignored. Each place or server counts as a separate session. Totals, session counts, the last 7 days and last played dates are stored in `History.json` on this PC. It can be turned off or cleared on the Games page. **Export** saves two CSV files for Excel or Google Sheets: every saved session (date, start time, game, place ID, minutes) and a total per game (hours, sessions, last played). They use the region's list separator and decimal mark, and a value starting with =, +, - or @ is written so a spreadsheet doesn't run it as a formula.
 
-**Game profiles** give a game its own FPS cap and graphics quality, set in Roblox's own settings when you join it from Nexstrap, whichever build you use. Your previous values are saved first and go back when Roblox closes, or the next time Nexstrap opens if it closed first. Profiles don't apply to website links, or while Roblox is already open.
+**Game profiles** give a game its own FPS cap, graphics quality, renderer, anti-aliasing and texture level. The FPS cap and graphics quality use Roblox's own settings. Renderer, anti-aliasing and texture overrides apply only to Nexstrap-installed builds. Previous Roblox settings and the original FastFlags file are saved first and restored when Roblox closes, or the next time Nexstrap opens if it closed first. Profiles don't apply to website links, or while Roblox is already open.
 
 ## Stats
 
@@ -108,6 +108,8 @@ These settings change limits and quality; they can't make your PC faster.
 - **Maximum frame rate**: 60, 120, 144 or 240, stored in Roblox's own settings.
 - **Remove frame-rate limit**: saves `FramerateCap` as 0, which community guides list as uncapped. Roblox only supports up to 240 FPS and doesn't document this, so it may ignore or reset it. Turning it off goes back to the cap that suits your display. Saved values of 0 or less, or 1000 and above, count as no limit.
 - **Graphics preferences**: graphics API, anti-aliasing and texture quality. These are allowlisted FastFlags, so they only apply to Nexstrap-installed builds; *Automatic* removes the flag.
+- **Per-game profiles**: the Games page can override a game's FPS cap, graphics quality, graphics API, anti-aliasing and texture quality. Temporary graphics values are merged at launch, then the build's original FastFlags file is restored when Roblox closes.
+- **Performance troubleshooting**: a live Windows sample shows Roblox process CPU use and working-set memory. Open Roblox's built-in in-game performance stats for FPS, frame time and graphics details; Nexstrap does not read or inject into the game to obtain those values.
 
 ## FastFlags
 

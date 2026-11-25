@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Nexstrap.Core;
@@ -9,6 +10,7 @@ using Nexstrap.Services.FastFlags;
 using Nexstrap.Services.Navigation;
 using Nexstrap.Services.Performance;
 using Nexstrap.Services.Roblox;
+using System.Windows.Threading;
 
 namespace Nexstrap.ViewModels.Pages;
 
@@ -23,6 +25,9 @@ public sealed partial class PerformanceViewModel(
     Nexstrap.Services.Configuration.ISettingsService settings) : PageViewModel
 {
     private bool _loading;
+    private readonly DispatcherTimer _diagnosticsTimer = new() { Interval = TimeSpan.FromSeconds(2) };
+    private TimeSpan? _lastRobloxCpu;
+    private long _lastRobloxSample;
 
     // ===== Low-end PC mode =====
 
@@ -68,6 +73,9 @@ public sealed partial class PerformanceViewModel(
         : Loc.Get("Performance.WindowsDidntReportYourDisplaysRefresh");
 
     public bool PlayUsesNexstrapBuild => client.State.Preferred?.Source == InstallationSource.Nexstrap;
+
+    [ObservableProperty]
+    private string _diagnosticsText = Loc.Get("Performance.Diagnostics.NotRunning");
 
     [ObservableProperty]
     private string? _message;
@@ -193,8 +201,51 @@ public sealed partial class PerformanceViewModel(
     public override void OnNavigatedTo()
     {
         Load();
+        _diagnosticsTimer.Tick -= RefreshDiagnostics;
+        _diagnosticsTimer.Tick += RefreshDiagnostics;
+        RefreshDiagnostics(this, EventArgs.Empty);
+        _diagnosticsTimer.Start();
         if (client.State.Installations.Count == 0)
             _ = client.RefreshAsync(checkLatest: false).ContinueWith(_ => System.Windows.Application.Current?.Dispatcher.BeginInvoke(Load));
+    }
+
+    public override void OnNavigatedFrom() => _diagnosticsTimer.Stop();
+
+    private void RefreshDiagnostics(object? sender, EventArgs e)
+    {
+        var cpu = TimeSpan.Zero;
+        long memory = 0;
+        var count = 0;
+        foreach (var process in Process.GetProcessesByName("RobloxPlayerBeta"))
+        {
+            using (process)
+            {
+                try
+                {
+                    cpu += process.TotalProcessorTime;
+                    memory += process.WorkingSet64;
+                    count++;
+                }
+                catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception or NotSupportedException) { }
+            }
+        }
+
+        if (count == 0)
+        {
+            _lastRobloxCpu = null;
+            _lastRobloxSample = Stopwatch.GetTimestamp();
+            DiagnosticsText = Loc.Get("Performance.Diagnostics.NotRunning");
+            return;
+        }
+
+        var now = Stopwatch.GetTimestamp();
+        var seconds = _lastRobloxSample == 0 ? 0 : (now - _lastRobloxSample) / (double)Stopwatch.Frequency;
+        var percent = _lastRobloxCpu is { } previous && seconds > 0
+            ? Math.Clamp((cpu - previous).TotalSeconds / (seconds * Environment.ProcessorCount) * 100, 0, 100)
+            : 0;
+        _lastRobloxCpu = cpu;
+        _lastRobloxSample = now;
+        DiagnosticsText = Loc.Format("Performance.Diagnostics.Sample", count, percent, memory / (1024d * 1024d));
     }
 
     private void Load()

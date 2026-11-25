@@ -18,7 +18,7 @@ A modern Windows launcher for the official Roblox client, with themes, honest Fa
 
 - **Play and join**: start Roblox, or join any experience by place ID or roblox.com link (with name, creator and player count shown first).
 - **Find and rejoin**: search games by name, and go back to the server you just left.
-- **Games**: favorites and recently played with thumbnails, quick Play, desktop shortcuts, and play time per game saved on your PC.
+- **Games**: favorites and recently played with thumbnails, quick Play, desktop shortcuts, play time, and per-game FPS and graphics profiles.
 - **Tray icon**: open Nexstrap, play or jump into a recent game from the notification area, and keep it running there if you like.
 - **Servers**: browse an experience's public servers, filter by free slots and ping, and join a specific one.
 - **Loading screen**: your own text, colours, background and animation while Roblox starts.
@@ -27,7 +27,7 @@ A modern Windows launcher for the official Roblox client, with themes, honest Fa
 - **Six languages**: the whole app in English, Deutsch, Español, Français, Português (Brasil) or Русский.
 - **Appearance**: dark and light themes, any accent colour, any installed font, background images, presets, and themes you can save, share and import. Changes apply instantly. An opt-in Roblox font setting can also change the font in Nexstrap-installed Roblox builds.
 - **FastFlags, honestly**: add, edit, toggle, import and export flags with type checking and automatic backups. Every flag is marked **Applied** or **Ignored**, based on Roblox's published allowlist (since September 2025 Roblox ignores everything else).
-- **Performance**: see how your frame-rate cap compares with your display, apply presets, and choose the graphics API, anti-aliasing and texture quality. It changes limits and quality; it can't make your PC faster.
+- **Performance**: see how your frame-rate cap compares with your display, apply presets, choose graphics settings, and inspect Roblox CPU and memory use alongside Roblox's built-in performance stats. It changes limits and quality; it can't make your PC faster.
 - **Roblox Settings**: frame-rate cap, graphics quality, fullscreen, volume and camera options, the same settings as Roblox's own menu, with backups. Also CPU priority and cores, a custom window title, start with Windows, and cleanup of old logs.
 - **Death sound and cursor**: use your own files in Nexstrap-installed Roblox builds, and go back to the originals any time.
 - **Discord Rich Presence**: "Inside Nexstrap · Browsing Roblox" in the menu (with your own text if you like); the game's name, icon, your avatar and a *View game* button in game.

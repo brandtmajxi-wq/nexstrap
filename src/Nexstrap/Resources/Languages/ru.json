@@ -987,7 +987,7 @@
   "RobloxSettings.Hotkeys.Taken.Text": "Ctrl+Alt+N или Ctrl+Alt+J уже использует другая программа или другая копия Nexstrap.",
   "RobloxSettings.Hotkeys.NothingToRejoin": "Пока нет сервера для возврата.",
   "Games.Profiles": "Профили игр",
-  "Games.Profiles.Text": "Задай игре свой лимит FPS и качество графики. Они применяются при входе через Nexstrap, а обычные настройки возвращаются, когда Roblox закрывается.",
+  "Games.Profiles.Text": "Задайте для каждой игры лимит FPS, качество, графический API, сглаживание и уровень текстур. Настройки применяются при запуске через Nexstrap, а после закрытия Roblox возвращаются обычные значения. Для графических параметров нужна сборка, установленная Nexstrap.",
   "Games.Profiles.Empty": "Профилей пока нет. Нажми кнопку настроек у игры, чтобы добавить.",
   "Games.Profile.Add": "Добавить профиль игры",
   "Games.Profile.Default": "Обычная настройка",
@@ -1212,5 +1212,9 @@
   "Sidebar.Minutes": "{0} мин",
   "Stats.AverageSession": "Средняя сессия",
   "Stats.LongestSession": "Самая долгая сессия",
-  "Stats.DifferentGames": "Разных игр"
+  "Stats.DifferentGames": "Разных игр",
+  "Performance.Diagnostics.Title": "Диагностика производительности",
+  "Performance.Diagnostics.Text": "Снимок Windows: загрузка процессора и память Roblox. Чтобы увидеть FPS, время кадра и графические показатели в игре, откройте встроенную статистику производительности через меню Roblox.",
+  "Performance.Diagnostics.NotRunning": "Roblox не запущен. Запустите игру, чтобы получить данные.",
+  "Performance.Diagnostics.Sample": "Процессов Roblox: {0} · ЦП: {1:0}% · Память: {2:0} МБ"
 }

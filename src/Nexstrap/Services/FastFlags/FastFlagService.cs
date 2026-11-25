@@ -44,7 +44,7 @@ public interface IFastFlagService
     /// Writes enabled flags into a Nexstrap-managed build's ClientSettings\ClientAppSettings.json.
     /// Builds owned by other launchers are never written to.
     /// </summary>
-    void ApplyTo(RobloxInstallation installation);
+    void ApplyTo(RobloxInstallation installation, IReadOnlyDictionary<string, string>? overrides = null);
 
     /// <summary>Reads (never writes) the flags file of any installation, e.g. to import from Voidstrap.</summary>
     string? ReadFromInstallation(RobloxInstallation installation);
@@ -225,7 +225,7 @@ public sealed class FastFlagService : IFastFlagService
         Commit();
     }
 
-    public void ApplyTo(RobloxInstallation installation)
+    public void ApplyTo(RobloxInstallation installation, IReadOnlyDictionary<string, string>? overrides = null)
     {
         if (installation.Source != InstallationSource.Nexstrap)
         {
@@ -237,7 +237,7 @@ public sealed class FastFlagService : IFastFlagService
         Directory.CreateDirectory(folder);
         var target = Path.Combine(folder, SettingsFile);
         var temp = target + ".tmp";
-        File.WriteAllText(temp, BuildRobloxJson(_doc.Flags));
+        File.WriteAllText(temp, BuildRobloxJson(_doc.Flags, overrides));
         File.Move(temp, target, overwrite: true);
         _logger.LogInformation("Wrote {Count} FastFlags to {Path}", _doc.Flags.Count(f => f.Enabled), target);
     }
@@ -249,10 +249,14 @@ public sealed class FastFlagService : IFastFlagService
     }
 
     /// <summary>Roblox format: enabled flags only, values as strings (what Roblox and other launchers use).</summary>
-    internal static string BuildRobloxJson(IEnumerable<FastFlagEntry> flags)
+    internal static string BuildRobloxJson(IEnumerable<FastFlagEntry> flags, IReadOnlyDictionary<string, string>? overrides = null)
     {
         var root = new JsonObject();
         foreach (var f in flags.Where(f => f.Enabled)) root[f.Name] = f.Value;
+        if (overrides is not null)
+            foreach (var (name, value) in overrides)
+                if (FastFlagCatalog.ValidateName(name) is null && FastFlagCatalog.ValidateValue(name, value) is null)
+                    root[name] = value;
         return root.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
     }
 

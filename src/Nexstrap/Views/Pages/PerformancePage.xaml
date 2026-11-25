@@ -50,6 +50,15 @@
             </StackPanel>
         </Border>
 
+        <!-- ===== Troubleshooting ===== -->
+        <TextBlock Text="{DynamicResource L.Performance.Diagnostics.Title}" Style="{StaticResource SectionHeader}" Margin="2,16,0,10" />
+        <Border Style="{StaticResource Card}" Padding="18,14">
+            <StackPanel>
+                <TextBlock Text="{Binding DiagnosticsText}" Style="{StaticResource Text.Base}" FontWeight="Medium" />
+                <TextBlock Text="{DynamicResource L.Performance.Diagnostics.Text}" Style="{StaticResource Text.Secondary}" Margin="0,6,0,0" TextWrapping="Wrap" />
+            </StackPanel>
+        </Border>
+
         <!-- ===== Presets ===== -->
         <TextBlock Text="{DynamicResource L.Appearance.Presets}" Style="{StaticResource SectionHeader}" />
         <TextBlock Text="{DynamicResource L.Performance.SetsRobloxsFrameRateCapAnd}"

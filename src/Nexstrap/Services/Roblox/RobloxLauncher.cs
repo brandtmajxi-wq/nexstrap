@@ -18,6 +18,9 @@ public interface IRobloxLauncher
     /// <summary>Hands a roblox: / roblox-player: link to the client, exactly as Windows would.</summary>
     LaunchResult LaunchUri(RobloxInstallation installation, string uri);
 
+    /// <summary>Launches with temporary, per-game FastFlag values when the implementation supports them.</summary>
+    LaunchResult LaunchUri(RobloxInstallation installation, string uri, IReadOnlyDictionary<string, string>? flagOverrides) => LaunchUri(installation, uri);
+
     /// <summary>True while any Roblox Player process is running.</summary>
     bool IsRobloxRunning();
 
@@ -42,11 +45,13 @@ public sealed class RobloxLauncher(
     public LaunchResult LaunchApp(RobloxInstallation installation) =>
         Start(installation, "--app", "the Roblox app");
 
-    public LaunchResult LaunchUri(RobloxInstallation installation, string uri)
+    public LaunchResult LaunchUri(RobloxInstallation installation, string uri) => LaunchUri(installation, uri, null);
+
+    public LaunchResult LaunchUri(RobloxInstallation installation, string uri, IReadOnlyDictionary<string, string>? flagOverrides)
     {
         if (!RobloxLinks.IsLaunchUri(uri))
             return Fail(Loc.Get("Launch.ThatIsntARobloxLaunchLink"));
-        return Start(installation, uri, RobloxLinks.Redact(uri));
+        return Start(installation, uri, RobloxLinks.Redact(uri), flagOverrides);
     }
 
     public bool IsRobloxRunning()
@@ -82,7 +87,7 @@ public sealed class RobloxLauncher(
         }
     }
 
-    private LaunchResult Start(RobloxInstallation installation, string argument, string description)
+    private LaunchResult Start(RobloxInstallation installation, string argument, string description, IReadOnlyDictionary<string, string>? flagOverrides = null)
     {
         if (!File.Exists(installation.ExecutablePath))
             return Fail(Loc.Format("Launch.RobloxIsNoLongerAtRefresh", installation.Directory));
@@ -91,7 +96,7 @@ public sealed class RobloxLauncher(
         string? flagWarning = null;
         try
         {
-            fastFlags.ApplyTo(installation);
+            fastFlags.ApplyTo(installation, flagOverrides);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
